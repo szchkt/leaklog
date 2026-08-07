@@ -55,6 +55,8 @@ MainWindowSettings::MainWindowSettings():
     m_decommissioned_circuits_visible(true),
     m_service_company_information_printed(true),
     m_service_company_information_visible(false),
+    m_service_company_stamp_printed(true),
+    m_service_company_stamp_visible(false),
     m_date_format(ddMMyyyy),
     m_time_format(hhmm)
 {
@@ -70,6 +72,8 @@ void MainWindowSettings::save(QSettings &settings) const
 
     settings.setValue("main_window/service_company_information_printed", m_service_company_information_printed);
     settings.setValue("main_window/service_company_information_visible", m_service_company_information_visible);
+    settings.setValue("main_window/service_company_stamp_printed", m_service_company_stamp_printed);
+    settings.setValue("main_window/service_company_stamp_visible", m_service_company_stamp_visible);
 
     settings.setValue("main_window/date_format", m_date_format);
     settings.setValue("main_window/time_format", m_time_format);
@@ -90,6 +94,8 @@ void MainWindowSettings::restore(QSettings &settings)
 
     setServiceCompanyInformationPrinted(settings.value("main_window/service_company_information_printed", true).toBool());
     setServiceCompanyInformationVisible(settings.value("main_window/service_company_information_visible", false).toBool());
+    setServiceCompanyStampPrinted(settings.value("main_window/service_company_stamp_printed", true).toBool());
+    setServiceCompanyStampVisible(settings.value("main_window/service_company_stamp_visible", false).toBool());
 
     setDateFormat((DateFormat)settings.value("main_window/date_format", ddMMyyyy).toInt());
     setTimeFormat((TimeFormat)settings.value("main_window/time_format", hhmm).toInt());
@@ -115,6 +121,24 @@ void MainWindowSettings::setServiceCompanyInformationVisible(bool service_compan
         return;
 
     m_service_company_information_visible = service_company_information_visible;
+    emit serviceCompanyInformationVisibilityChanged();
+}
+
+void MainWindowSettings::setServiceCompanyStampPrinted(bool service_company_stamp_printed)
+{
+    if (m_service_company_stamp_printed == service_company_stamp_printed)
+        return;
+
+    m_service_company_stamp_printed = service_company_stamp_printed;
+    emit serviceCompanyInformationVisibilityChanged();
+}
+
+void MainWindowSettings::setServiceCompanyStampVisible(bool service_company_stamp_visible)
+{
+    if (m_service_company_stamp_visible == service_company_stamp_visible)
+        return;
+
+    m_service_company_stamp_visible = service_company_stamp_visible;
     emit serviceCompanyInformationVisibilityChanged();
 }
 

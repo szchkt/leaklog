@@ -405,6 +405,8 @@
     <addaction name="actionPrinter_friendly_version"/>
     <addaction name="actionPrint_Service_Company_Information"/>
     <addaction name="actionShow_Service_Company_Information"/>
+    <addaction name="actionPrint_Service_Company_Stamp"/>
+    <addaction name="actionShow_Service_Company_Stamp"/>
     <addaction name="actionCompare_values"/>
     <addaction name="actionMost_recent_first"/>
    </widget>
@@ -2082,6 +2084,14 @@
     <string>Show Service Company Information</string>
    </property>
   </action>
+  <action name="actionShow_Service_Company_Stamp">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Service Company Stamp</string>
+   </property>
+  </action>
   <action name="actionMove_Circuit_to_Another_Customer">
    <property name="enabled">
     <bool>false</bool>
@@ -2145,6 +2155,17 @@
    </property>
    <property name="text">
     <string>Print Service Company Information</string>
+   </property>
+  </action>
+  <action name="actionPrint_Service_Company_Stamp">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Print Service Company Stamp</string>
    </property>
   </action>
   <action name="actionEdit_Refrigerants">

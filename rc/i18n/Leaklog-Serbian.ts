@@ -4467,6 +4467,14 @@ Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</t
         <source>Unstar all circuits of customer %1%2</source>
         <translation>Ukloni zvezdicu sa svih krugova korisnika %1%2</translation>
     </message>
+    <message>
+        <source>Show Service Company Stamp</source>
+        <translation>Prikaži pečat servisne kompanije</translation>
+    </message>
+    <message>
+        <source>Print Service Company Stamp</source>
+        <translation>Odštampaj pečat servisne kompanije</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -5229,6 +5237,10 @@ Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</t
     <message>
         <source>Service Company</source>
         <translation>Servisna kompanija</translation>
+    </message>
+    <message>
+        <source>Stamp:</source>
+        <translation>Pečat:</translation>
     </message>
 </context>
 <context>

@@ -165,3 +165,26 @@ void View::writeServiceCompany(HTMLParent &div)
     *service_company_parent << writeServiceCompany();
     service_company_parent->newLine();
 }
+
+QString View::writeServiceCompanyStamp()
+{
+    if (!settings->mainWindowSettings().serviceCompanyStampVisible() && !settings->mainWindowSettings().serviceCompanyStampPrinted())
+        return QString();
+
+    ServiceCompany service_company(settings->selectedServiceCompanyUUID());
+    if (service_company.stampFileUUID().isEmpty())
+        return QString();
+
+    QByteArray byte_array = DBFile(service_company.stampFileUUID()).data().toBase64();
+    if (byte_array.isNull())
+        return QString();
+
+    QString stamp = QString("<br><div style=\"text-align: right;\">"
+                            "<img src=\"data:image/jpeg;base64,%1\" style=\"max-width: 300px;\"></div>")
+                        .arg(byte_array);
+
+    if (!settings->mainWindowSettings().serviceCompanyStampVisible())
+        stamp.prepend("<div class=\"print_only\">").append("</div>");
+
+    return stamp;
+}

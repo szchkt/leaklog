@@ -4474,6 +4474,14 @@ Pro odstranění všech údajů o servisní organizaci „%1“ napište ODSTRAN
         <source>Unstar all circuits of customer %1%2</source>
         <translation>Odebrat hvězdičku všem okruhům zákazníka %1%2</translation>
     </message>
+    <message>
+        <source>Show Service Company Stamp</source>
+        <translation>Zobrazit razítko servisní organizace</translation>
+    </message>
+    <message>
+        <source>Print Service Company Stamp</source>
+        <translation>Tisknout razítko servisní organizace</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -5236,6 +5244,10 @@ Pro odstranění všech údajů o servisní organizaci „%1“ napište ODSTRAN
     <message>
         <source>Service Company</source>
         <translation>Servisní organizace</translation>
+    </message>
+    <message>
+        <source>Stamp:</source>
+        <translation>Razítko:</translation>
     </message>
 </context>
 <context>

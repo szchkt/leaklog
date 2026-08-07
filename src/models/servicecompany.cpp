@@ -38,6 +38,7 @@ void ServiceCompany::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), mail()));
     md->addInputWidget(new MDLineEdit("website", tr("Website:"), md->widget(), website()));
     md->addInputWidget(new MDFileChooser("image_file_uuid", tr("Image:"), md->widget(), imageFileUUID()));
+    md->addInputWidget(new MDFileChooser("stamp_file_uuid", tr("Stamp:"), md->widget(), stampFileUUID()));
 }
 
 MTAddress ServiceCompany::address()
@@ -61,6 +62,7 @@ public:
     ServiceCompanyColumns() {
         columns << Column("uuid", "UUID PRIMARY KEY");
         columns << Column("image_file_uuid", "UUID");
+        columns << Column("stamp_file_uuid", "UUID");
         columns << Column("id", "TEXT");
         columns << Column("name", "TEXT");
         columns << Column("address", "TEXT");

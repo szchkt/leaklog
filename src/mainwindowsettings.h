@@ -86,6 +86,16 @@ public slots:
     void setServiceCompanyInformationVisible(bool service_company_information_visible);
 public:
 
+    inline bool serviceCompanyStampPrinted() const { return m_service_company_stamp_printed; }
+public slots:
+    void setServiceCompanyStampPrinted(bool service_company_stamp_printed);
+public:
+
+    inline bool serviceCompanyStampVisible() const { return m_service_company_stamp_visible; }
+public slots:
+    void setServiceCompanyStampVisible(bool service_company_stamp_visible);
+public:
+
     inline DateFormat dateFormat() const { return m_date_format; }
     inline QString dateFormatString() const { return m_date_format_string; }
     void setDateFormat(DateFormat date_format);
@@ -115,6 +125,8 @@ private:
     bool m_decommissioned_circuits_visible;
     bool m_service_company_information_printed;
     bool m_service_company_information_visible;
+    bool m_service_company_stamp_printed;
+    bool m_service_company_stamp_visible;
 
     DateFormat m_date_format;
     QString m_date_format_string;

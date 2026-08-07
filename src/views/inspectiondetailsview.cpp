@@ -163,6 +163,7 @@ QString InspectionDetailsView::renderHTML(bool)
         *(_table->addRow()->addHeaderCell("style=\"font-size: medium;\"")) << tr("Warnings");
         *(_table->addRow()->addCell()) << warnings_list.join(", ");
     }
+    div << writeServiceCompanyStamp();
     return viewTemplate("inspection").arg(div.html());
 }
 

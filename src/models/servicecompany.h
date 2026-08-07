@@ -35,6 +35,8 @@ public:
 
     inline QString imageFileUUID() { return stringValue("image_file_uuid"); }
     inline void setImageFileUUID(const QString &value) { setValue("image_file_uuid", value); }
+    inline QString stampFileUUID() { return stringValue("stamp_file_uuid"); }
+    inline void setStampFileUUID(const QString &value) { setValue("stamp_file_uuid", value); }
     inline QString companyID() { return stringValue("id"); }
     inline void setCompanyID(const QString &value) { setValue("id", value); }
     inline QString name() { return stringValue("name"); }

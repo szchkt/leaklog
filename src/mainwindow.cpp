@@ -258,6 +258,8 @@ MainWindow::MainWindow():
     QObject::connect(&m_settings, SIGNAL(serviceCompanyInformationVisibilityChanged()), this, SLOT(serviceCompanyInformationVisibilityChanged()));
     QObject::connect(actionPrint_Service_Company_Information, SIGNAL(triggered(bool)), &m_settings, SLOT(setServiceCompanyInformationPrinted(bool)));
     QObject::connect(actionShow_Service_Company_Information, SIGNAL(triggered(bool)), &m_settings, SLOT(setServiceCompanyInformationVisible(bool)));
+    QObject::connect(actionPrint_Service_Company_Stamp, SIGNAL(triggered(bool)), &m_settings, SLOT(setServiceCompanyStampPrinted(bool)));
+    QObject::connect(actionShow_Service_Company_Stamp, SIGNAL(triggered(bool)), &m_settings, SLOT(setServiceCompanyStampVisible(bool)));
     QObject::connect(&m_settings, SIGNAL(dateFormatChanged(MainWindowSettings::DateFormat)), this, SLOT(dateFormatChanged(MainWindowSettings::DateFormat)));
     QObject::connect(actgrp_date_format, SIGNAL(triggered(QAction *)), this, SLOT(dateFormatChanged(QAction *)));
     QObject::connect(&m_settings, SIGNAL(timeFormatChanged(MainWindowSettings::TimeFormat)), this, SLOT(timeFormatChanged(MainWindowSettings::TimeFormat)));
@@ -1078,6 +1080,8 @@ void MainWindow::serviceCompanyInformationVisibilityChanged()
 {
     actionPrint_Service_Company_Information->setChecked(m_settings.serviceCompanyInformationPrinted());
     actionShow_Service_Company_Information->setChecked(m_settings.serviceCompanyInformationVisible());
+    actionPrint_Service_Company_Stamp->setChecked(m_settings.serviceCompanyStampPrinted());
+    actionShow_Service_Company_Stamp->setChecked(m_settings.serviceCompanyStampVisible());
     if (QSqlDatabase::database().isOpen())
         refreshView();
 }

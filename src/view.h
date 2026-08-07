@@ -77,6 +77,7 @@ protected:
     HTMLTable *writeServiceCompany(HTMLTable *table = NULL);
     void writeServiceCompany(MTTextStream &out);
     void writeServiceCompany(HTMLParent &div);
+    QString writeServiceCompanyStamp();
 
     ViewTabSettings *settings;
 

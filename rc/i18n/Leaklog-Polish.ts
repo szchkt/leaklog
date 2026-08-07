@@ -4463,6 +4463,14 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
         <source>Unstar all circuits of customer %1%2</source>
         <translation>Usuń oznaczenie gwiazdką ze wszystkich obiegów klienta %1%2</translation>
     </message>
+    <message>
+        <source>Show Service Company Stamp</source>
+        <translation>Pokaż pieczątkę firmy serwisowej</translation>
+    </message>
+    <message>
+        <source>Print Service Company Stamp</source>
+        <translation>Drukuj pieczątkę firmy serwisowej</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -5225,6 +5233,10 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
     <message>
         <source>E-mail:</source>
         <translation>E-mail:</translation>
+    </message>
+    <message>
+        <source>Stamp:</source>
+        <translation>Pieczątka:</translation>
     </message>
 </context>
 <context>

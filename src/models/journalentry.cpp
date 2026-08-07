@@ -274,6 +274,8 @@ public:
         column_names.insert(167, "sold_rege");
         column_names.insert(168, "refr_add_am_recy");
         column_names.insert(169, "refr_add_am_rege");
+        // Version 4
+        column_names.insert(170, "stamp_file_uuid");
 
         QMapIterator<int, QString> i(column_names);
         while (i.hasNext()) { i.next();
@@ -297,6 +299,8 @@ QString JournalEntry::columnNameForID(int id, const QString &default_value)
 
 int JournalEntry::versionForColumnID(int column_id)
 {
+    if (column_id >= 170)
+        return 4;
     if (column_id >= 166)
         return 3;
     if (column_id >= 163)
@@ -319,6 +323,8 @@ bool JournalEntry::shouldJournalUpdateOnInsertionForColumnID(int column_id, cons
         case 168:
         case 169:
             return value.toDouble() != 0.0;
+        case 170:
+            return !value.toString().isEmpty();
     }
     return column_id >= 162;
 }
