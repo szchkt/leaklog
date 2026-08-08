@@ -18,5 +18,9 @@
         <source>Serbian</source>
         <translation>Srpski</translation>
     </message>
+    <message>
+        <source>Hungarian</source>
+        <translation>Magyar</translation>
+    </message>
 </context>
 </TS>

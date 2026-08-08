@@ -391,5 +391,6 @@ CODECFORTR         = UTF-8
 TRANSLATIONS      += rc/i18n/Leaklog-Slovak.ts \
                      rc/i18n/Leaklog-Polish.ts \
                      rc/i18n/Leaklog-Czech.ts \
-                     rc/i18n/Leaklog-Serbian.ts
+                     rc/i18n/Leaklog-Serbian.ts \
+                     rc/i18n/Leaklog-Hungarian.ts
 QMAKE_RESOURCE_FLAGS += -compress 9
