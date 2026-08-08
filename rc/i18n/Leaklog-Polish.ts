@@ -2058,6 +2058,10 @@
         <source>Service company:</source>
         <translation>Firma serwisowa:</translation>
     </message>
+    <message>
+        <source>Stamp:</source>
+        <translation>Pieczątka:</translation>
+    </message>
 </context>
 <context>
     <name>InspectorDetailsView</name>
@@ -4464,12 +4468,12 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
         <translation>Usuń oznaczenie gwiazdką ze wszystkich obiegów klienta %1%2</translation>
     </message>
     <message>
-        <source>Show Service Company Stamp</source>
-        <translation>Pokaż pieczątkę firmy serwisowej</translation>
+        <source>Show Service Company or Inspector Stamp</source>
+        <translation>Pokaż pieczątkę firmy serwisowej lub kontrolera</translation>
     </message>
     <message>
-        <source>Print Service Company Stamp</source>
-        <translation>Drukuj pieczątkę firmy serwisowej</translation>
+        <source>Print Service Company or Inspector Stamp</source>
+        <translation>Drukuj pieczątkę firmy serwisowej lub kontrolera</translation>
     </message>
 </context>
 <context>

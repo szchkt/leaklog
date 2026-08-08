@@ -2089,7 +2089,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show Service Company Stamp</string>
+    <string>Show Service Company or Inspector Stamp</string>
    </property>
   </action>
   <action name="actionMove_Circuit_to_Another_Customer">
@@ -2165,7 +2165,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Print Service Company Stamp</string>
+    <string>Print Service Company or Inspector Stamp</string>
    </property>
   </action>
   <action name="actionEdit_Refrigerants">

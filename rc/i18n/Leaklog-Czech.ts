@@ -2065,6 +2065,10 @@
         <source>Service company:</source>
         <translation>Servisní organizace:</translation>
     </message>
+    <message>
+        <source>Stamp:</source>
+        <translation>Razítko:</translation>
+    </message>
 </context>
 <context>
     <name>InspectorDetailsView</name>
@@ -4475,12 +4479,12 @@ Pro odstranění všech údajů o servisní organizaci „%1“ napište ODSTRAN
         <translation>Odebrat hvězdičku všem okruhům zákazníka %1%2</translation>
     </message>
     <message>
-        <source>Show Service Company Stamp</source>
-        <translation>Zobrazit razítko servisní organizace</translation>
+        <source>Show Service Company or Inspector Stamp</source>
+        <translation>Zobrazit razítko servisní organizace nebo certifikované osoby</translation>
     </message>
     <message>
-        <source>Print Service Company Stamp</source>
-        <translation>Tisknout razítko servisní organizace</translation>
+        <source>Print Service Company or Inspector Stamp</source>
+        <translation>Tisknout razítko servisní organizace nebo certifikované osoby</translation>
     </message>
 </context>
 <context>

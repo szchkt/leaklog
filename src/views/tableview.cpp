@@ -230,7 +230,7 @@ QString TableView::renderHTML(bool)
             out << "<div style=\"page-break-after: always;\"><br /></div>";
     }
 
-    out << writeServiceCompanyStamp();
+    out << writeServiceCompanyOrInspectorStamp();
 
     QString colours = !settings->isPrinterFriendlyVersionChecked() ? "<link href=\"colours.css\" rel=\"stylesheet\" type=\"text/css\" />" : "";
     return viewTemplate("table").arg(colours).arg(html);

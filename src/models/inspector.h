@@ -33,6 +33,8 @@ public:
 
     inline QString serviceCompanyUUID() { return stringValue("service_company_uuid"); }
     inline void setServiceCompanyUUID(const QString &value) { setValue("service_company_uuid", value); }
+    inline QString stampFileUUID() { return stringValue("stamp_file_uuid"); }
+    inline void setStampFileUUID(const QString &value) { setValue("stamp_file_uuid", value); }
     inline QString certificateNumber() { return stringValue("certificate_number"); }
     inline QString certificateCountry() { return stringValue("certificate_country"); }
     inline QString personName() { return stringValue("person"); }

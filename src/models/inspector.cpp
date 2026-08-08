@@ -42,6 +42,7 @@ void Inspector::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDLineEdit("person", tr("Full name:"), md->widget(), personName()));
     md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), mail()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), phone()));
+    md->addInputWidget(new MDFileChooser("stamp_file_uuid", tr("Stamp:"), md->widget(), stampFileUUID()));
     MDInputWidget *iw = new MDDoubleSpinBox("acquisition_price", tr("Acquisition price:"), md->widget(), 0.0, 999999999.9, acquisitionPrice(), currency);
     iw->setRowSpan(0);
     md->addInputWidget(iw);
@@ -61,6 +62,7 @@ public:
     InspectorColumns() {
         columns << Column("uuid", "UUID PRIMARY KEY");
         columns << Column("service_company_uuid", "UUID");
+        columns << Column("stamp_file_uuid", "UUID");
         columns << Column("certificate_number", "TEXT");
         columns << Column("certificate_country", "TEXT");
         columns << Column("person", "TEXT");

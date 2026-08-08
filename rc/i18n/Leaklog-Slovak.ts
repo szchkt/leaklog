@@ -2058,6 +2058,10 @@
         <source>Service company:</source>
         <translation>Servisná organizácia:</translation>
     </message>
+    <message>
+        <source>Stamp:</source>
+        <translation>Pečiatka:</translation>
+    </message>
 </context>
 <context>
     <name>InspectorDetailsView</name>
@@ -4468,12 +4472,12 @@ Na odstránenie všetkých údajov o servisnej organizácii „%1“ napíšte O
         <translation>Odstrániť hviezdičku zo všetkých okruhov zákazníka %1%2</translation>
     </message>
     <message>
-        <source>Show Service Company Stamp</source>
-        <translation>Zobraziť pečiatku servisnej organizácie</translation>
+        <source>Show Service Company or Inspector Stamp</source>
+        <translation>Zobraziť pečiatku servisnej organizácie alebo kontrolóra</translation>
     </message>
     <message>
-        <source>Print Service Company Stamp</source>
-        <translation>Tlačiť pečiatku servisnej organizácie</translation>
+        <source>Print Service Company or Inspector Stamp</source>
+        <translation>Tlačiť pečiatku servisnej organizácie alebo kontrolóra</translation>
     </message>
 </context>
 <context>

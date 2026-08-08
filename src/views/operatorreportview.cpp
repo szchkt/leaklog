@@ -241,6 +241,8 @@ QString OperatorReportView::renderHTML(bool)
                       << " <input type=\"text\" style=\"border: 0;\">";
     out << compiled_by.html();
 
+    out << writeServiceCompanyOrInspectorStamp();
+
     return viewTemplate("operator_report").arg(html);
 }
 

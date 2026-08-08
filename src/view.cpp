@@ -166,16 +166,20 @@ void View::writeServiceCompany(HTMLParent &div)
     service_company_parent->newLine();
 }
 
-QString View::writeServiceCompanyStamp()
+QString View::writeServiceCompanyOrInspectorStamp()
 {
     if (!settings->mainWindowSettings().serviceCompanyStampVisible() && !settings->mainWindowSettings().serviceCompanyStampPrinted())
         return QString();
 
-    ServiceCompany service_company(settings->selectedServiceCompanyUUID());
-    if (service_company.stampFileUUID().isEmpty())
+    QString stamp_file_uuid;
+    if (settings->isInspectorSelected())
+        stamp_file_uuid = Inspector(settings->selectedInspectorUUID()).stampFileUUID();
+    if (stamp_file_uuid.isEmpty())
+        stamp_file_uuid = ServiceCompany(settings->selectedServiceCompanyUUID()).stampFileUUID();
+    if (stamp_file_uuid.isEmpty())
         return QString();
 
-    QByteArray byte_array = DBFile(service_company.stampFileUUID()).data().toBase64();
+    QByteArray byte_array = DBFile(stamp_file_uuid).data().toBase64();
     if (byte_array.isNull())
         return QString();
 

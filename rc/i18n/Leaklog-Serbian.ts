@@ -2058,6 +2058,10 @@
         <source>Service company:</source>
         <translation>Servisna kompanija:</translation>
     </message>
+    <message>
+        <source>Stamp:</source>
+        <translation>Pečat:</translation>
+    </message>
 </context>
 <context>
     <name>InspectorDetailsView</name>
@@ -4468,12 +4472,12 @@ Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</t
         <translation>Ukloni zvezdicu sa svih krugova korisnika %1%2</translation>
     </message>
     <message>
-        <source>Show Service Company Stamp</source>
-        <translation>Prikaži pečat servisne kompanije</translation>
+        <source>Show Service Company or Inspector Stamp</source>
+        <translation>Prikaži pečat servisne kompanije ili kontrolora</translation>
     </message>
     <message>
-        <source>Print Service Company Stamp</source>
-        <translation>Odštampaj pečat servisne kompanije</translation>
+        <source>Print Service Company or Inspector Stamp</source>
+        <translation>Odštampaj pečat servisne kompanije ili kontrolora</translation>
     </message>
 </context>
 <context>
