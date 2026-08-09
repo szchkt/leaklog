@@ -529,7 +529,7 @@
     </message>
     <message>
         <source>Customer: %2 %1 Circuit</source>
-        <translation>Ügyfél: %2 %1 Hhűtőkör</translation>
+        <translation>Ügyfél: %2 %1 hűtőkör</translation>
     </message>
     <message>
         <source>ID:</source>
@@ -804,7 +804,7 @@
     </message>
     <message>
         <source>At t0/tc:</source>
-        <translation>to/tk -nál: </translation>
+        <translation>t0/tc-nél:</translation>
     </message>
     <message>
         <source>Output:</source>
@@ -860,7 +860,7 @@
     </message>
     <message>
         <source>Output at t0/tc</source>
-        <translation>Teljesítmény to/tk -nél</translation>
+        <translation>Teljesítmény t0/tc-nél</translation>
     </message>
     <message>
         <source>Notes</source>
@@ -3044,7 +3044,7 @@
     </message>
     <message>
         <source>Show most recent inspections, repairs and records of refrigerant management first</source>
-        <translation>Legújabb felülvizsgálatokat, javításokat és hűtőközeg nyilvántartás bejegyzésket mutassa legelöl </translation>
+        <translation>A legutóbbi ellenőrzések, javítások és hűtőközeg-kezelési bejegyzések megjelenítése legelöl</translation>
     </message>
     <message>
         <source>01/02/2003</source>
@@ -3164,7 +3164,7 @@
     </message>
     <message>
         <source>The database has been upgraded to work with this version of Leaklog. It is recommended that you save the changes now.</source>
-        <translation>Adatbázis frissítve a Leaklog ehhez a verziójához. Ajánlot az adatokat most elmenteni.</translation>
+        <translation>Az adatbázist a Leaklog ezen verziójával való használathoz frissítettük. Javasoljuk, hogy most mentse el a módosításokat.</translation>
     </message>
     <message>
         <source>Once saved, you will not be able to use this database with previous versions of Leaklog. Do you want to save the changes?</source>
@@ -3214,7 +3214,7 @@
     </message>
     <message>
         <source>Open database - Leaklog</source>
-        <translation>Adatbázis megnyitása - Leklog</translation>
+        <translation>Adatbázis megnyitása - Leaklog</translation>
     </message>
     <message>
         <source>Leaklog Databases (*.lklg);;All files (*.*)</source>
@@ -3288,7 +3288,7 @@
     </message>
     <message>
         <source>Permission denied - Leaklog</source>
-        <translation>Engeély megtagadva - Leaklog</translation>
+        <translation>Engedély megtagadva - Leaklog</translation>
     </message>
     <message>
         <source>This record was created by another user. Operation not permitted.</source>
@@ -3312,7 +3312,7 @@
     </message>
     <message>
         <source>Edit record of refrigerant management %1</source>
-        <translation>Hűtőközeg nyilvántartás bejegyzésének szerkesztése %1</translation>
+        <translation>Hűtőközeg-kezelési bejegyzés szerkesztése %1</translation>
     </message>
     <message>
         <source>Add customer</source>
@@ -3484,7 +3484,7 @@ A &quot;%1&quot; javítás összes adatának eltávolításához gépelje be ELT
     </message>
     <message>
         <source>Remove variable - Leaklog</source>
-        <translation>Változó eltávolítása -Leaklog</translation>
+        <translation>Változó eltávolítása - Leaklog</translation>
     </message>
     <message>
         <source>Are you sure you want to remove the selected variable?
@@ -3792,7 +3792,7 @@ A &quot;%1&quot; bejegyzés összes adatának eltávolításához gépelje be EL
     </message>
     <message>
         <source>Remove assembly record item type - Leaklog</source>
-        <translation>Szerelési bejegyzés tétel  típus eltávolítása - Leaklog</translation>
+        <translation>Szerelési jegyzék tételtípusának eltávolítása - Leaklog</translation>
     </message>
     <message>
         <source>Are you sure you want to remove the selected assembly record item type?
@@ -4630,7 +4630,7 @@ No. 2024/573</source>
     </message>
     <message>
         <source>Edit record of refrigerant management</source>
-        <translation>Hűtőközeg nyilvántartás bejegyzésének szerkesztése</translation>
+        <translation>Hűtőközeg-kezelési bejegyzés szerkesztése</translation>
     </message>
     <message>
         <source>Add customer</source>
@@ -4889,7 +4889,7 @@ No. 2024/573</source>
     <name>RefrigerantRecord</name>
     <message>
         <source>Record of Refrigerant Management</source>
-        <translation>Hűtőközeg nyilvántartás bejegyzés</translation>
+        <translation>Hűtőközeg-kezelési bejegyzés</translation>
     </message>
     <message>
         <source>Date:</source>
@@ -5421,7 +5421,7 @@ No. 2024/573</source>
     </message>
     <message>
         <source>Autofill the form with values from the database</source>
-        <translation>Automatikus  nyomtatványkitöltése az adatbázis adataival</translation>
+        <translation>Űrlap automatikus kitöltése az adatbázis adataival</translation>
     </message>
     <message>
         <source>Autofill</source>
