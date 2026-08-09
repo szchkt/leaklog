@@ -8,8 +8,8 @@
         <translation>Leaklog je systém kontroly únikov založený na nariadení EÚ č. 2024/573. Usporiadava nálezy a parametre priamych a nepriamych kontrol únikov v záznamníku. Výsledkom je história kontrol, vývoj parametrov a ich porovnanie s nominálnymi a výpočet množstva a percenta úniku.</translation>
     </message>
     <message>
-        <source>Slovak Association for Cooling and Air Conditioning Technology</source>
-        <translation>Slovenský zväz pre chladiacu a klimatizačnú techniku</translation>
+        <source>Slovak Association for Cooling, Air Conditioning and Heat Pumps</source>
+        <translation>Slovenský zväz pre chladenie, klimatizáciu a tepelné čerpadlá</translation>
     </message>
     <message>
         <source>About Qt</source>

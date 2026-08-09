@@ -8,8 +8,8 @@
         <translation>Leaklog je sistem kontrole curenja zasnovan na Uredbi EU br. 2024/573. On prati nalaze i parametre direktnih i indirektnih provera curenja koristeći dnevnik. Rezultat je istorija provera, razvoj parametara i njihovo poređenje sa nominalnim i izračunavanje količine i procenta curenja.</translation>
     </message>
     <message>
-        <source>Slovak Association for Cooling and Air Conditioning Technology</source>
-        <translation>Slovačko udruženje za tehnologiju hlađenja i klimatizaciju</translation>
+        <source>Slovak Association for Cooling, Air Conditioning and Heat Pumps</source>
+        <translation>Slovačko udruženje za tehnologiju hlađenja, klimatizaciju i toplotne pumpe</translation>
     </message>
     <message>
         <source>About Qt</source>

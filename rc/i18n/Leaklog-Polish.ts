@@ -20,8 +20,8 @@
         <translation>Leaklog jest systemem kontroli wycieków opartym na rozporządzeniu (UE) 2024/573. Za pomocą dziennika rejestruje wyniki i parametry bezpośrednich i pośrednich kontroli szczelności. Rezultatem jest historia kontroli, zmiany parametrów, ich porównanie z wartościami nominalnymi oraz obliczenie ilości i procentu wycieku.</translation>
     </message>
     <message>
-        <source>Slovak Association for Cooling and Air Conditioning Technology</source>
-        <translation>Słowacki związek ds. chłodnictwa i klimatyzacji</translation>
+        <source>Slovak Association for Cooling, Air Conditioning and Heat Pumps</source>
+        <translation>Słowacki Związek Chłodnictwa, Klimatyzacji i Pomp Ciepła</translation>
     </message>
     <message>
         <source>Version %1</source>
@@ -5929,7 +5929,7 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
     </message>
     <message>
         <source>evap. in</source>
-        <translation>evap. wejście</translation>
+        <translation>parownik wejście</translation>
     </message>
     <message>
         <source>cond. in</source>
@@ -5957,7 +5957,7 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
     </message>
     <message>
         <source>Temperature evap. out</source>
-        <translation>Temp. evap. wyjście</translation>
+        <translation>Temp. parownik wyjście</translation>
     </message>
     <message>
         <source>Temperature comp. in</source>
@@ -5973,7 +5973,7 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
     </message>
     <message>
         <source>evap.</source>
-        <translation>evap.</translation>
+        <translation>parownik</translation>
     </message>
     <message>
         <source>comp.</source>

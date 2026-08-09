@@ -71,7 +71,7 @@ void AboutWidget::showAcknowledgements(bool show)
         HTMLParagraph *p = body->paragraph();
         *p << "&copy; 2008&nbsp;&ndash;&nbsp;2026 <span style=\"font-style:italic;\">Mat&uacute;&scaron; Tomlein, Michal Tomlein, Peter Tomlein</span>";
         p->newLine();
-        *p << tr("Slovak Association for Cooling and Air Conditioning Technology");
+        *p << tr("Slovak Association for Cooling, Air Conditioning and Heat Pumps");
 
         *(body->paragraph()) << tr("Leaklog is a leakage control system based on Regulation (EU) 2024/573. It keeps track of findings and parameters of direct and indirect leakage checks using a log. The result is a history of checks, the development of parameters and their comparison with nominal ones and calculation of the amount and percentage of leakage.");
     } else {

@@ -16,8 +16,8 @@
         <translation>Tudnivalók a Qt-ről</translation>
     </message>
     <message>
-        <source>Slovak Association for Cooling and Air Conditioning Technology</source>
-        <translation>Szlovák Hűtő- és Klímatechnikai Szövetség</translation>
+        <source>Slovak Association for Cooling, Air Conditioning and Heat Pumps</source>
+        <translation>Szlovák Hűtő-, Klímatechnikai és Hőszivattyú Szövetség</translation>
     </message>
     <message>
         <source>Version %1</source>
