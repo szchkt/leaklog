@@ -3872,7 +3872,7 @@ A &quot;%1&quot; stílus eltávolításához gépelje be ELTÁVOLÍTÁS majd er�
     </message>
     <message>
         <source>en_GB</source>
-        <translation>en_GB</translation>
+        <translation>hu_HU</translation>
     </message>
     <message>
         <source>LTR</source>
