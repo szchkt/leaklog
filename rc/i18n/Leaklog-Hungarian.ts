@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="hu_HU" sourcelanguage="en_GB">
-<defaultcodec>UTF-8</defaultcodec>
+<TS version="2.1" language="hu_HU" sourcelanguage="en_GB">
 <context>
     <name>AboutWidget</name>
     <message>
         <source>About Leaklog</source>
-        <translation>Tudnivalók a Leaklog -ról</translation>
+        <translation>Tudnivalók a Leaklogról</translation>
     </message>
     <message>
         <source>Leaklog</source>
@@ -14,11 +13,7 @@
     </message>
     <message>
         <source>About Qt</source>
-        <translation>Tudnivalók a Qt -ről</translation>
-    </message>
-    <message>
-        <source>Leaklog is a leakage control system based on the EU Regulation No 842/2006. It keeps track of findings and parameters of direct and indirect leakage checks using a log. The result is a history of checks, the development of parameters and their comparison with nominal ones and calculation of the amount and percentage of leakage.</source>
-        <translation>Leaklog a 842/2006 EU rendeleten alapuló szivárgás ellenőrző rendszer. Naplózza a közvetlen és közvetett szivárgásellenőrző vizsgálat eredményeit és paramétereit. Eredményként  listázza a vizsgálatokat és a paraméterek névleges értékekhez viszonyított változását, valamint  a szivárgás mértékét és százalékos arányát.</translation>
+        <translation>Tudnivalók a Qt-ről</translation>
     </message>
     <message>
         <source>Slovak Association for Cooling and Air Conditioning Technology</source>
@@ -26,43 +21,63 @@
     </message>
     <message>
         <source>Version %1</source>
-        <translation type="unfinished"></translation>
+        <translation>A változat %1</translation>
     </message>
     <message>
         <source>Acknowledgements</source>
-        <translation type="unfinished"></translation>
+        <translation>Köszönetnyilvánítás</translation>
     </message>
     <message>
         <source>Licence</source>
-        <translation type="unfinished"></translation>
+        <translation>Licenc</translation>
     </message>
     <message>
         <source>Translation</source>
-        <translation type="unfinished"></translation>
+        <translation>Fordítás</translation>
     </message>
     <message>
         <source>Polish translation: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Lengyel fordítás: %1</translation>
     </message>
     <message>
         <source>Contributors</source>
-        <translation type="unfinished"></translation>
+        <translation>Közreműködők</translation>
     </message>
     <message>
         <source>Leaklog uses</source>
-        <translation type="unfinished"></translation>
+        <translation>A Leaklog a következőket használja</translation>
     </message>
     <message>
         <source>%1, licensed under the GNU LGPL</source>
-        <translation type="unfinished"></translation>
+        <translation>%1, GNU LGPL licenc alatt</translation>
     </message>
     <message>
         <source>%1, licensed under the GNU GPL</source>
-        <translation type="unfinished"></translation>
+        <translation>%1, GNU GPL licenc alatt</translation>
     </message>
     <message>
         <source>http://www.gnu.org/licenses/gpl-2.0.html</source>
-        <translation type="unfinished"></translation>
+        <translation>http://www.gnu.org/licenses/gpl-2.0.html</translation>
+    </message>
+    <message>
+        <source>Leaklog is a leakage control system based on Regulation (EU) 2024/573. It keeps track of findings and parameters of direct and indirect leakage checks using a log. The result is a history of checks, the development of parameters and their comparison with nominal ones and calculation of the amount and percentage of leakage.</source>
+        <translation>A Leaklog az (EU) 2024/573 rendeleten alapuló szivárgásellenőrző rendszer. Naplóban követi a közvetlen és közvetett szivárgásvizsgálatok megállapításait és paramétereit. Ennek eredménye az ellenőrzések előzménye, a paraméterek alakulása és azok névleges értékekkel való összehasonlítása, valamint a szivárgás mennyiségének és százalékának kiszámítása.</translation>
+    </message>
+    <message>
+        <source>Czech translation: %1</source>
+        <translation>Cseh fordítás: %1</translation>
+    </message>
+    <message>
+        <source>Czech Association for Cooling and Air Conditioning Technology</source>
+        <translation>Cseh Hűtő- és Klímatechnikai Szövetség</translation>
+    </message>
+    <message>
+        <source>Serbian translation: %1</source>
+        <translation>Szerb fordítás: %1</translation>
+    </message>
+    <message>
+        <source>Association of HVAC technicians of Serbia</source>
+        <translation>Szerbiai HVAC-szerelők Szövetsége</translation>
     </message>
 </context>
 <context>
@@ -73,7 +88,7 @@
     </message>
     <message>
         <source>Next inspection</source>
-        <translation>Következő inspekció</translation>
+        <translation>Következő ellenőrzés</translation>
     </message>
     <message>
         <source>Customer</source>
@@ -85,7 +100,7 @@
     </message>
     <message>
         <source>Last inspection</source>
-        <translation>Utolsó inspekció</translation>
+        <translation>Utolsó ellenőrzés</translation>
     </message>
     <message>
         <source>Yesterday</source>
@@ -138,32 +153,12 @@
         <source>Assembly record No.</source>
         <translation>Szerelési bejegyzés sorszám</translation>
     </message>
-    <message>
-        <source>Assembly record type ID</source>
-        <translation>Szerelési bejegyzés Azonosító</translation>
-    </message>
-    <message>
-        <source>Inspector certificate number</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>AssemblyRecordDetailsView</name>
     <message>
         <source>Assembly record No. %1</source>
         <translation>Szerelési bejegyzés sz. %1</translation>
-    </message>
-    <message>
-        <source>Nominal inspection:</source>
-        <translation>Névleges felülvizsgálat:</translation>
-    </message>
-    <message>
-        <source>Repair:</source>
-        <translation>Javítás:</translation>
-    </message>
-    <message>
-        <source>Inspection:</source>
-        <translation>Felölvizsgálat:</translation>
     </message>
     <message>
         <source>Value</source>
@@ -223,10 +218,6 @@
 </context>
 <context>
     <name>AssemblyRecordItemCategory</name>
-    <message>
-        <source>ID</source>
-        <translation>Azonosító</translation>
-    </message>
     <message>
         <source>Name</source>
         <translation>Név</translation>
@@ -323,10 +314,6 @@
         <translation>Adattípus:</translation>
     </message>
     <message>
-        <source>ID</source>
-        <translation>Azonosító</translation>
-    </message>
-    <message>
         <source>Name</source>
         <translation>Név</translation>
     </message>
@@ -362,10 +349,6 @@
         <translation>Mutat</translation>
     </message>
     <message>
-        <source>List of Assembly Record Item Categories and Types</source>
-        <translation>Szerelési bejegyzés tétel kategória és típus</translation>
-    </message>
-    <message>
         <source>Value</source>
         <translation>Érték</translation>
     </message>
@@ -392,6 +375,10 @@
     <message>
         <source>No</source>
         <translation>Nem</translation>
+    </message>
+    <message>
+        <source>Assembly Record Item Categories and Types</source>
+        <translation>Montázsjegyzék elemkategóriái és -típusai</translation>
     </message>
 </context>
 <context>
@@ -445,10 +432,6 @@
         <translation>Vizuális stílus:</translation>
     </message>
     <message>
-        <source>ID</source>
-        <translation>Azonosító</translation>
-    </message>
-    <message>
         <source>Name</source>
         <translation>Név</translation>
     </message>
@@ -471,8 +454,8 @@
 <context>
     <name>AssemblyRecordTypesView</name>
     <message>
-        <source>List of Assembly Record Types</source>
-        <translation>Szerelési bejegyzés típusainak listázása</translation>
+        <source>Assembly Record Types</source>
+        <translation>Montázsjegyzék típusai</translation>
     </message>
 </context>
 <context>
@@ -492,14 +475,6 @@
     <message>
         <source>Assembly record name</source>
         <translation>Szerelési bejegyzés név</translation>
-    </message>
-    <message>
-        <source>Customer</source>
-        <translation>Ügyfél</translation>
-    </message>
-    <message>
-        <source>Circuit</source>
-        <translation>Hűtőkör</translation>
     </message>
     <message>
         <source>Inspector</source>
@@ -531,14 +506,6 @@
     <message>
         <source>Date of commissioning</source>
         <translation>Raktárra vételezés</translation>
-    </message>
-    <message>
-        <source>Amount of refrigerant</source>
-        <translation>Hűtőközeg mennyiség</translation>
-    </message>
-    <message>
-        <source>Amount of oil</source>
-        <translation>Olajmennyiség</translation>
     </message>
     <message>
         <source>Fixed leakage detector installed</source>
@@ -605,10 +572,6 @@
         <translation>Raktárra vételezés dátuma:</translation>
     </message>
     <message>
-        <source>Disused</source>
-        <translation>Nem használt</translation>
-    </message>
-    <message>
         <source>Date of decommissioning:</source>
         <translation>Raktári kivételezés dátuma:</translation>
     </message>
@@ -621,16 +584,8 @@
         <translation>Hűtőközeg:</translation>
     </message>
     <message>
-        <source>Amount of refrigerant:</source>
-        <translation>Hűtőközeg mennyiség:</translation>
-    </message>
-    <message>
         <source>Oil:</source>
         <translation>Olaj:</translation>
-    </message>
-    <message>
-        <source>Amount of oil:</source>
-        <translation>Olajmennyiség:</translation>
     </message>
     <message>
         <source>Run-time per day:</source>
@@ -647,14 +602,6 @@
     <message>
         <source>Automatic</source>
         <translation>Automatikus</translation>
-    </message>
-    <message>
-        <source>Change refrigerant - Leaklog</source>
-        <translation>Hűtőközeg váltás - Leaklog</translation>
-    </message>
-    <message>
-        <source>Changing the refrigerant will affect previous inspections of this circuit.</source>
-        <translation>Hűtőközeg váltás ennél a hűtőkörnél korábbi felülvizsgálatot tesz szükségessé.</translation>
     </message>
     <message>
         <source>ID</source>
@@ -701,16 +648,100 @@
         <translation>Olaj</translation>
     </message>
     <message>
-        <source>Circuit ID</source>
-        <translation>Hűtőkör azonosító</translation>
-    </message>
-    <message>
         <source>Name</source>
         <translation>Név</translation>
     </message>
     <message>
-        <source>Commissioned on</source>
-        <translation>Raktárra vételezve ekkor</translation>
+        <source>This ID is not available. Please choose a different ID.</source>
+        <translation>Ez az azonosító foglalt. Válasszon másik azonosítót.</translation>
+    </message>
+    <message>
+        <source>Refrigerant amount</source>
+        <translation>Hűtőközeg mennyisége</translation>
+    </message>
+    <message>
+        <source>Oil amount</source>
+        <translation>Olajmennyiség</translation>
+    </message>
+    <message>
+        <source>Status</source>
+        <translation>Állapot</translation>
+    </message>
+    <message>
+        <source>Commissioned</source>
+        <translation>Üzembe helyezve</translation>
+    </message>
+    <message>
+        <source>Excluded from Agenda</source>
+        <translation>Naplóból kizárva</translation>
+    </message>
+    <message>
+        <source>Decommissioned</source>
+        <translation>Üzemen kívül helyezve</translation>
+    </message>
+    <message>
+        <source>Service company:</source>
+        <translation>Szervizcég:</translation>
+    </message>
+    <message>
+        <source>Notes:</source>
+        <translation>Megjegyzések:</translation>
+    </message>
+    <message>
+        <source>Refrigerant amount precharged:</source>
+        <translation>Előtöltött hűtőközeg mennyisége:</translation>
+    </message>
+    <message>
+        <source>Oil amount:</source>
+        <translation>Olajmennyiség:</translation>
+    </message>
+    <message>
+        <source>Status:</source>
+        <translation>Állapot:</translation>
+    </message>
+    <message>
+        <source>Date excluded:</source>
+        <translation>Naplóból való kizárás dátuma:</translation>
+    </message>
+    <message>
+        <source>Reason:</source>
+        <translation>Ok:</translation>
+    </message>
+    <message>
+        <source>Add circuit - Leaklog</source>
+        <translation>Hűtőkör hozzáadása - Leaklog</translation>
+    </message>
+    <message>
+        <source>Select a refrigerant.</source>
+        <translation>Válasszon hűtőközeget.</translation>
+    </message>
+    <message>
+        <source>Select a field of application.</source>
+        <translation>Válasszon alkalmazási területet.</translation>
+    </message>
+    <message>
+        <source>Edit circuit - Leaklog</source>
+        <translation>Hűtőkör szerkesztése - Leaklog</translation>
+    </message>
+    <message>
+        <source>You cannot change the refrigerant in this circuit.</source>
+        <translation>Ebben a hűtőkörben nem módosíthatja a hűtőközeget.</translation>
+    </message>
+    <message>
+        <source>Changing the refrigerant would affect the store.</source>
+        <translation>A hűtőközeg módosítása hatással lenne a készletre.</translation>
+    </message>
+    <message>
+        <source>Reason for decommissioning</source>
+        <translation>Az üzemen kívül helyezés oka</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Megjegyzések</translation>
+    </message>
+    <message>
+        <source>Date excluded</source>
+        <translation>Naplóból való kizárás dátuma</translation>
     </message>
 </context>
 <context>
@@ -740,16 +771,8 @@
         <translation>Hűtőközeg:</translation>
     </message>
     <message>
-        <source>Amount of refrigerant:</source>
-        <translation>Hűtőközeg mennyiség:</translation>
-    </message>
-    <message>
         <source>Oil:</source>
         <translation>Olaj:</translation>
-    </message>
-    <message>
-        <source>Amount of oil:</source>
-        <translation>Olajmennyiség:</translation>
     </message>
     <message>
         <source>Acquisition price:</source>
@@ -808,16 +831,8 @@
         <translation>Hűtőközeg</translation>
     </message>
     <message>
-        <source>Amount of refrigerant</source>
-        <translation>Hűtőközeg mennyiség</translation>
-    </message>
-    <message>
         <source>Oil</source>
         <translation>Olaj</translation>
-    </message>
-    <message>
-        <source>Amount of oil</source>
-        <translation>Olajmennyiség</translation>
     </message>
     <message>
         <source>Acquisition price</source>
@@ -848,42 +863,50 @@
         <translation>Teljesítmény to/tk -nél</translation>
     </message>
     <message>
-        <source>Category</source>
-        <translation>Kategória</translation>
-    </message>
-    <message>
         <source>Notes</source>
         <translation>Megjegyzések</translation>
     </message>
     <message>
-        <source>Content</source>
-        <translation>Tartalom</translation>
+        <source>Refrigerant amount</source>
+        <translation>Hűtőközeg mennyisége</translation>
+    </message>
+    <message>
+        <source>Oil amount</source>
+        <translation>Olajmennyiség</translation>
+    </message>
+    <message>
+        <source>Refrigerant amount:</source>
+        <translation>Hűtőközeg mennyisége:</translation>
+    </message>
+    <message>
+        <source>Oil amount:</source>
+        <translation>Olajmennyiség:</translation>
+    </message>
+    <message>
+        <source>Add circuit unit type - Leaklog</source>
+        <translation>Hűtőköri egységtípus hozzáadása - Leaklog</translation>
     </message>
 </context>
 <context>
     <name>CircuitUnitTypesView</name>
     <message>
-        <source>List of Circuit Unit Types</source>
-        <translation>Hűtőköri egység típusok listája</translation>
+        <source>Circuit Unit Types</source>
+        <translation>Hűtőköri egységtípusok</translation>
     </message>
 </context>
 <context>
     <name>CircuitsView</name>
     <message>
         <source>Last inspection</source>
-        <translation>Utolsó inspekció</translation>
+        <translation>Utolsó ellenőrzés</translation>
     </message>
     <message>
         <source>Date Updated</source>
-        <translation>Dátum aktualizálva</translation>
+        <translation>Frissítés dátuma</translation>
     </message>
     <message>
         <source>Author</source>
         <translation>Szerző</translation>
-    </message>
-    <message>
-        <source>List of Circuits</source>
-        <translation>Hűtőkörök listája</translation>
     </message>
     <message>
         <source>Circuit</source>
@@ -892,18 +915,6 @@
     <message>
         <source>Circuit: %1 %2</source>
         <translation>Hűtőkör: %1 %2</translation>
-    </message>
-    <message>
-        <source>Yes</source>
-        <translation>Igen</translation>
-    </message>
-    <message>
-        <source>No</source>
-        <translation>Nem</translation>
-    </message>
-    <message>
-        <source>Disused Circuits</source>
-        <translation>Nem használt hűtőkör</translation>
     </message>
     <message>
         <source>Compressors</source>
@@ -924,6 +935,34 @@
     <message>
         <source>Circuit units</source>
         <translation>Hűtőköri egység</translation>
+    </message>
+    <message>
+        <source>Circuits</source>
+        <translation>Hűtőkörök</translation>
+    </message>
+    <message>
+        <source>Circuits (%1)</source>
+        <translation>Hűtőkörök (%1)</translation>
+    </message>
+    <message>
+        <source>Circuits Excluded from Agenda</source>
+        <translation>Naplóból kizárt hűtőkörök</translation>
+    </message>
+    <message>
+        <source>Circuits Excluded from Agenda (%1)</source>
+        <translation>Naplóból kizárt hűtőkörök (%1)</translation>
+    </message>
+    <message>
+        <source>Decommissioned Circuits</source>
+        <translation>Üzemen kívül helyezett hűtőkörök</translation>
+    </message>
+    <message>
+        <source>Decommissioned Circuits (%1)</source>
+        <translation>Üzemen kívül helyezett hűtőkörök (%1)</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Megjegyzések</translation>
     </message>
 </context>
 <context>
@@ -953,122 +992,126 @@
     <name>Countries</name>
     <message>
         <source>Austria</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausztria</translation>
     </message>
     <message>
         <source>Belgium</source>
-        <translation type="unfinished"></translation>
+        <translation>Belgium</translation>
     </message>
     <message>
         <source>Bulgaria</source>
-        <translation type="unfinished"></translation>
+        <translation>Bulgária</translation>
     </message>
     <message>
         <source>Czech Republic</source>
-        <translation type="unfinished"></translation>
+        <translation>Csehország</translation>
     </message>
     <message>
         <source>Croatia</source>
-        <translation type="unfinished"></translation>
+        <translation>Horvátország</translation>
     </message>
     <message>
         <source>Cyprus</source>
-        <translation type="unfinished"></translation>
+        <translation>Ciprus</translation>
     </message>
     <message>
         <source>Denmark</source>
-        <translation type="unfinished"></translation>
+        <translation>Dánia</translation>
     </message>
     <message>
         <source>Estonia</source>
-        <translation type="unfinished"></translation>
+        <translation>Észtország</translation>
     </message>
     <message>
         <source>Finland</source>
-        <translation type="unfinished"></translation>
+        <translation>Finnország</translation>
     </message>
     <message>
         <source>France</source>
-        <translation type="unfinished"></translation>
+        <translation>Franciaország</translation>
     </message>
     <message>
         <source>Germany</source>
-        <translation type="unfinished"></translation>
+        <translation>Németország</translation>
     </message>
     <message>
         <source>Greece</source>
-        <translation type="unfinished"></translation>
+        <translation>Görögország</translation>
     </message>
     <message>
         <source>Hungary</source>
-        <translation type="unfinished"></translation>
+        <translation>Magyarország</translation>
     </message>
     <message>
         <source>Ireland</source>
-        <translation type="unfinished"></translation>
+        <translation>Írország</translation>
     </message>
     <message>
         <source>Italy</source>
-        <translation type="unfinished"></translation>
+        <translation>Olaszország</translation>
     </message>
     <message>
         <source>Latvia</source>
-        <translation type="unfinished"></translation>
+        <translation>Lettország</translation>
     </message>
     <message>
         <source>Lithuania</source>
-        <translation type="unfinished"></translation>
+        <translation>Litvánia</translation>
     </message>
     <message>
         <source>Luxembourg</source>
-        <translation type="unfinished"></translation>
+        <translation>Luxemburg</translation>
     </message>
     <message>
         <source>Malta</source>
-        <translation type="unfinished"></translation>
+        <translation>Málta</translation>
     </message>
     <message>
         <source>Netherlands</source>
-        <translation type="unfinished"></translation>
+        <translation>Hollandia</translation>
     </message>
     <message>
         <source>Poland</source>
-        <translation type="unfinished"></translation>
+        <translation>Lengyelország</translation>
     </message>
     <message>
         <source>Portugal</source>
-        <translation type="unfinished"></translation>
+        <translation>Portugália</translation>
     </message>
     <message>
         <source>Romania</source>
-        <translation type="unfinished"></translation>
+        <translation>Románia</translation>
     </message>
     <message>
         <source>Slovenia</source>
-        <translation type="unfinished"></translation>
+        <translation>Szlovénia</translation>
     </message>
     <message>
         <source>Slovakia</source>
-        <translation type="unfinished"></translation>
+        <translation>Szlovákia</translation>
     </message>
     <message>
         <source>Spain</source>
-        <translation type="unfinished"></translation>
+        <translation>Spanyolország</translation>
     </message>
     <message>
         <source>Sweden</source>
-        <translation type="unfinished"></translation>
+        <translation>Svédország</translation>
     </message>
     <message>
         <source>United Kingdom</source>
-        <translation type="unfinished"></translation>
+        <translation>Egyesült Királyság</translation>
+    </message>
+    <message>
+        <source>Serbia</source>
+        <translation>Szerbia</translation>
     </message>
 </context>
 <context>
     <name>Customer</name>
     <message>
         <source>Service company</source>
-        <translation>Szervíz cég</translation>
+        <translation>Szervizcég</translation>
     </message>
     <message>
         <source>Customer</source>
@@ -1142,6 +1185,30 @@
         <source>Operator phone</source>
         <translation>Üzembentartó tel</translation>
     </message>
+    <message>
+        <source>Website:</source>
+        <translation>Weboldal:</translation>
+    </message>
+    <message>
+        <source>Link to maps:</source>
+        <translation>Térképlink:</translation>
+    </message>
+    <message>
+        <source>Notes:</source>
+        <translation>Megjegyzések:</translation>
+    </message>
+    <message>
+        <source>Website</source>
+        <translation>Weboldal</translation>
+    </message>
+    <message>
+        <source>Link to maps</source>
+        <translation>Térképlink</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Megjegyzések</translation>
+    </message>
 </context>
 <context>
     <name>CustomersView</name>
@@ -1160,10 +1227,6 @@
     <message>
         <source>Author</source>
         <translation>Szerző</translation>
-    </message>
-    <message>
-        <source>List of Customers</source>
-        <translation>Ügyfelek listája</translation>
     </message>
     <message>
         <source>Customer</source>
@@ -1185,6 +1248,14 @@
         <source>Phone</source>
         <translation>Tel</translation>
     </message>
+    <message>
+        <source>Customers</source>
+        <translation>Ügyfelek</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Megjegyzések</translation>
+    </message>
 </context>
 <context>
     <name>DBFileChooser</name>
@@ -1202,7 +1273,7 @@
     </message>
     <message>
         <source>Replace</source>
-        <translation type="unfinished"></translation>
+        <translation>Csere</translation>
     </message>
 </context>
 <context>
@@ -1317,6 +1388,13 @@
     </message>
 </context>
 <context>
+    <name>EditCircuitDialogueNotesTab</name>
+    <message>
+        <source>Notes</source>
+        <translation>Megjegyzések</translation>
+    </message>
+</context>
+<context>
     <name>EditCircuitDialogueTable</name>
     <message>
         <source>Update circuit</source>
@@ -1376,10 +1454,6 @@
 <context>
     <name>EditDialogue</name>
     <message>
-        <source>This ID is not available. Please choose a different ID.</source>
-        <translation>Ez az azonosító nem áll választható. Válasszon másik azonosítót.</translation>
-    </message>
-    <message>
         <source>Save</source>
         <translation>Mentés</translation>
     </message>
@@ -1388,24 +1462,8 @@
         <translation>Mégsem</translation>
     </message>
     <message>
-        <source>%1: %2</source>
-        <translation>%1: %2</translation>
-    </message>
-    <message>
-        <source>Save changes</source>
-        <translation>Változások mentése</translation>
-    </message>
-    <message>
-        <source>Invalid ID.</source>
-        <translation>Érvénytelen azonosító.</translation>
-    </message>
-    <message>
-        <source>This date is not available. Please choose a different date.</source>
-        <translation>Ez a dátum nem választható. Válasszon másik dátumot.</translation>
-    </message>
-    <message>
         <source>Select a customer first.</source>
-        <translation type="unfinished"></translation>
+        <translation>Először válasszon ügyfelet.</translation>
     </message>
 </context>
 <context>
@@ -1449,26 +1507,6 @@
     <message>
         <source>Assembly record</source>
         <translation>Szerelési bejegyzés</translation>
-    </message>
-    <message>
-        <source>Name</source>
-        <translation>Név</translation>
-    </message>
-    <message>
-        <source>Value</source>
-        <translation>Érték</translation>
-    </message>
-    <message>
-        <source>Acquisition price</source>
-        <translation>Vételár</translation>
-    </message>
-    <message>
-        <source>List price</source>
-        <translation>Listaár</translation>
-    </message>
-    <message>
-        <source>Discount</source>
-        <translation>Kedvezmény</translation>
     </message>
     <message>
         <source>Assembly record number already in use</source>
@@ -1530,14 +1568,6 @@
         <source>Conditions:</source>
         <translation>Állapot:</translation>
     </message>
-    <message>
-        <source>Save changes</source>
-        <translation>Változások mentése</translation>
-    </message>
-    <message>
-        <source>You cannot create more than 1000 warnings.</source>
-        <translation>Nem lehet 1000-nél több figyelmeztetést felvenni.</translation>
-    </message>
 </context>
 <context>
     <name>FieldsOfApplication</name>
@@ -1572,6 +1602,10 @@
     <message>
         <source>Refrigeration</source>
         <translation>Hűtés</translation>
+    </message>
+    <message>
+        <source>ORC</source>
+        <translation>ORC</translation>
     </message>
 </context>
 <context>
@@ -1795,15 +1829,11 @@
     </message>
     <message>
         <source>Scope</source>
-        <translation type="unfinished"></translation>
+        <translation>Hatókör</translation>
     </message>
 </context>
 <context>
     <name>Inspection</name>
-    <message>
-        <source>Nominal</source>
-        <translation>Névleges</translation>
-    </message>
     <message>
         <source>Repair</source>
         <translation>Javítás</translation>
@@ -1815,10 +1845,6 @@
     <message>
         <source>Date:</source>
         <translation>Dátum:</translation>
-    </message>
-    <message>
-        <source>Nominal inspection</source>
-        <translation>Névleges felülvizsgálat</translation>
     </message>
     <message>
         <source>Outside the inspection interval</source>
@@ -1857,40 +1883,68 @@
         <translation>Szerelési bejegyzés sorszám</translation>
     </message>
     <message>
-        <source>Assembly record type</source>
-        <translation>Szerelési bejegyzés típus</translation>
-    </message>
-    <message>
         <source>Circuit moved from customer %1 to %2.</source>
-        <translation type="unfinished"></translation>
+        <translation>A hűtőkört áthelyezték %1 ügyféltől %2 ügyfélhez.</translation>
     </message>
     <message>
         <source>Inspection carried out by another service company.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Contact person</source>
-        <translation type="unfinished"></translation>
+        <translation>Az ellenőrzést egy másik szervizcég végezte.</translation>
     </message>
     <message>
         <source>Risks</source>
-        <translation type="unfinished"></translation>
+        <translation>Kockázatok</translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation>Típus</translation>
+    </message>
+    <message>
+        <source>Regular Inspection</source>
+        <translation>Rendszeres ellenőrzés</translation>
+    </message>
+    <message>
+        <source>Nominal Inspection</source>
+        <translation>Névleges ellenőrzés</translation>
+    </message>
+    <message>
+        <source>Inspection After Repair</source>
+        <translation>Javítás utáni ellenőrzés</translation>
+    </message>
+    <message>
+        <source>Strength and Tightness Test</source>
+        <translation>Szilárdsági és tömörségi vizsgálat</translation>
+    </message>
+    <message>
+        <source>Vacuum Test</source>
+        <translation>Vákuumvizsgálat</translation>
+    </message>
+    <message>
+        <source>Circuit Moved</source>
+        <translation>Hűtőkör áthelyezve</translation>
+    </message>
+    <message>
+        <source>Inspection Skipped</source>
+        <translation>Ellenőrzés kihagyva</translation>
+    </message>
+    <message>
+        <source>Unknown Inspection Type</source>
+        <translation>Ismeretlen ellenőrzéstípus</translation>
+    </message>
+    <message>
+        <source>Customer: %2 %1 Inspection</source>
+        <translation>Ügyfél: %2 %1 ellenőrzés</translation>
+    </message>
+    <message>
+        <source>Type:</source>
+        <translation>Típus:</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Megjegyzések</translation>
     </message>
 </context>
 <context>
     <name>InspectionDetailsView</name>
-    <message>
-        <source>Nominal Inspection:</source>
-        <translation>Névleges felülvizsgálat:</translation>
-    </message>
-    <message>
-        <source>Repair:</source>
-        <translation>Javítás:</translation>
-    </message>
-    <message>
-        <source>Inspection:</source>
-        <translation>Felölvizsgálat:</translation>
-    </message>
     <message>
         <source>Other</source>
         <translation>Más</translation>
@@ -1915,18 +1969,6 @@
 <context>
     <name>InspectionImagesView</name>
     <message>
-        <source>Nominal inspection:</source>
-        <translation>Névleges felülvizsgálat:</translation>
-    </message>
-    <message>
-        <source>Repair:</source>
-        <translation>Javítás:</translation>
-    </message>
-    <message>
-        <source>Inspection:</source>
-        <translation>Felölvizsgálat:</translation>
-    </message>
-    <message>
         <source>Inspection Images</source>
         <translation>Felülvizsgálati képek</translation>
     </message>
@@ -1950,12 +1992,12 @@
         <translation>Szerző</translation>
     </message>
     <message>
-        <source>List of Inspections</source>
-        <translation>Felülvizsgálatok listája</translation>
-    </message>
-    <message>
         <source>Images</source>
         <translation>Képek</translation>
+    </message>
+    <message>
+        <source>Inspections</source>
+        <translation>Ellenőrzések</translation>
     </message>
 </context>
 <context>
@@ -1989,40 +2031,36 @@
         <translation>Tel</translation>
     </message>
     <message>
-        <source>Customer ID</source>
-        <translation>Ügyfél azonosító</translation>
-    </message>
-    <message>
         <source>Certificate number:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Foreign certificate number:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tanúsítvány száma:</translation>
     </message>
     <message>
         <source>Country of issue:</source>
-        <translation type="unfinished"></translation>
+        <translation>Kiállítás országa:</translation>
     </message>
     <message>
         <source>Full name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Teljes név:</translation>
     </message>
     <message>
         <source>Certificate number</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Foreign certificate number</source>
-        <translation type="unfinished"></translation>
+        <translation>Tanúsítvány száma</translation>
     </message>
     <message>
         <source>Country of issue</source>
-        <translation type="unfinished"></translation>
+        <translation>Kiállítás országa</translation>
     </message>
     <message>
         <source>Full name</source>
-        <translation type="unfinished"></translation>
+        <translation>Teljes név</translation>
+    </message>
+    <message>
+        <source>Service company:</source>
+        <translation>Szervizcég:</translation>
+    </message>
+    <message>
+        <source>Stamp:</source>
+        <translation>Bélyegző:</translation>
     </message>
 </context>
 <context>
@@ -2095,16 +2133,20 @@
         <translation>Javítások száma</translation>
     </message>
     <message>
-        <source>List of Inspectors</source>
-        <translation>Felülvizsgálók listája</translation>
-    </message>
-    <message>
         <source>Inspector</source>
         <translation>Felülvizsgáló</translation>
     </message>
     <message>
         <source>View inspector activity</source>
         <translation>Felülvizsgáló tevékenységének áttekintése</translation>
+    </message>
+    <message>
+        <source>Service company</source>
+        <translation>Szervizcég</translation>
+    </message>
+    <message>
+        <source>Inspectors</source>
+        <translation>Ellenőrök</translation>
     </message>
 </context>
 <context>
@@ -2115,11 +2157,19 @@
     </message>
     <message>
         <source>Polish</source>
-        <translation type="unfinished"></translation>
+        <translation>Lengyel</translation>
     </message>
     <message>
         <source>Hungarian</source>
-        <translation type="unfinished"></translation>
+        <translation>Magyar</translation>
+    </message>
+    <message>
+        <source>Czech</source>
+        <translation>Cseh</translation>
+    </message>
+    <message>
+        <source>Serbian</source>
+        <translation>Szerb</translation>
     </message>
 </context>
 <context>
@@ -2146,6 +2196,30 @@
     <message>
         <source>All</source>
         <translation>Összes</translation>
+    </message>
+    <message>
+        <source>Weighted Average</source>
+        <translation>Súlyozott átlag</translation>
+    </message>
+    <message>
+        <source>Refrigerant</source>
+        <translation>Hűtőközeg</translation>
+    </message>
+    <message>
+        <source>Average Leakage</source>
+        <translation>Átlagos szivárgás</translation>
+    </message>
+    <message>
+        <source>Added</source>
+        <translation>Hozzáadva</translation>
+    </message>
+    <message>
+        <source>In Circuits</source>
+        <translation>Hűtőkörökben</translation>
+    </message>
+    <message>
+        <source>Leakage</source>
+        <translation>Szivárgás</translation>
     </message>
 </context>
 <context>
@@ -2537,14 +2611,6 @@
         <translation>Ctrl+Shift+-</translation>
     </message>
     <message>
-        <source>Show browser</source>
-        <translation>Listázás mutatása</translation>
-    </message>
-    <message>
-        <source>Ctrl+Alt+B</source>
-        <translation>Ctrl+Alt+B</translation>
-    </message>
-    <message>
         <source>Show Variables</source>
         <translation>Változók mutatása</translation>
     </message>
@@ -2623,42 +2689,6 @@
     <message>
         <source>Display a print preview of the current view</source>
         <translation>Aktuális nézet nyomtatási előnézetének kinyomtatása</translation>
-    </message>
-    <message>
-        <source>Export Customer Data...</source>
-        <translation>Ügyféladatok exportálása...</translation>
-    </message>
-    <message>
-        <source>Export all data of the selected customer</source>
-        <translation>Kiválasztott ügyfél összes adatának exportálása</translation>
-    </message>
-    <message>
-        <source>Ctrl+E</source>
-        <translation>Ctrl+E</translation>
-    </message>
-    <message>
-        <source>Export Circuit Data...</source>
-        <translation>Hűtőköri adatok exportálása...</translation>
-    </message>
-    <message>
-        <source>Export all data of the selected circuit</source>
-        <translation>Kiválasztott hűtőkör összes adatának exportálása</translation>
-    </message>
-    <message>
-        <source>Ctrl+Alt+E</source>
-        <translation>Ctrl+Alt+E</translation>
-    </message>
-    <message>
-        <source>Export Inspection Data...</source>
-        <translation>Felülvizsgálat adatainak exportálása...</translation>
-    </message>
-    <message>
-        <source>Export all data of the selected inspection</source>
-        <translation>Kiválasztott felülvizsgálat összes adatának exportálása</translation>
-    </message>
-    <message>
-        <source>Ctrl+Shift+E</source>
-        <translation>Ctrl+Shift+E</translation>
     </message>
     <message>
         <source>Another Database...</source>
@@ -2753,14 +2783,6 @@
         <translation>Interfész nyelvének választása</translation>
     </message>
     <message>
-        <source>Show inspectors</source>
-        <translation>Felülvizsgálók megtekintése</translation>
-    </message>
-    <message>
-        <source>Ctrl+Alt+I</source>
-        <translation>Ctrl+Alt+I</translation>
-    </message>
-    <message>
         <source>Add Inspector...</source>
         <translation>Felülvizsgáló hozzáadása</translation>
     </message>
@@ -2831,14 +2853,6 @@
     <message>
         <source>Ctrl+Shift+O</source>
         <translation>Ctrl+Shift+O</translation>
-    </message>
-    <message>
-        <source>Edit Service Company Information...</source>
-        <translation>Szervizcég információk szerkesztése...</translation>
-    </message>
-    <message>
-        <source>Edit service company information</source>
-        <translation>Szervizcég információk szerkesztése</translation>
     </message>
     <message>
         <source>Add Repair...</source>
@@ -3107,18 +3121,6 @@
     <message>
         <source>Ctrl+W</source>
         <translation>Ctrl+W</translation>
-    </message>
-    <message>
-        <source>Find All</source>
-        <translation>Összes keresése</translation>
-    </message>
-    <message>
-        <source>Find all occurrences of the searched word</source>
-        <translation>Keresett szó összes előfordulásának keresése</translation>
-    </message>
-    <message>
-        <source>Ctrl+Shift+F</source>
-        <translation>Ctrl+Shift+F</translation>
     </message>
     <message>
         <source>Auto Save...</source>
@@ -3597,22 +3599,6 @@ A &quot;%1&quot; felülvizsgáló összes adatának eltávolításához gépelje
         <translation>Felülvizsgáló eltávolítása %1</translation>
     </message>
     <message>
-        <source>Export customer data - Leaklog</source>
-        <translation>Ügyfél adatok exportálása - Leaklog</translation>
-    </message>
-    <message>
-        <source>Export circuit data - Leaklog</source>
-        <translation>Hűtőköri adatok exportálása - Leaklog</translation>
-    </message>
-    <message>
-        <source>Export inspection data - Leaklog</source>
-        <translation>Felülvizsgálati adatok exportálása - Leaklog</translation>
-    </message>
-    <message>
-        <source>Export data - Leaklog</source>
-        <translation>Adatok exportálása - Leaklog</translation>
-    </message>
-    <message>
         <source>Import data - Leaklog</source>
         <translation>Adatok importálása - Leaklog</translation>
     </message>
@@ -3665,16 +3651,8 @@ A &quot;%1&quot; felülvizsgáló összes adatának eltávolításához gépelje
         <translation>Ügyfelek</translation>
     </message>
     <message>
-        <source>Company</source>
-        <translation>Cég</translation>
-    </message>
-    <message>
         <source>E-mail</source>
         <translation>E-mail</translation>
-    </message>
-    <message>
-        <source>Phone</source>
-        <translation>Tel</translation>
     </message>
     <message>
         <source>Street</source>
@@ -3713,10 +3691,6 @@ A &quot;%1&quot; felülvizsgáló összes adatának eltávolításához gépelje
         <translation>Ügyfél azonosító</translation>
     </message>
     <message>
-        <source>Name</source>
-        <translation>Név</translation>
-    </message>
-    <message>
         <source>Place of operation</source>
         <translation>Beavatkozás helye</translation>
     </message>
@@ -3741,34 +3715,6 @@ A &quot;%1&quot; felülvizsgáló összes adatának eltávolításához gépelje
         <translation>Gyári szám</translation>
     </message>
     <message>
-        <source>Amount of refrigerant</source>
-        <translation>Hűtőközeg mennyiség</translation>
-    </message>
-    <message>
-        <source>Amount of oil</source>
-        <translation>Olajmennyiség</translation>
-    </message>
-    <message>
-        <source>Run-time per day</source>
-        <translation>Napi üzemidő</translation>
-    </message>
-    <message>
-        <source>Rate of utilisation</source>
-        <translation>Kihasználtsági fok</translation>
-    </message>
-    <message>
-        <source>Disused</source>
-        <translation>Nem használt</translation>
-    </message>
-    <message>
-        <source>Hermetically sealed</source>
-        <translation>Hermetikusan zárt</translation>
-    </message>
-    <message>
-        <source>Fixed leakage detector installed</source>
-        <translation>Telepített szivárgásérzékelő</translation>
-    </message>
-    <message>
         <source>Year of purchase</source>
         <translation>Vásárlás éve</translation>
     </message>
@@ -3789,92 +3735,16 @@ A &quot;%1&quot; felülvizsgáló összes adatának eltávolításához gépelje
         <translation>Hűtőközeg</translation>
     </message>
     <message>
-        <source>Compressor name</source>
-        <translation>Kompresszor neve</translation>
-    </message>
-    <message>
-        <source>Unit type ID</source>
-        <translation>Hűtőköri egység típusa</translation>
-    </message>
-    <message>
-        <source>Unit serial number</source>
-        <translation>Hűtőköri egység gyári száma:</translation>
-    </message>
-    <message>
         <source>Circuit unit types</source>
         <translation>Hűtőköri egység típusa</translation>
-    </message>
-    <message>
-        <source>Acquisition price</source>
-        <translation>Vételár</translation>
-    </message>
-    <message>
-        <source>List price</source>
-        <translation>Listaár</translation>
-    </message>
-    <message>
-        <source>Location</source>
-        <translation>Hely</translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation>Teljesítmény</translation>
     </message>
     <message>
         <source>Output unit</source>
         <translation>Hűtőköri egység teljesítménye</translation>
     </message>
     <message>
-        <source>Output at t0/tc</source>
-        <translation>Teljesítmény to/tk -nél</translation>
-    </message>
-    <message>
         <source>Notes</source>
         <translation>Megjegyzések</translation>
-    </message>
-    <message>
-        <source>Assembly record item types</source>
-        <translation>Szerelési bejegyzés tétel típus</translation>
-    </message>
-    <message>
-        <source>Discount</source>
-        <translation>Kedvezmény</translation>
-    </message>
-    <message>
-        <source>EAN code</source>
-        <translation>EAN kód</translation>
-    </message>
-    <message>
-        <source>Data type</source>
-        <translation>Adattípus:</translation>
-    </message>
-    <message>
-        <source>string</source>
-        <translation>szöveges adat</translation>
-    </message>
-    <message>
-        <source>integer</source>
-        <translation>egész szám</translation>
-    </message>
-    <message>
-        <source>numeric</source>
-        <translation>szám</translation>
-    </message>
-    <message>
-        <source>text</source>
-        <translation>szöveg</translation>
-    </message>
-    <message>
-        <source>boolean</source>
-        <translation>logikai</translation>
-    </message>
-    <message>
-        <source>Automatically add to assembly record</source>
-        <translation>Automatikusan hozzáadja a szerelési bejegyzéshez</translation>
-    </message>
-    <message>
-        <source>Category ID</source>
-        <translation>Kategória azonosító</translation>
     </message>
     <message>
         <source>Import CSV %1</source>
@@ -3888,8 +3758,6 @@ A &quot;%1&quot; felülvizsgáló összes adatának eltávolításához gépelje
         <source>Successfully imported %n record(s).</source>
         <translation>
             <numerusform>Sikeresen importálva %n bejegyzés(ek).</numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
         </translation>
     </message>
     <message>
@@ -4103,12 +3971,6 @@ A &quot;%1&quot; stílus eltávolításához gépelje be ELTÁVOLÍTÁS majd er�
         <translation>Következő felülvizsgálat dátuma</translation>
     </message>
     <message>
-        <source>Refrigerant leakage inspection
-in accordance with Regulation (EC)
-No. 842/2006</source>
-        <translation>Hűtőközeg szivárgásvizsgálat a 842/2006 (EU) rendelet szerint</translation>
-    </message>
-    <message>
         <source>once a year*</source>
         <translation>évente egyszer*</translation>
     </message>
@@ -4223,7 +4085,7 @@ person and company ID</source>
     </message>
     <message>
         <source>Leaklog %1 is available now.</source>
-        <translation>Leaklog %1 elérhető jelenleg.</translation>
+        <translation>A Leaklog %1 már elérhető.</translation>
     </message>
     <message>
         <source>&amp;Download Update</source>
@@ -4244,88 +4106,88 @@ person and company ID</source>
     <message>
         <source>ID</source>
         <comment>Variable ID</comment>
-        <translation type="unfinished">Azonosító</translation>
+        <translation>Azonosító</translation>
     </message>
     <message>
         <source>Check for Leaklog updates online</source>
-        <translation type="unfinished"></translation>
+        <translation>A Leaklog frissítéseinek online keresése</translation>
     </message>
     <message>
         <source>Compare Values With Nominal Inspection</source>
-        <translation type="unfinished"></translation>
+        <translation>Értékek összehasonlítása a névleges ellenőrzéssel</translation>
     </message>
     <message>
         <source>Documentation</source>
-        <translation type="unfinished"></translation>
+        <translation>Dokumentáció</translation>
     </message>
     <message>
         <source>View the online documentation</source>
-        <translation type="unfinished"></translation>
+        <translation>Az online dokumentáció megtekintése</translation>
     </message>
     <message>
         <source>What&apos;s New</source>
-        <translation type="unfinished"></translation>
+        <translation>Újdonságok</translation>
     </message>
     <message>
         <source>View the changelog online</source>
-        <translation type="unfinished"></translation>
+        <translation>A változásnapló online megtekintése</translation>
     </message>
     <message>
         <source>Show Service Company Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Szervizcég adatainak megjelenítése</translation>
     </message>
     <message>
         <source>Move Circuit to Another Customer...</source>
-        <translation type="unfinished"></translation>
+        <translation>Hűtőkör áthelyezése másik ügyfélhez...</translation>
     </message>
     <message>
         <source>Move the selected circuit to another customer</source>
-        <translation type="unfinished"></translation>
+        <translation>A kiválasztott hűtőkör áthelyezése másik ügyfélhez</translation>
     </message>
     <message>
         <source>Skip Inspection...</source>
-        <translation type="unfinished"></translation>
+        <translation>Ellenőrzés kihagyása...</translation>
     </message>
     <message>
         <source>Open Backup Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>A biztonsági mentések mappájának megnyitása</translation>
     </message>
     <message>
         <source>Open the folder containing automatic backups of this database</source>
-        <translation type="unfinished"></translation>
+        <translation>Az adatbázis automatikus biztonsági mentéseit tartalmazó mappa megnyitása</translation>
     </message>
     <message>
         <source>Failed to create backup: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Nem sikerült létrehozni a biztonsági mentést: %1</translation>
     </message>
     <message>
         <source>Failed to copy database.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nem sikerült másolni az adatbázist.</translation>
     </message>
     <message>
         <source>Could not create backup folder.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nem sikerült létrehozni a biztonsági mentések mappáját.</translation>
     </message>
     <message>
         <source>Cannot open database %1:
 %2.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nem nyitható meg az adatbázis %1: %2.</translation>
     </message>
     <message>
         <source>Move circuit to another customer - Leaklog</source>
-        <translation type="unfinished"></translation>
+        <translation>Hűtőkör áthelyezése másik ügyfélhez - Leaklog</translation>
     </message>
     <message>
         <source>Move circuit:</source>
-        <translation type="unfinished"></translation>
+        <translation>Áthelyezendő hűtőkör:</translation>
     </message>
     <message>
         <source>To customer:</source>
-        <translation type="unfinished"></translation>
+        <translation>Célügyfél:</translation>
     </message>
     <message>
         <source>Change circuit ID to:</source>
-        <translation type="unfinished"></translation>
+        <translation>Hűtőkör-azonosító módosítása erre:</translation>
     </message>
     <message>
         <source>Date:</source>
@@ -4333,67 +4195,282 @@ person and company ID</source>
     </message>
     <message>
         <source>Move</source>
-        <translation type="unfinished"></translation>
+        <translation>Áthelyezés</translation>
     </message>
     <message>
         <source>Move circuit %1 (%2) to customer %3</source>
-        <translation type="unfinished"></translation>
+        <translation>Hűtőkör %1 (%2) áthelyezése %3 ügyfélhez</translation>
     </message>
     <message>
         <source>DO NOT EDIT THIS INSPECTION: If you can read this message, you are using an older version of Leaklog than the one used to create this inspection. Changes made to this inspection will not be visible in newer versions of Leaklog.</source>
-        <translation type="unfinished"></translation>
+        <translation>NE SZERKESSZE EZT AZ ELLENŐRZÉST: Ha ezt az üzenetet látja, a Leaklognak az ellenőrzés létrehozásához használtnál régebbi verzióját használja. Az ellenőrzésen végzett módosítások nem lesznek láthatók a Leaklog újabb verzióiban.</translation>
     </message>
     <message>
         <source>Skip inspection - Leaklog</source>
-        <translation type="unfinished"></translation>
+        <translation>Ellenőrzés kihagyása - Leaklog</translation>
     </message>
     <message>
         <source>Skip inspection of circuit:</source>
-        <translation type="unfinished"></translation>
+        <translation>Hűtőkör ellenőrzésének kihagyása:</translation>
     </message>
     <message>
         <source>Date of skipped inspection:</source>
-        <translation type="unfinished"></translation>
+        <translation>A kihagyott ellenőrzés dátuma:</translation>
     </message>
     <message>
         <source>Reason:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok:</translation>
     </message>
     <message>
         <source>Skip</source>
-        <translation type="unfinished"></translation>
+        <translation>Kihagyás</translation>
     </message>
     <message>
         <source>Skip inspection of circuit %1 (%2)</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 (%2) hűtőkör ellenőrzésének kihagyása</translation>
     </message>
     <message>
         <source>GWP</source>
-        <translation type="unfinished"></translation>
+        <translation>GWP</translation>
     </message>
     <message>
         <source>Detector installed</source>
-        <translation type="unfinished"></translation>
+        <translation>Szivárgásérzékelő telepítve</translation>
     </message>
     <message>
         <source>No detector installed</source>
-        <translation type="unfinished"></translation>
+        <translation>Nincs szivárgásérzékelő telepítve</translation>
     </message>
     <message>
         <source>Open Backup Folder - Leaklog</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>http://github.com/szchkt/leaklog/wiki</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>http://github.com/szchkt/leaklog/releases</source>
-        <translation type="unfinished"></translation>
+        <translation>A biztonsági mentések mappájának megnyitása - Leaklog</translation>
     </message>
     <message>
         <source>CO₂ equivalent</source>
-        <translation type="unfinished"></translation>
+        <translation>CO₂-egyenérték</translation>
+    </message>
+    <message>
+        <source>Edit Service Company...</source>
+        <translation>Szervizcég szerkesztése...</translation>
+    </message>
+    <message>
+        <source>Edit service company</source>
+        <translation>Szervizcég szerkesztése</translation>
+    </message>
+    <message>
+        <source>Unstar All Circuits</source>
+        <translation>Csillag eltávolítása az összes hűtőkörről</translation>
+    </message>
+    <message>
+        <source>Unstar all of the selected customer&apos;s circuits</source>
+        <translation>Csillag eltávolítása a kijelölt ügyfél összes hűtőköréről</translation>
+    </message>
+    <message>
+        <source>Show Service Company or Inspector Stamp</source>
+        <translation>Szervizcég vagy ellenőr bélyegzőjének megjelenítése</translation>
+    </message>
+    <message>
+        <source>Leaked in Store</source>
+        <translation>Raktárban elszivárgott</translation>
+    </message>
+    <message>
+        <source>Print Service Company Information</source>
+        <translation>Szervizcég adatainak nyomtatása</translation>
+    </message>
+    <message>
+        <source>Print Service Company or Inspector Stamp</source>
+        <translation>Szervizcég vagy ellenőr bélyegzőjének nyomtatása</translation>
+    </message>
+    <message>
+        <source>Edit Refrigerants...</source>
+        <translation>Hűtőközegek szerkesztése...</translation>
+    </message>
+    <message>
+        <source>Sync...</source>
+        <translation>Szinkronizálás...</translation>
+    </message>
+    <message>
+        <source>Log In</source>
+        <translation>Bejelentkezés</translation>
+    </message>
+    <message>
+        <source>From Leaklog.org...</source>
+        <translation>A Leaklog.org-ról...</translation>
+    </message>
+    <message>
+        <source>Add Service Company...</source>
+        <translation>Szervizcég hozzáadása...</translation>
+    </message>
+    <message>
+        <source>Add service company</source>
+        <translation>Szervizcég hozzáadása</translation>
+    </message>
+    <message>
+        <source>Remove Service Company...</source>
+        <translation>Szervizcég eltávolítása...</translation>
+    </message>
+    <message>
+        <source>Remove service company</source>
+        <translation>Szervizcég eltávolítása</translation>
+    </message>
+    <message>
+        <source>Reclaimed</source>
+        <translation>Regenerált</translation>
+    </message>
+    <message>
+        <source>Disposed of</source>
+        <translation>Ártalmatlanítva</translation>
+    </message>
+    <message>
+        <source>Download database from Leaklog.org</source>
+        <translation>Adatbázis letöltése a Leaklog.org-ról</translation>
+    </message>
+    <message>
+        <source>No databases found.</source>
+        <translation>Nem található adatbázis.</translation>
+    </message>
+    <message>
+        <source>Create a new database or open an existing database, then sync with Leaklog.org.</source>
+        <translation>Hozzon létre új adatbázist, vagy nyisson meg egy meglévőt, majd szinkronizálja a Leaklog.org-gal.</translation>
+    </message>
+    <message>
+        <source>Select a database to download:</source>
+        <translation>Válassza ki a letöltendő adatbázist:</translation>
+    </message>
+    <message>
+        <source>Failed to connect to Leaklog.org.</source>
+        <translation>Nem sikerült csatlakozni a Leaklog.org-hoz.</translation>
+    </message>
+    <message>
+        <source>Sync database - Leaklog</source>
+        <translation>Adatbázis szinkronizálása - Leaklog</translation>
+    </message>
+    <message>
+        <source>Do you want to sync this database with Leaklog.org?</source>
+        <translation>Szeretné szinkronizálni ezt az adatbázist a Leaklog.org-gal?</translation>
+    </message>
+    <message>
+        <source>By using this service, you agree to the &lt;a href=&quot;https://leaklog.org/terms&quot;&gt;Terms of Service&lt;/a&gt;.</source>
+        <translation>A szolgáltatás használatával elfogadja a &lt;a href=&quot;https://leaklog.org/terms&quot;&gt;Szolgáltatási feltételeket&lt;/a&gt;.</translation>
+    </message>
+    <message>
+        <source>&amp;Sync</source>
+        <translation>&amp;Szinkronizálás</translation>
+    </message>
+    <message>
+        <source>Do &amp;Not Sync</source>
+        <translation>&amp;Ne szinkronizálja</translation>
+    </message>
+    <message>
+        <source>Sync</source>
+        <translation>Szinkronizálás</translation>
+    </message>
+    <message>
+        <source>Sync - Leaklog</source>
+        <translation>Szinkronizálás - Leaklog</translation>
+    </message>
+    <message>
+        <source>Failed to sync with the server.</source>
+        <translation>Nem sikerült szinkronizálni a kiszolgálóval.</translation>
+    </message>
+    <message>
+        <source>You cannot remove the selected customer.</source>
+        <translation>Nem távolíthatja el a kiválasztott ügyfelet.</translation>
+    </message>
+    <message>
+        <source>You cannot remove the selected circuit.</source>
+        <translation>Nem távolíthatja el a kiválasztott hűtőkört.</translation>
+    </message>
+    <message>
+        <source>Removing this customer would affect the store.</source>
+        <translation>Az ügyfél eltávolítása hatással lenne a készletre.</translation>
+    </message>
+    <message>
+        <source>Removing this circuit would affect the store.</source>
+        <translation>A hűtőkör eltávolítása hatással lenne a készletre.</translation>
+    </message>
+    <message>
+        <source>Edit refrigerants - Leaklog</source>
+        <translation>Hűtőközegek szerkesztése - Leaklog</translation>
+    </message>
+    <message>
+        <source>Refrigerants</source>
+        <translation>Hűtőközegek</translation>
+    </message>
+    <message>
+        <source>Remove service company - Leaklog</source>
+        <translation>Szervizcég eltávolítása - Leaklog</translation>
+    </message>
+    <message>
+        <source>You cannot remove the selected service company.</source>
+        <translation>Nem távolíthatja el a kiválasztott szervizcéget.</translation>
+    </message>
+    <message>
+        <source>Removing this service company would affect the store.</source>
+        <translation>A szervizcég eltávolítása hatással lenne a készletre.</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to remove the selected service company?
+To remove all data about the service company &quot;%1&quot; type REMOVE and confirm:</source>
+        <translation>Biztosan el kívánja távolítani a kiválasztott szervizcéget? A „%1” szervizcég összes adatának eltávolításához írja be az ELTÁVOLÍTÁS szót, majd erősítse meg:</translation>
+    </message>
+    <message>
+        <source>Remove service company %1%2</source>
+        <translation>Szervizcég eltávolítása %1%2</translation>
+    </message>
+    <message>
+        <source>Exclude from Agenda only</source>
+        <translation>Kizárás csak a naplóból</translation>
+    </message>
+    <message>
+        <source>Unstar all circuits of customer %1%2</source>
+        <translation>Csillag eltávolítása %1%2 ügyfél összes hűtőköréről</translation>
+    </message>
+    <message>
+        <source>Keep ID</source>
+        <translation>Azonosító megtartása</translation>
+    </message>
+    <message>
+        <source>Select circuits - Leaklog</source>
+        <translation>Hűtőkörök kiválasztása - Leaklog</translation>
+    </message>
+    <message>
+        <source>Refrigerant leakage inspection
+in accordance with Regulation (EU)
+No. 2024/573</source>
+        <translation>Hűtőközeg-szivárgásvizsgálat az (EU) 2024/573 rendeletnek megfelelően</translation>
+    </message>
+    <message>
+        <source>Log In - Leaklog</source>
+        <translation>Bejelentkezés - Leaklog</translation>
+    </message>
+    <message>
+        <source>Enter your szchkt.org username and password:</source>
+        <translation>Adja meg a szchkt.org felhasználónevét és jelszavát:</translation>
+    </message>
+    <message>
+        <source>Register</source>
+        <translation>Regisztráció</translation>
+    </message>
+    <message>
+        <source>Log Out</source>
+        <translation>Kijelentkezés</translation>
+    </message>
+    <message>
+        <source>Failed to log in.</source>
+        <translation>Nem sikerült bejelentkezni.</translation>
+    </message>
+    <message>
+        <source>Try Again</source>
+        <translation>Próbálja újra</translation>
+    </message>
+    <message>
+        <source>https://github.com/szchkt/leaklog/wiki</source>
+        <translation>https://github.com/szchkt/leaklog/wiki</translation>
+    </message>
+    <message>
+        <source>https://github.com/szchkt/leaklog/releases</source>
+        <translation>https://github.com/szchkt/leaklog/releases</translation>
     </message>
 </context>
 <context>
@@ -4548,10 +4625,6 @@ person and company ID</source>
 <context>
     <name>Permissions</name>
     <message>
-        <source>Edit service company information</source>
-        <translation>Szervizcég információk szerkesztése</translation>
-    </message>
-    <message>
         <source>Add record of refrigerant management</source>
         <translation>Bejegyzés hozzáadása a hűtőközeg nyilvántartáshoz</translation>
     </message>
@@ -4671,6 +4744,18 @@ person and company ID</source>
         <source>Access assembly record list prices</source>
         <translation>Hozzáférés a szerelési bejegyzés listaárakhoz</translation>
     </message>
+    <message>
+        <source>Add service company</source>
+        <translation>Szervizcég hozzáadása</translation>
+    </message>
+    <message>
+        <source>Edit service company</source>
+        <translation>Szervizcég szerkesztése</translation>
+    </message>
+    <message>
+        <source>Remove service company</source>
+        <translation>Szervizcég eltávolítása</translation>
+    </message>
 </context>
 <context>
     <name>PermissionsDialogue</name>
@@ -4710,14 +4795,6 @@ person and company ID</source>
 <context>
     <name>Person</name>
     <message>
-        <source>ID</source>
-        <translation>Azonosító</translation>
-    </message>
-    <message>
-        <source>Company ID</source>
-        <translation>Cég azonosító</translation>
-    </message>
-    <message>
         <source>Name</source>
         <translation>Név</translation>
     </message>
@@ -4739,26 +4816,6 @@ person and company ID</source>
     <message>
         <source>No type</source>
         <translation>Nincs típus</translation>
-    </message>
-    <message>
-        <source>String</source>
-        <translation>szöveges adat</translation>
-    </message>
-    <message>
-        <source>Integer</source>
-        <translation>egész szám</translation>
-    </message>
-    <message>
-        <source>Real number</source>
-        <translation>valós szám</translation>
-    </message>
-    <message>
-        <source>Text</source>
-        <translation>Szöveg</translation>
-    </message>
-    <message>
-        <source>Boolean</source>
-        <translation>logikai</translation>
     </message>
     <message>
         <source>Default</source>
@@ -4805,7 +4862,7 @@ person and company ID</source>
     </message>
     <message>
         <source>Disposed of</source>
-        <translation>Megsemmisített </translation>
+        <translation>Ártalmatlanítva</translation>
     </message>
     <message>
         <source>Leaked in store</source>
@@ -4818,6 +4875,14 @@ person and company ID</source>
     <message>
         <source>Author</source>
         <translation>Szerző</translation>
+    </message>
+    <message>
+        <source>Service company</source>
+        <translation>Szervizcég</translation>
+    </message>
+    <message>
+        <source>Batch number</source>
+        <translation>Tételszám</translation>
     </message>
 </context>
 <context>
@@ -4904,7 +4969,7 @@ person and company ID</source>
     </message>
     <message>
         <source>Disposed of</source>
-        <translation>Megsemmisített </translation>
+        <translation>Ártalmatlanítva</translation>
     </message>
     <message>
         <source>Leaked (new)</source>
@@ -4913,6 +4978,46 @@ person and company ID</source>
     <message>
         <source>Leaked (recovered)</source>
         <translation>Elszivárgott (lefejtett)</translation>
+    </message>
+    <message>
+        <source>Service company:</source>
+        <translation>Szervizcég:</translation>
+    </message>
+    <message>
+        <source>Batch number:</source>
+        <translation>Tételszám:</translation>
+    </message>
+    <message>
+        <source>Purchased (reclaimed):</source>
+        <translation>Vásárolt (regenerált):</translation>
+    </message>
+    <message>
+        <source>Sold (reclaimed):</source>
+        <translation>Eladott (regenerált):</translation>
+    </message>
+    <message>
+        <source>Notes:</source>
+        <translation>Megjegyzések:</translation>
+    </message>
+    <message>
+        <source>Add record of refrigerant management - Leaklog</source>
+        <translation>Hűtőközeg-kezelési nyilvántartás hozzáadása - Leaklog</translation>
+    </message>
+    <message>
+        <source>Batch number</source>
+        <translation>Tételszám</translation>
+    </message>
+    <message>
+        <source>Purchased (reclaimed)</source>
+        <translation>Vásárolt (regenerált)</translation>
+    </message>
+    <message>
+        <source>Sold (reclaimed)</source>
+        <translation>Eladott (regenerált)</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Megjegyzések</translation>
     </message>
 </context>
 <context>
@@ -4953,14 +5058,6 @@ person and company ID</source>
         <translation>Szerelési bejegyzés sorszám:</translation>
     </message>
     <message>
-        <source>Amount of refrigerant:</source>
-        <translation>Hűtőközeg mennyiség:</translation>
-    </message>
-    <message>
-        <source>Refrigerant addition:</source>
-        <translation>Hűtőközeg mennyiség hozzáadása:</translation>
-    </message>
-    <message>
         <source>Refrigerant recovery:</source>
         <translation>Hűtőközeg lefejtés:</translation>
     </message>
@@ -4985,10 +5082,6 @@ person and company ID</source>
         <translation>Hűtőközeg</translation>
     </message>
     <message>
-        <source>Amount of refrigerant</source>
-        <translation>Hűtőközeg mennyiség</translation>
-    </message>
-    <message>
         <source>Refrigerant addition</source>
         <translation>Hűtőközeg hozzáadása</translation>
     </message>
@@ -5008,13 +5101,73 @@ person and company ID</source>
         <source>Inspector</source>
         <translation>Felülvizsgáló</translation>
     </message>
+    <message>
+        <source>Service company:</source>
+        <translation>Szervizcég:</translation>
+    </message>
+    <message>
+        <source>Commissioning</source>
+        <translation>Üzembe helyezés</translation>
+    </message>
+    <message>
+        <source>Type:</source>
+        <translation>Típus:</translation>
+    </message>
+    <message>
+        <source>Refrigerant amount total:</source>
+        <translation>Hűtőközeg teljes mennyisége:</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (new):</source>
+        <translation>Hűtőközeg-utántöltés (új):</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (recycled):</source>
+        <translation>Hűtőközeg-utántöltés (újrahasznosított):</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (reclaimed):</source>
+        <translation>Hűtőközeg-utántöltés (regenerált):</translation>
+    </message>
+    <message>
+        <source>Add repair - Leaklog</source>
+        <translation>Javítás hozzáadása - Leaklog</translation>
+    </message>
+    <message>
+        <source>Refrigerant amount</source>
+        <translation>Hűtőközeg mennyisége</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (new)</source>
+        <translation>Hűtőközeg-utántöltés (új)</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (recycled)</source>
+        <translation>Hűtőközeg-utántöltés (újrahasznosított)</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition (reclaimed)</source>
+        <translation>Hűtőközeg-utántöltés (regenerált)</translation>
+    </message>
+    <message>
+        <source>Service company</source>
+        <translation>Szervizcég</translation>
+    </message>
+    <message>
+        <source>New</source>
+        <translation>Új</translation>
+    </message>
+    <message>
+        <source>Recycled</source>
+        <translation>Újrahasznosított</translation>
+    </message>
+    <message>
+        <source>Reclaimed</source>
+        <translation>Regenerált</translation>
+    </message>
 </context>
 <context>
     <name>RepairsView</name>
-    <message>
-        <source>List of Repairs</source>
-        <translation>Javítások listája</translation>
-    </message>
     <message>
         <source>Date Updated</source>
         <translation>Dátum aktualizálva</translation>
@@ -5022,6 +5175,10 @@ person and company ID</source>
     <message>
         <source>Author</source>
         <translation>Szerző</translation>
+    </message>
+    <message>
+        <source>Repairs</source>
+        <translation>Javítások</translation>
     </message>
 </context>
 <context>
@@ -5031,11 +5188,6 @@ person and company ID</source>
         <translation>Jelentés éve: %1</translation>
     </message>
     <message>
-        <source>http://szchkt.org/report_data/</source>
-        <extracomment>URL to the data report system of the notified body</extracomment>
-        <translation>http://szchkt.org/report_data/</translation>
-    </message>
-    <message>
         <source>A newer version of Leaklog is required.</source>
         <translation>A Leaklog újabb verziójára van szükség.</translation>
     </message>
@@ -5043,12 +5195,17 @@ person and company ID</source>
         <source>all</source>
         <translation>mind</translation>
     </message>
+    <message>
+        <source>https://szchkt.org/report_data/</source>
+        <extracomment>URL to the data report system of the notified body</extracomment>
+        <translation>https://szchkt.org/report_data/</translation>
+    </message>
 </context>
 <context>
     <name>ServiceCompany</name>
     <message>
         <source>Service Company</source>
-        <translation>Szervíz cég</translation>
+        <translation>Szervizcég</translation>
     </message>
     <message>
         <source>Name:</source>
@@ -5078,12 +5235,16 @@ person and company ID</source>
         <source>Image:</source>
         <translation>Kép:</translation>
     </message>
+    <message>
+        <source>Stamp:</source>
+        <translation>Bélyegző:</translation>
+    </message>
 </context>
 <context>
     <name>StoreView</name>
     <message>
         <source>Service Company</source>
-        <translation>Szervíz cég</translation>
+        <translation>Szervizcég</translation>
     </message>
     <message>
         <source>Store</source>
@@ -5139,7 +5300,11 @@ person and company ID</source>
     </message>
     <message>
         <source>Disposed of</source>
-        <translation>Megsemmisített </translation>
+        <translation>Ártalmatlanítva</translation>
+    </message>
+    <message>
+        <source>Reclaimed in store</source>
+        <translation>A raktárban regenerált</translation>
     </message>
 </context>
 <context>
@@ -5159,6 +5324,14 @@ person and company ID</source>
     <message>
         <source>Use div elements instead of tables</source>
         <translation>Használjon elemeket tábla helyett</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation>Név</translation>
+    </message>
+    <message>
+        <source>Content</source>
+        <translation>Tartalom</translation>
     </message>
 </context>
 <context>
@@ -5261,14 +5434,6 @@ person and company ID</source>
     <message>
         <source>Done</source>
         <translation>Kész</translation>
-    </message>
-    <message>
-        <source>Edit service company information</source>
-        <translation>Szervizcég információk szerkesztése</translation>
-    </message>
-    <message>
-        <source>Edit Service Company Information...</source>
-        <translation>Szervizcég információk szerkesztése...</translation>
     </message>
     <message>
         <source>Add record of refrigerant management</source>
@@ -5636,7 +5801,63 @@ person and company ID</source>
     </message>
     <message>
         <source>Convert refrigerant to CO₂ equivalent</source>
-        <translation type="unfinished"></translation>
+        <translation>Hűtőközeg átszámítása CO₂-egyenértékre</translation>
+    </message>
+    <message>
+        <source>Add a new service company</source>
+        <translation>Új szervizcég hozzáadása</translation>
+    </message>
+    <message>
+        <source>Add Service Company...</source>
+        <translation>Szervizcég hozzáadása...</translation>
+    </message>
+    <message>
+        <source>Service Company:</source>
+        <translation>Szervizcég:</translation>
+    </message>
+    <message>
+        <source>Edit the selected service company</source>
+        <translation>A kijelölt szervizcég szerkesztése</translation>
+    </message>
+    <message>
+        <source>Edit Service Company...</source>
+        <translation>Szervizcég szerkesztése...</translation>
+    </message>
+    <message>
+        <source>Remove the selected service company</source>
+        <translation>A kijelölt szervizcég eltávolítása</translation>
+    </message>
+    <message>
+        <source>Remove Service Company...</source>
+        <translation>Szervizcég eltávolítása...</translation>
+    </message>
+    <message>
+        <source>Except Decommissioned Before:</source>
+        <translation>Kivéve az ezt megelőzően üzemen kívül helyezetteket:</translation>
+    </message>
+    <message>
+        <source>dd/MM/yyyy</source>
+        <translation>yyyy.MM.dd</translation>
+    </message>
+    <message>
+        <source>≥ 5 t of CO₂ equivalent (10 t if hermetic)</source>
+        <translation>≥ 5 t CO₂-egyenérték (hermetikusan zárt esetén 10 t)</translation>
+    </message>
+    <message>
+        <source>≥ 5 (10) t CO₂</source>
+        <translation>≥ 5 (10) t CO₂</translation>
+    </message>
+    <message>
+        <source>≥ 3 kg of refrigerant (6 kg if hermetic)</source>
+        <translation>≥ 3 kg hűtőközeg (hermetikusan zárt esetén 6 kg)</translation>
+    </message>
+    <message>
+        <source>≥ 3 (6) kg</source>
+        <translation>≥ 3 (6) kg</translation>
+    </message>
+    <message>
+        <source>Refrigerant:</source>
+        <translation>Hűtőközeg:</translation>
     </message>
 </context>
 <context>
@@ -5686,11 +5907,11 @@ person and company ID</source>
     </message>
     <message>
         <source>t of CO₂ equivalent</source>
-        <translation type="unfinished"></translation>
+        <translation>t CO₂-egyenérték</translation>
     </message>
     <message>
         <source>t</source>
-        <translation type="unfinished"></translation>
+        <translation>t</translation>
     </message>
 </context>
 <context>
@@ -5897,11 +6118,23 @@ person and company ID</source>
     </message>
     <message>
         <source>Risks</source>
-        <translation type="unfinished"></translation>
+        <translation>Kockázatok</translation>
     </message>
     <message>
         <source>Contact person</source>
-        <translation type="unfinished"></translation>
+        <translation>Kapcsolattartó</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Megjegyzések</translation>
+    </message>
+    <message>
+        <source>Recycled</source>
+        <translation>Újrahasznosított</translation>
+    </message>
+    <message>
+        <source>Reclaimed</source>
+        <translation>Regenerált</translation>
     </message>
 </context>
 <context>
@@ -5954,24 +6187,24 @@ person and company ID</source>
         <source>Colour:</source>
         <translation>Szín:</translation>
     </message>
+    <message>
+        <source>Save changes</source>
+        <translation>Változások mentése</translation>
+    </message>
+    <message>
+        <source>Invalid ID.</source>
+        <translation>Érvénytelen azonosító.</translation>
+    </message>
+    <message>
+        <source>This ID is not available. Please choose a different ID.</source>
+        <translation>Ez az azonosító foglalt. Válasszon másik azonosítót.</translation>
+    </message>
 </context>
 <context>
     <name>VariableTypes</name>
     <message>
         <source>Integer</source>
         <translation>egész szám</translation>
-    </message>
-    <message>
-        <source>Real number</source>
-        <translation>valós szám</translation>
-    </message>
-    <message>
-        <source>String</source>
-        <translation>szöveges adat</translation>
-    </message>
-    <message>
-        <source>Text</source>
-        <translation>szöveg</translation>
     </message>
     <message>
         <source>Boolean</source>
@@ -5981,27 +6214,51 @@ person and company ID</source>
         <source>Group</source>
         <translation>Csoport</translation>
     </message>
+    <message>
+        <source>Decimal Number</source>
+        <translation>Tizedes szám</translation>
+    </message>
+    <message>
+        <source>Short Text</source>
+        <translation>Rövid szöveg</translation>
+    </message>
+    <message>
+        <source>Long Text</source>
+        <translation>Hosszú szöveg</translation>
+    </message>
+    <message>
+        <source>UUID</source>
+        <translation>UUID</translation>
+    </message>
 </context>
 <context>
     <name>Variables</name>
     <message>
-        <source>New charge:</source>
-        <translation>Új töltet:</translation>
+        <source>New charge (new):</source>
+        <translation>Új töltet (új):</translation>
     </message>
     <message>
-        <source>Inspector:</source>
-        <translation type="unfinished"></translation>
+        <source>New charge (recycled):</source>
+        <translation>Új töltet (újrahasznosított):</translation>
+    </message>
+    <message>
+        <source>New charge (reclaimed):</source>
+        <translation>Új töltet (regenerált):</translation>
+    </message>
+    <message>
+        <source>New charge</source>
+        <translation>Új töltet</translation>
+    </message>
+    <message>
+        <source>Refrigerant addition</source>
+        <translation>Hűtőközeg-utántöltés</translation>
     </message>
 </context>
 <context>
     <name>ViewTab</name>
     <message>
-        <source>about:blank</source>
-        <translation>Üres</translation>
-    </message>
-    <message>
         <source>Service Company</source>
-        <translation>Szervíz cég</translation>
+        <translation>Szervizcég</translation>
     </message>
     <message>
         <source>Store</source>
@@ -6208,6 +6465,46 @@ person and company ID</source>
     <message>
         <source>above 300 kg, leakage detector installed</source>
         <translation>300 kg felett, szivárgásérzékelő telepítve</translation>
+    </message>
+    <message>
+        <source>5 - 50 t of CO₂ equivalent, before 2011</source>
+        <translation>5–50 t CO₂-egyenérték, 2011 előtt</translation>
+    </message>
+    <message>
+        <source>5 - 50 t of CO₂ equivalent, after 2011</source>
+        <translation>5–50 t CO₂-egyenérték, 2011 után</translation>
+    </message>
+    <message>
+        <source>50 - 500 t of CO₂ equivalent, before 2011</source>
+        <translation>50–500 t CO₂-egyenérték, 2011 előtt</translation>
+    </message>
+    <message>
+        <source>50 - 500 t of CO₂ equivalent, after 2011</source>
+        <translation>50–500 t CO₂-egyenérték, 2011 után</translation>
+    </message>
+    <message>
+        <source>above 500 t of CO₂ equivalent, before 2011</source>
+        <translation>500 t CO₂-egyenérték felett, 2011 előtt</translation>
+    </message>
+    <message>
+        <source>above 500 t of CO₂ equivalent, after 2011</source>
+        <translation>500 t CO₂-egyenérték felett, 2011 után</translation>
+    </message>
+    <message>
+        <source>once in 2 years</source>
+        <translation>2 évente</translation>
+    </message>
+    <message>
+        <source>once a year</source>
+        <translation>Évente</translation>
+    </message>
+    <message>
+        <source>once in 6 months</source>
+        <translation>6 havonta</translation>
+    </message>
+    <message>
+        <source>once in 3 months</source>
+        <translation>3 havonta</translation>
     </message>
 </context>
 </TS>

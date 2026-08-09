@@ -2167,6 +2167,10 @@
         <source>Serbian</source>
         <translation>Srpski</translation>
     </message>
+    <message>
+        <source>Hungarian</source>
+        <translation>Mađarski</translation>
+    </message>
 </context>
 <context>
     <name>LeakagesByApplication</name>
