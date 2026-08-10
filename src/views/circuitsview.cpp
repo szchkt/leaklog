@@ -105,10 +105,10 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QS
             circuits_query.parents().insert("service_company_uuid", service_company_uuid);
         }
         if (!settings->toolBarStack()->isFilterEmpty()) {
-            circuits_query.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+            circuits_query.addFilter("circuits." + settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
         }
         if (settings->toolBarStack()->starredOnly()) {
-            circuits_query.addFilter("starred <> ?", "0");
+            circuits_query.addFilter("circuits.starred <> ?", "0");
         }
     }
     if (all_customers) {
