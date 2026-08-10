@@ -79,6 +79,7 @@ QString StoreView::renderHTML(bool)
     out << "<tr><td style=\"background-color: #eee; font-size: medium; text-align: center;\"><b>";
     out << tr("Store") << "</b></td></tr>";
     out << "<tr><td align=\"center\"><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:60%;\" class=\"centred_with_borders\">";
+    out << "<thead class=\"sticky\">";
     out << "<tr><th>" << tr("Year") << "</th>";
     out << "<th>" << tr("Refrigerant") << "</th>";
     out << "<th>" << tr("New in store") << "</th>";
@@ -87,12 +88,13 @@ QString StoreView::renderHTML(bool)
     bool show_leaked = settings->isShowLeakedChecked();
     if (show_leaked)
         out << "<th>" << tr("Leaked in store") << "</th>";
-    out << "</tr>";
+    out << "</tr></thead>";
     out << "<store />";
     out << "</table></td></tr>";
     out << "<tr><td style=\"background-color: #eee; font-size: medium; text-align: center;\"><b>";
     out << tr("Refrigerant Management") << "</b></td></tr>";
     out << "<tr><td><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"centred_with_borders\">";
+    out << "<thead class=\"sticky\">";
     out << "<tr><th rowspan=\"2\">" << tr("Date") << "</th>";
     out << "<th rowspan=\"2\">" << tr("Refrigerant") << "</th>";
     bool by_field = settings->toolBarStack()->isByFieldOfApplicationChecked();
@@ -135,7 +137,7 @@ QString StoreView::renderHTML(bool)
         out << "<td>" << QApplication::translate("VariableNames", "New") << "</td>";
         out << "<td>" << QApplication::translate("VariableNames", "Recovered") << "</td>";
     }
-    out << "</tr>";
+    out << "</tr></thead>";
     ReportData data(service_company_uuid, settings->toolBarStack()->filterSinceValue(), settings->toolBarStack()->selectedRefrigerant(), by_field);
     QString store_html; MTTextStream store_out(&store_html);
     QStringList list_refrigerants = listRefrigerants();

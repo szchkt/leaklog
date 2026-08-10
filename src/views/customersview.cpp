@@ -103,6 +103,10 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_uuid, HTML
     if (customer_uuid.isEmpty())
         table->addClass("highlight");
 
+    HTMLTable *thead = customer_uuid.isEmpty() ? table->thead() : table;
+    if (customer_uuid.isEmpty())
+        thead->addClass("sticky");
+
     int thead_colspan = 9;
     HTMLTableRow *row = NULL;
 
@@ -134,7 +138,7 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_uuid, HTML
         }
     }
 
-    HTMLTableCell *cell = table->addRow()->addHeaderCell("colspan=\"" + QString::number(thead_colspan) + "\" style=\"font-size: medium; background-color: floralwhite;\"");
+    HTMLTableCell *cell = thead->addRow()->addHeaderCell("colspan=\"" + QString::number(thead_colspan) + "\" style=\"font-size: medium; background-color: floralwhite;\"");
 
     if (customer_uuid.isEmpty()) {
         *cell << tr("Customers");
@@ -154,7 +158,7 @@ HTMLTable *CustomersView::writeCustomersTable(const QString &customer_uuid, HTML
     }
 
     if (customer_uuid.isEmpty() || customer_details_visible) {
-        *table << row;
+        *thead << row;
 
         QString highlighted_uuid = settings->selectedCustomerUUID();
         for (int i = 0; i < list.count(); ++i) {

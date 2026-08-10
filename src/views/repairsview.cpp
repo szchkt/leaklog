@@ -69,6 +69,7 @@ QString RepairsView::renderHTML(bool)
     MTSqlQuery repairs = repairs_record.select("*", settings->appendDefaultOrderToColumn(order_by));
     repairs.exec();
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
+    out << "<thead class=\"sticky\">";
     out << "<tr><th colspan=\"15\" style=\"font-size: medium;\">" << tr("Repairs") << "</th></tr><tr>";
     auto th = [&out](const QString &key, const QString &title) {
         out << "<th rowspan=\"2\"><a href=\"allrepairs:/order_by:" << key << "\">" << title << "</a></th>";
@@ -94,7 +95,7 @@ QString RepairsView::renderHTML(bool)
     out << "<th><a href=\"allrepairs:/order_by:refr_add_am\">" << QApplication::translate("Repair", "New") << "</a></th>";
     out << "<th><a href=\"allrepairs:/order_by:refr_add_am_recy\">" << QApplication::translate("Repair", "Recycled") << "</a></th>";
     out << "<th><a href=\"allrepairs:/order_by:refr_add_am_rege\">" << QApplication::translate("Repair", "Reclaimed") << "</a></th>";
-    out << "</tr>";
+    out << "</tr></thead>";
     MultiMapOfVariantMaps inspectors(Inspector::query().mapAll("uuid", "person"));
     while (repairs.next()) {
         QString uuid = repairs.stringValue("uuid");

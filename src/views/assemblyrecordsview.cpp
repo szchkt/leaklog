@@ -69,10 +69,12 @@ QString AssemblyRecordsView::renderHTML(bool)
     div << html;
 
     table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
-    _tr = table->addRow();
+    HTMLTableHead *thead = table->thead();
+    thead->addClass("sticky");
+    _tr = thead->addRow();
     _td = _tr->addHeaderCell("colspan=\"9\" style=\"background-color: #DFDFDF; font-size: medium; width:100%; text-align: center;\"");
     *_td << tr("Assembly Records");
-    _tr = table->addRow();
+    _tr = thead->addRow();
     *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:date")) << tr("Date");
     *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:arno")) << tr("Assembly record number");
     *(_tr->addHeaderCell()->link("allassemblyrecords:/order_by:record_name")) << tr("Assembly record name");

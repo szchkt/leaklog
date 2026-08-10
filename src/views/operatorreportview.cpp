@@ -91,6 +91,7 @@ QString OperatorReportView::renderHTML(bool)
     out << "<td>" << MTVariant(customer.value("operator_address"), MTVariant::Address) << "</td>";
     out << "</tr></table><br>";
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
+    out << "<thead class=\"sticky\">";
     out << "<tr><th colspan=\"" << (10 + show_circuit_name + CO2_equivalent) << "\" style=\"font-size: medium; background-color: aliceblue;\">";
     out << tr("Circuit information", "Operator report") << "</th></tr><tr>";
     out << "<th rowspan=\"3\">" << QApplication::translate("Circuit", "ID") << "</th>";
@@ -117,7 +118,7 @@ QString OperatorReportView::renderHTML(bool)
     out << "<th>" << QApplication::translate("VariableNames", "New") << "</th>";
     out << "<th>" << QApplication::translate("VariableNames", "Recycled") << "</th>";
     out << "<th>" << QApplication::translate("VariableNames", "Reclaimed") << "</th>";
-    out << "</tr>";
+    out << "</tr></thead>";
 
     MTQuery inspections = Inspection::query();
     inspections.addFilter("inspection_type <> ?", QString::number(Inspection::NominalInspection));
@@ -226,7 +227,7 @@ QString OperatorReportView::renderHTML(bool)
     if (settings->isInspectorSelected())
         inspector = Inspector(settings->selectedInspectorUUID()).list("person, mail, phone");
 
-    HTMLTable compiled_by;
+    HTMLTable compiled_by("cellspacing=\"0\"");
     HTMLTableRow *row = compiled_by.addRow();
     *(row->addCell()) << tr("Compiled by:") << " <input type=\"text\" style=\"border: 0;\" size=\"30\" value=\""
                       << escapeString(inspector.value("person").toString()) << "\">";

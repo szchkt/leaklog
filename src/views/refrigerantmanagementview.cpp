@@ -54,6 +54,7 @@ QString RefrigerantManagementView::renderHTML(bool)
     int column_count = 18;
 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
+    out << "<thead class=\"sticky\">";
     out << "<tr><th colspan=\"" << column_count << "\" style=\"font-size: medium;\">";
     out << tr("Refrigerant Management") << "</th></tr>";
     out << "<tr><th rowspan=\"2\"><a href=\"refrigerantmanagement:/order_by:date\">" << tr("Date") << "</a></th>";
@@ -88,7 +89,7 @@ QString RefrigerantManagementView::renderHTML(bool)
         out << "<th>" << QApplication::translate("VariableNames", "New") << "</th>";
         out << "<th>" << QApplication::translate("VariableNames", "Recovered") << "</th>";
     }
-    out << "</tr>";
+    out << "</tr></thead>";
     MTQuery records = RefrigerantRecord::query();
     if (!service_company_uuid.isEmpty())
         records.parents().insert("service_company_uuid", service_company_uuid);

@@ -53,7 +53,7 @@ QString LeakagesByApplicationView::renderHTML(bool)
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr>";
     out << "<th style=\"font-size: medium;\">" << tr("Leakages by Application") << "</th></tr></table><br>";
 
-    out << "<table><thead><tr><th rowspan=\"2\" width=\"15%\">" << tr("Weighted Average") << "</th>";
+    out << "<table cellspacing=\"0\"><thead><tr><th rowspan=\"2\" width=\"15%\">" << tr("Weighted Average") << "</th>";
     out << "<th colspan=\"7\">" << tr("Fields") << "</th></tr>";
     out << "<tr><th>" << tr("All") << "</th>";
 
@@ -121,7 +121,7 @@ QString LeakagesByApplicationView::renderHTML(bool)
     out << "<tr></tr></table><br>";
 
     for (int year = leakages.endYear(); year >= leakages.startYear(); --year) {
-        out << "<table><thead><tr><th rowspan=\"2\" width=\"15%\">" << year << "</th>";
+        out << "<table cellspacing=\"0\"><thead><tr><th rowspan=\"2\" width=\"15%\">" << year << "</th>";
         out << "<th colspan=\"21\">" << tr("Fields") << "</th></tr>";
         out << "<tr><th colspan=\"3\">" << tr("All") << "</th>";
 

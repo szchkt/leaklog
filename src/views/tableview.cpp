@@ -105,7 +105,7 @@ QString TableView::renderHTML(bool)
         out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr><th style=\"font-size: medium;\">";
         out << escapeString(title) << "</th></tr></table><br>";
 
-        out << QString("<div%1><table>").arg(c > 1 ? " class=\"print_only\"" : "");
+        out << QString("<div%1><table cellspacing=\"0\">").arg(c > 1 ? " class=\"print_only\"" : "");
         out << "<tr><th>" << QApplication::translate("Customer", "ID");
         out << "</th><th>" << QApplication::translate("Customer", "Company");
         out << "</th><th>" << QApplication::translate("Customer", "Address");
@@ -123,7 +123,7 @@ QString TableView::renderHTML(bool)
 
         // *** Table ***
         if (table.value("scope").toInt() & Variable::Compressor) {
-            HTMLTable *compressors_table = new HTMLTable();
+            HTMLTable *compressors_table = new HTMLTable("cellspacing=\"0\"");
             HTMLTableRow *compressors_table_row = compressors_table->addRow();
 
             HTMLTableCell *cell;
@@ -220,7 +220,7 @@ QString TableView::renderHTML(bool)
                 warnings_html.append("</b></td></tr>");
             }
             if (!warnings_html.isEmpty()) {
-                out << "<br /><table>";
+                out << "<br /><table cellspacing=\"0\">";
                 out << "<tr><th width=\"20%\">" << tr("Date") << "</th><th>" << tr("Warnings") << "</th></tr>";
                 out << warnings_html;
                 out << "</table>";
@@ -241,7 +241,7 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, Table &t
 {
     QStringList table_vars = table_record.variables();
     VariableEvaluation::Variable *variable = NULL, *subvariable = NULL;
-    HTMLTable *table = new HTMLTable;
+    HTMLTable *table = new HTMLTable("cellspacing=\"0\"");
     HTMLTableRow *row = table->addRow();
     row->addClass("border_top");
     HTMLTableCell *cell = NULL;
@@ -249,6 +249,7 @@ HTMLTable *TableView::writeInspectionsTable(const QVariantMap &circuit, Table &t
 
 //*** Head ***
     HTMLTableHead *thead = table->thead();
+    thead->addClass("sticky");
     row = thead->addRow();
     row->addClass("border_top");
     *(row->addHeaderCell("rowspan=\"3\"")) << tr("Date");

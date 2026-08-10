@@ -99,6 +99,7 @@ QString InspectionsView::renderHTML(bool)
     persons_query.addJoin("LEFT JOIN customers ON customer_uuid = customers.uuid");
     MultiMapOfVariantMaps persons(persons_query.mapAll("persons.uuid", "customer_uuid, name, company"));
     out << "<br><table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
+    out << "<thead class=\"sticky\">";
     out << "<tr><th colspan=\"13\" style=\"font-size: medium; background-color: lightgoldenrodyellow;\">";
     out << "<a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/table\">";
     out << tr("Inspections and Repairs") << "</a></th></tr>";
@@ -121,7 +122,7 @@ QString InspectionsView::renderHTML(bool)
     out << "<th><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:refr_add_am\">" << variableNames().value("refr_add_am") << "</a></th>";
     out << "<th><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:refr_add_am_recy\">" << variableNames().value("refr_add_am_recy") << "</a></th>";
     out << "<th><a href=\"customer:" << customer_uuid << "/circuit:" << circuit_uuid << "/order_by:refr_add_am_rege\">" << variableNames().value("refr_add_am_rege") << "</a></th>";
-    out << "</tr>";
+    out << "</tr></thead>";
 
     if (most_recent_first)
         writeCircuitDecommissioningReason(out, circuit_uuid);

@@ -59,8 +59,11 @@ QString InspectorDetailsView::renderHTML(bool)
     ListOfVariantMaps ar_items(ar_item_record.listAll("inspections.customer_uuid, inspections.circuit_uuid, inspections.uuid AS inspection_uuid, inspections.date, customers.id AS customer_id, circuits.id AS circuit_id, assembly_record_items.*"));
 
     table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
-    *(table->addRow()->addHeaderCell("colspan=\"10\" style=\"font-size: medium;\"")) << tr("Assembly Records");
-    _tr = table->addRow();
+    HTMLTableHead *thead = table->thead();
+    thead->addClass("sticky");
+    _tr = thead->addRow();
+    *(_tr->addHeaderCell("colspan=\"10\" style=\"font-size: medium;\"")) << tr("Assembly Records");
+    _tr = thead->addRow();
     *(_tr->addHeaderCell()) << tr("Date");
     *(_tr->addHeaderCell()) << tr("Customer ID");
     *(_tr->addHeaderCell()) << tr("Circuit ID");
@@ -135,8 +138,11 @@ QString InspectorDetailsView::renderHTML(bool)
     div.newLine();
 
     table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
-    *(table->addRow()->addHeaderCell("colspan=\"5\" style=\"font-size: medium;\"")) << tr("Inspections and Repairs");
-    _tr = table->addRow();
+    thead = table->thead();
+    thead->addClass("sticky");
+    _tr = thead->addRow();
+    *(_tr->addHeaderCell("colspan=\"5\" style=\"font-size: medium;\"")) << tr("Inspections and Repairs");
+    _tr = thead->addRow();
     *(_tr->addHeaderCell()) << tr("Date");
     *(_tr->addHeaderCell()) << tr("Customer ID");
     *(_tr->addHeaderCell()) << tr("Customer");

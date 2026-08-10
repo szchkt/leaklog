@@ -49,6 +49,7 @@ QString CircuitUnitTypesView::renderHTML(bool)
     ListOfVariantMaps items = all_items.listAll("*", settings->mainWindowSettings().orderByForView(LinkParser::AllCircuitUnitTypes));
 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
+    out << "<thead class=\"sticky\">";
     QString thead = "<tr>"; int thead_colspan = 2;
     for (int n = 1; n < CircuitUnitType::attributes().count(); ++n) {
         thead.append("<th><a href=\"allcircuitunittypes:/order_by:"
@@ -59,6 +60,7 @@ QString CircuitUnitTypesView::renderHTML(bool)
     thead.append("</tr>");
     out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">" << tr("Circuit Unit Types") << "</th></tr>";
     out << thead;
+    out << "</thead>";
 
     for (int i = 0; i < items.count(); ++i) {
         QString uuid = items.at(i).value("uuid").toString();

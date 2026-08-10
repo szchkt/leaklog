@@ -140,7 +140,8 @@ QString AgendaView::renderHTML(bool)
         }
     }
 
-    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"><tr>";
+    out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\">";
+    out << "<thead class=\"sticky\"><tr>";
     out << "<th colspan=\"9\" style=\"font-size: medium;\">" << tr("Agenda") << "</th></tr>";
     out << "<tr><th rowspan=\"2\">" << tr("Next inspection") << "</th>";
     out << "<th colspan=\"2\">" << tr("Customer") << "</th>";
@@ -154,7 +155,7 @@ QString AgendaView::renderHTML(bool)
     out << "<th>" << QApplication::translate("Customer", "Company") << "</th>";
     out << "<th>" << QApplication::translate("Circuit", "ID") << "</th>";
     out << "<th>" << QApplication::translate("Circuit", "Name") << "</th>";
-    out << "</tr>";
+    out << "</tr></thead>";
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     QMultiMapIterator<QString, QList<QVariant> > i(next_inspections_map);

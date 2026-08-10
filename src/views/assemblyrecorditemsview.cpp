@@ -48,6 +48,8 @@ QString AssemblyRecordItemsView::renderHTML(bool)
     writeServiceCompany(div);
 
     HTMLTable *table = div.table("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
+    HTMLTableHead *thead = table->thead();
+    thead->addClass("sticky");
     int thead_colspan = 5;
     HTMLTableRow *row = new HTMLTableRow();
     for (int n = 0; n < AssemblyRecordItemCategory::attributes().count(); ++n) {
@@ -57,10 +59,10 @@ QString AssemblyRecordItemsView::renderHTML(bool)
         thead_colspan++;
     }
     *(row->addHeaderCell("colspan=\"5\"")) << tr("Show");
-    *(table->addRow()->addHeaderCell("colspan=\"" + QString::number(thead_colspan) + "\" style=\"font-size: medium;\""))
+    *(thead->addRow()->addHeaderCell("colspan=\"" + QString::number(thead_colspan) + "\" style=\"font-size: medium;\""))
         << tr("Assembly Record Item Categories and Types");
-    *table << row;
-    row = table->addRow();
+    *thead << row;
+    row = thead->addRow();
     *(row->addHeaderCell()) << tr("Value");
     *(row->addHeaderCell()) << tr("Acquisition price");
     *(row->addHeaderCell()) << tr("List price");

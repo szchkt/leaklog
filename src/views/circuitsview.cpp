@@ -152,10 +152,14 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QS
     }
 
     HTMLDiv *div = new HTMLDiv();
-    if (!table) table = new HTMLTable(title ? "cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"" : QString());
+    if (!table) table = new HTMLTable(title ? "cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\"" : "cellspacing=\"0\"");
     table->addClass("circuits");
     if (all_circuits)
         table->addClass("highlight");
+
+    HTMLTable *_thead = cols_in_row < 0 ? table->thead() : table;
+    if (cols_in_row < 0)
+        _thead->addClass("sticky");
 
     HTMLTableRow *thead = NULL;
 
@@ -165,7 +169,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QS
     }
 
     if (title) {
-        HTMLTableRow *_tr = table->addRow();
+        HTMLTableRow *_tr = _thead->addRow();
         HTMLTableCell *_td = _tr->addHeaderCell("colspan=\"" + QString::number(thead ? thead->childCount() : 1) + "\" style=\"font-size: medium; background-color: aliceblue;\"");
 
         if (all_circuits) {
@@ -198,7 +202,7 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QS
     }
 
     if (all_circuits ? circuits_visible : circuits_details_visible) {
-        *table << thead;
+        *_thead << thead;
 
         QString previous_customer_uuid;
         foreach (const QVariantMap &circuit, circuits) {
@@ -220,10 +224,13 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QS
     if (all_circuits && excluded_count) {
         *div << "<br>";
         table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
-        HTMLTableRow *_tr = table->addRow();
+        _thead = cols_in_row < 0 ? table->thead() : table;
+        if (cols_in_row < 0)
+            _thead->addClass("sticky");
+        HTMLTableRow *_tr = _thead->addRow();
 
         if (excluded_circuits_visible) {
-            thead = table->addRow();
+            thead = _thead->addRow();
             writeCircuitsHeader(customer_uuid, circuit_uuid, cols_in_row, columns, Circuit::ExcludedFromAgenda, thead);
         } else {
             thead = NULL;
@@ -256,10 +263,13 @@ HTMLDiv *CircuitsView::writeCircuitsTable(const QString &customer_uuid, const QS
     if (all_circuits && decommissioned_count) {
         *div << "<br>";
         table = new HTMLTable("cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\"");
-        HTMLTableRow *_tr = table->addRow();
+        _thead = cols_in_row < 0 ? table->thead() : table;
+        if (cols_in_row < 0)
+            _thead->addClass("sticky");
+        HTMLTableRow *_tr = _thead->addRow();
 
         if (decommissioned_circuits_visible) {
-            thead = table->addRow();
+            thead = _thead->addRow();
             writeCircuitsHeader(customer_uuid, circuit_uuid, cols_in_row, columns, Circuit::Decommissioned, thead);
         } else {
             thead = NULL;

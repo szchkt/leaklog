@@ -36,20 +36,27 @@ th {
 }
 table {
 	width: 100%;
+	border-collapse: separate;
+	border: 0;
+	border-left: 1px solid #A9A9A9;
+	border-top: 1px solid #A9A9A9;
 }
-table,td,th {
-	border-collapse: collapse;
-	border-style: solid;
-	border-width: 1px;
-	border-color: #A9A9A9;
+table th, table td {
+	border: 0;
+	border-right: 1px solid #A9A9A9;
+	border-bottom: 1px solid #A9A9A9;
 }
-.no_border {
+.no_border table {
 	border-collapse: collapse;
-	border-style: none;
 }
 tr.nominal > td {
 	background-color: #FFFF33 !important;
 	color: #000000 !important;
+}
+thead.sticky {
+	position: sticky;
+	top: 0;
+	z-index: 10;
 }
 a:link {
 	color: inherit;

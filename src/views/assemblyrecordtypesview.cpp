@@ -49,6 +49,7 @@ QString AssemblyRecordTypesView::renderHTML(bool)
     ListOfVariantMaps items = all_items.listAll("*", settings->mainWindowSettings().orderByForView(LinkParser::AllAssemblyRecordTypes));
 
     out << "<table cellspacing=\"0\" cellpadding=\"4\" style=\"width:100%;\" class=\"highlight\">";
+    out << "<thead class=\"sticky\">";
     QString thead = "<tr>"; int thead_colspan = 2;
     for (int n = 0; n < AssemblyRecordType::attributes().count(); ++n) {
         thead.append("<th><a href=\"allassemblyrecordtypes:/order_by:"
@@ -60,6 +61,7 @@ QString AssemblyRecordTypesView::renderHTML(bool)
     out << "<tr><th colspan=\"" << thead_colspan << "\" style=\"font-size: medium;\">"
         << tr("Assembly Record Types") << "</th></tr>";
     out << thead;
+    out << "</thead>";
     for (int i = 0; i < items.count(); ++i) {
         QString uuid = items.at(i).value("uuid").toString();
         out << QString("<tr id=\"%1\" onclick=\"executeLink(this, '%1');\"").arg("assemblyrecordtype:" + uuid);
