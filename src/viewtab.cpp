@@ -395,7 +395,6 @@ void ViewTab::enableAllTools()
 
 void ViewTab::enableTools()
 {
-    view_items[View::Circuits]->setDisabled(!isCustomerSelected());
     for (int i = 0; i < group_tables->childCount(); ++i)
         group_tables->child(i)->setDisabled(!isCustomerSelected());
     view_items[View::OperatorReport]->setDisabled(!isCustomerSelected());
@@ -672,7 +671,7 @@ void ViewTab::viewChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
     emit viewChanged(view);
 
     QString tabText = current->text(0);
-    if (isCustomerSelected() && view >= View::CustomerRequired && view <= View::CustomerRequiredEnd) {
+    if (isCustomerSelected() && view >= View::CustomerSelectable && view <= View::CustomerSelectableEnd) {
         Customer customer(selectedCustomerUUID());
         tabText.append(QString::fromUtf8(" \342\200\224 %1").arg(customer.companyName().isEmpty() ? customer.companyID() : customer.companyName()));
     }
@@ -739,7 +738,7 @@ void ViewTab::executeLink(Link *link)
                 parentWindow()->starCustomer(id);
             }
         } else if (id != selectedCustomerUUID()) {
-            loadCustomer(id, view_changed && link->countViews() <= 1 && link->action() == Link::View);
+            loadCustomer(id, link->countViews() <= 1 && link->action() == Link::View);
         } else if (link->countViews() <= 1 && link->action() == Link::View) {
             setView(View::Circuits);
         }
