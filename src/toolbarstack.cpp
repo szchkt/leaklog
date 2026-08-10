@@ -549,8 +549,10 @@ void ToolBarStack::enableTools()
     tbtn_remove_customer->setEnabled(_settings->isCustomerSelected());
     tbtn_edit_repair->setEnabled(_settings->isRepairSelected());
     tbtn_remove_repair->setEnabled(_settings->isRepairSelected());
+    tbtn_add_circuit->setEnabled(_settings->isCustomerSelected());
     tbtn_edit_circuit->setEnabled(_settings->isCircuitSelected());
     tbtn_remove_circuit->setEnabled(_settings->isCircuitSelected());
+    tbtn_add_inspection->setEnabled(_settings->isCustomerSelected());
     tbtn_edit_inspection->setEnabled(_settings->isInspectionSelected());
     tbtn_remove_inspection->setEnabled(_settings->isInspectionSelected());
     tbtn_edit_assembly_record_type->setEnabled(_settings->isAssemblyRecordTypeSelected());
