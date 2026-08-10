@@ -36,7 +36,7 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
 {
     md->setMaximumRowCount(15);
 
-    MTDictionary refrigerants(listRefrigerants());
+    MTDictionary refrigerants(listRefrigerants(true));
 
     Customer customer(customerUUID());
     md->setWindowTitle(tr("Customer: %2 %1 Circuit").arg(rightTriangle())

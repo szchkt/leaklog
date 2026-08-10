@@ -1178,7 +1178,7 @@ void MainWindow::editRefrigerants()
     EditDialogueBasicTable *table = new EditDialogueBasicTable(tr("Refrigerants"), cells, this);
     gl->addWidget(table, 0, 0);
 
-    QSet<QString> predefined_refrigerants = refrigerantSet(false);
+    QSet<QString> predefined_refrigerants = refrigerantSet(false, false);
     QSet<QString> used_refrigerants;
     MTSqlQuery query("SELECT refrigerant FROM circuits UNION SELECT refrigerant FROM repairs UNION SELECT refrigerant FROM refrigerant_management");
     while (query.next()) {
@@ -1660,7 +1660,9 @@ void MainWindow::duplicateAndDecommissionCircuit()
     QRadioButton *set_duplicate_id = new QRadioButton(tr("Choose a new ID for the duplicate:"), &d);
     gl->addWidget(set_duplicate_id, 4, 0);
 
-    QStringList refrigerants = listRefrigerants();
+    QStringList refrigerants = listRefrigerants(true);
+    if (!refrigerants.contains(circuit.refrigerant()))
+        refrigerants.append(circuit.refrigerant());
 
     lbl = new QLabel(tr("Previous refrigerant:"), &d);
     lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);

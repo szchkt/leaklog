@@ -1126,7 +1126,7 @@ double Global::CO2Equivalent(const QString &refrigerant, double refrigerant_amou
     return refrigerantGWP(refrigerant) * refrigerant_amount / 1000.0;
 }
 
-QStringList Global::listRefrigerants(bool include_user_refrigerants)
+QStringList Global::listRefrigerants(bool in_store_only, bool include_user_refrigerants)
 {
     QStringList refrigerants;
     refrigerants
@@ -1237,12 +1237,24 @@ QStringList Global::listRefrigerants(bool include_user_refrigerants)
         }
     }
 
+    if (in_store_only) {
+        QSet<QString> refrigerants_in_store;
+        MTSqlQuery query = RefrigerantRecord::query().select("DISTINCT refrigerant");
+        query.exec();
+        while (query.next()) {
+            refrigerants_in_store.insert(query.value(0).toString());
+        }
+        refrigerants.removeIf([refrigerants_in_store](const QString &refrigerant) {
+            return !refrigerants_in_store.contains(refrigerant);
+        });
+    }
+
     return refrigerants;
 }
 
-QSet<QString> Global::refrigerantSet(bool include_user_refrigerants)
+QSet<QString> Global::refrigerantSet(bool in_store_only, bool include_user_refrigerants)
 {
-    QStringList refrigerants = listRefrigerants(include_user_refrigerants);
+    QStringList refrigerants = listRefrigerants(in_store_only, include_user_refrigerants);
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
     return QSet<QString>::fromList(refrigerants);
 #else
