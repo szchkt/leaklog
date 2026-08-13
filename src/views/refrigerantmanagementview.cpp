@@ -91,15 +91,34 @@ QString RefrigerantManagementView::renderHTML(bool)
     }
     out << "</tr></thead>";
     MTQuery records = RefrigerantRecord::query();
+    records.addJoin("LEFT JOIN partners ON partner_uuid = partners.uuid");
     if (!service_company_uuid.isEmpty())
         records.parents().insert("service_company_uuid", service_company_uuid);
     if (!settings->toolBarStack()->isFilterEmpty()) {
-        records.addFilter(settings->toolBarStack()->filterColumn(), settings->toolBarStack()->filterKeyword());
+        QString key = settings->toolBarStack()->filterColumn();
+        if (key == "partner") {
+            key = "COALESCE(partners.name, refrigerant_management.partner)";
+        } else if (key == "partner_id") {
+            key = "COALESCE(partners.company_id, refrigerant_management.partner_id)";
+        } else {
+            key.prepend("refrigerant_management.");
+        }
+        records.addFilter(key, settings->toolBarStack()->filterKeyword());
     }
     QString order_by = settings->mainWindowSettings().orderByForView(LinkParser::RefrigerantManagement);
     if (order_by.isEmpty())
         order_by = "date";
-    MTSqlQuery query = records.select("*", settings->appendDefaultOrderToColumn(order_by));
+    QStringList select = RefrigerantRecord::columns().toStringList([](const Column &column) {
+        QString key = column.name();
+        if (key == "partner") {
+            return QString("COALESCE(partners.name, refrigerant_management.partner) AS partner");
+        } else if (key == "partner_id") {
+            return QString("COALESCE(partners.company_id, refrigerant_management.partner_id) AS partner_id");
+        } else {
+            return "refrigerant_management." + key;
+        }
+    });
+    MTSqlQuery query = records.select(select.join(", "), settings->appendDefaultOrderToColumn(order_by));
     query.exec();
     QString date;
     while (query.next()) {

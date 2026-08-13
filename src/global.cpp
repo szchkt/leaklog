@@ -375,8 +375,9 @@ bool Global::journalInsertion(const QString &table_name, const QString &record_u
 bool Global::journalInsertion(int table_id, const QString &record_uuid, const QSqlDatabase &database)
 {
     MTSqlQuery query(database);
-    query.prepare("INSERT INTO journal (source_uuid, entry_id, operation_id, table_id, record_uuid) VALUES (:source_uuid, (SELECT COALESCE(MAX(entry_id), 0) + 1 FROM journal WHERE source_uuid = :source_uuid), :operation_id, :table_id, :record_uuid)");
+    query.prepare("INSERT INTO journal (source_uuid, version, entry_id, operation_id, table_id, record_uuid) VALUES (:source_uuid, :version, (SELECT COALESCE(MAX(entry_id), 0) + 1 FROM journal WHERE source_uuid = :source_uuid), :operation_id, :table_id, :record_uuid)");
     query.bindValue(":source_uuid", sourceUUID());
+    query.bindValue(":version", JournalEntry::versionForTableID(table_id));
     query.bindValue(":operation_id", JournalEntry::Insertion);
     query.bindValue(":table_id", table_id);
     query.bindValue(":record_uuid", record_uuid);
@@ -562,6 +563,7 @@ public:
     DatabaseTables() {
         dict.insert(DBInfo::tableName(), DBInfo::columns().toString());
         dict.insert(ServiceCompany::tableName(), ServiceCompany::columns().toString());
+        dict.insert(BusinessPartner::tableName(), BusinessPartner::columns().toString());
         dict.insert(Customer::tableName(), Customer::columns().toString());
         dict.insert(Person::tableName(), Person::columns().toString());
         dict.insert(Circuit::tableName(), Circuit::columns().toString());

@@ -20,30 +20,38 @@
 #ifndef PARTNER_WIDGETS_H
 #define PARTNER_WIDGETS_H
 
+#include "inputwidgets.h"
+
+class EditDialogueWidgets;
 class MDLineEdit;
 class MDComboBox;
+class MDAddressEdit;
+class MDPlainTextEdit;
 class QWidget;
 class QString;
 
-#include <QObject>
-
-class PartnerWidgets : public QObject
+class PartnerWidgets : public MDGroupedInputWidgets
 {
     Q_OBJECT
 
 public:
-    PartnerWidgets(const QString &, const QString &, QWidget *);
+    PartnerWidgets(const QString &partner_uuid, const QString &partner_name, const QString &partner_id, QWidget *md);
 
-    MDLineEdit *partnerIdWidget() { return partner_id_le; }
-    MDLineEdit *partnerNameWidget() { return partner_name_le; }
-    MDComboBox *partnersWidget() { return partners_cb; }
+    void addToEditDialogue(EditDialogueWidgets &);
+    void save();
 
 private slots:
     void partnerChanged(int);
 
 private:
+    QList<MDAbstractInputWidget *> input_widgets;
     MDLineEdit *partner_id_le;
     MDLineEdit *partner_name_le;
+    MDLineEdit *company_vatin_le;
+    MDAddressEdit *address_ae;
+    MDLineEdit *mail_le;
+    MDLineEdit *phone_le;
+    MDPlainTextEdit *notes_pte;
     MDComboBox *partners_cb;
 };
 

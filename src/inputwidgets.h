@@ -150,6 +150,8 @@ public:
     bool skipSave() const { return skip_save; }
     void setSkipSave(bool skip) { skip_save = skip; }
 
+    virtual void save();
+
     void setVisible(bool visible) {
         iw_label->setVisible(visible);
         iw_widget->setVisible(visible);

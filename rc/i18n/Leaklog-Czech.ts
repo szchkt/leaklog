@@ -495,6 +495,69 @@
     </message>
 </context>
 <context>
+    <name>BusinessPartner</name>
+    <message>
+        <source>Business Partner</source>
+        <translation>Obchodní partner</translation>
+    </message>
+    <message>
+        <source>Name:</source>
+        <translation>Název:</translation>
+    </message>
+    <message>
+        <source>ID:</source>
+        <translation>IČO:</translation>
+    </message>
+    <message>
+        <source>VAT ID:</source>
+        <translation>DIČ:</translation>
+    </message>
+    <message>
+        <source>Address:</source>
+        <translation>Adresa:</translation>
+    </message>
+    <message>
+        <source>E-mail:</source>
+        <translation>E-mail:</translation>
+    </message>
+    <message>
+        <source>Phone:</source>
+        <translation>Telefon:</translation>
+    </message>
+    <message>
+        <source>Notes:</source>
+        <translation>Poznámky:</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation>Název</translation>
+    </message>
+    <message>
+        <source>ID</source>
+        <translation>IČO</translation>
+    </message>
+    <message>
+        <source>VAT ID</source>
+        <translation>DIČ</translation>
+    </message>
+    <message>
+        <source>Address</source>
+        <translation>Adresa</translation>
+    </message>
+    <message>
+        <source>E-mail</source>
+        <translation>E-mail</translation>
+    </message>
+    <message>
+        <source>Phone</source>
+        <translation>Telefon</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Poznámky</translation>
+    </message>
+</context>
+<context>
     <name>Circuit</name>
     <message>
         <source>ID:</source>
@@ -4636,8 +4699,8 @@ Pro odstranění všech údajů o servisní organizaci „%1“ napište ODSTRAN
         <translation>Obchodní partner:</translation>
     </message>
     <message>
-        <source>Business partner (ID):</source>
-        <translation>IČO obchodního partnera:</translation>
+        <source>New Partner</source>
+        <translation>Nový partner</translation>
     </message>
 </context>
 <context>

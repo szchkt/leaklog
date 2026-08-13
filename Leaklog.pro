@@ -44,6 +44,7 @@ HEADERS       += src/aboutwidget.h \
                  src/mainwindowsettings.h \
                  src/migrations.h \
                  src/models/servicecompany.h \
+                 src/models/businesspartner.h \
                  src/models/customer.h \
                  src/models/person.h \
                  src/models/circuit.h \
@@ -162,6 +163,7 @@ SOURCES       += src/aboutwidget.cpp \
                  src/mainwindowsettings.cpp \
                  src/migrations.cpp \
                  src/models/servicecompany.cpp \
+                 src/models/businesspartner.cpp \
                  src/models/customer.cpp \
                  src/models/person.cpp \
                  src/models/circuit.cpp \

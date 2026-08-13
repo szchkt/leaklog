@@ -494,6 +494,69 @@
     </message>
 </context>
 <context>
+    <name>BusinessPartner</name>
+    <message>
+        <source>Business Partner</source>
+        <translation>Üzleti partner</translation>
+    </message>
+    <message>
+        <source>Name:</source>
+        <translation>Név:</translation>
+    </message>
+    <message>
+        <source>ID:</source>
+        <translation>Azonosító:</translation>
+    </message>
+    <message>
+        <source>VAT ID:</source>
+        <translation>Adószám:</translation>
+    </message>
+    <message>
+        <source>Address:</source>
+        <translation>Cím:</translation>
+    </message>
+    <message>
+        <source>E-mail:</source>
+        <translation>E-mail:</translation>
+    </message>
+    <message>
+        <source>Phone:</source>
+        <translation>Tel:</translation>
+    </message>
+    <message>
+        <source>Notes:</source>
+        <translation>Megjegyzések:</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation>Név</translation>
+    </message>
+    <message>
+        <source>ID</source>
+        <translation>Azonosító</translation>
+    </message>
+    <message>
+        <source>VAT ID</source>
+        <translation>Adószám</translation>
+    </message>
+    <message>
+        <source>Address</source>
+        <translation>Cím</translation>
+    </message>
+    <message>
+        <source>E-mail</source>
+        <translation>E-mail</translation>
+    </message>
+    <message>
+        <source>Phone</source>
+        <translation>Tel</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Megjegyzések</translation>
+    </message>
+</context>
+<context>
     <name>Circuit</name>
     <message>
         <source>Hermetically sealed</source>
@@ -4618,8 +4681,8 @@ No. 2024/573</source>
         <translation>Üzleti partner:</translation>
     </message>
     <message>
-        <source>Business partner (ID):</source>
-        <translation>Üzleti partner azonosító:</translation>
+        <source>New Partner</source>
+        <translation>Új partner</translation>
     </message>
 </context>
 <context>

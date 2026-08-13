@@ -115,6 +115,10 @@ QPalette MDAbstractInputWidget::paletteForColour(const QString &colour)
     return palette;
 }
 
+void MDAbstractInputWidget::save()
+{
+}
+
 MDNullableInputWidget::MDNullableInputWidget(const QString &id, const QString &labeltext, QWidget *parent, QWidget *widget):
 MDAbstractInputWidget(id, widget)
 {

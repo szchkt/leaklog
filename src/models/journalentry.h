@@ -29,7 +29,7 @@ private:
 
 public:
     enum {
-        Version = 3,
+        Version = 4,
     };
 
     enum Operation {
@@ -43,6 +43,7 @@ public:
 
     static int tableIDForName(const QString &name);
     static QString tableNameForID(int id, const QString &default_value = QString());
+    static int versionForTableID(int table_id);
 
     static int columnIDForName(const QString &name);
     static QString columnNameForID(int id, const QString &default_value = QString());

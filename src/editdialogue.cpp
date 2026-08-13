@@ -92,6 +92,10 @@ bool EditDialogue::save(bool call_accept)
 
     md_undo_stack->savepoint();
 
+    for (QList<MDAbstractInputWidget *>::const_iterator i = md_inputwidgets.constBegin(); i != md_inputwidgets.constEnd(); ++i) {
+        (*i)->save();
+    }
+
     md_record->save(true);
 
     if (call_accept) accept();

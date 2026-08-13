@@ -21,6 +21,7 @@
 #define RECORDS_H
 
 #include "servicecompany.h"
+#include "businesspartner.h"
 #include "customer.h"
 #include "person.h"
 #include "circuit.h"

@@ -494,6 +494,69 @@
     </message>
 </context>
 <context>
+    <name>BusinessPartner</name>
+    <message>
+        <source>Business Partner</source>
+        <translation>Poslovni partner</translation>
+    </message>
+    <message>
+        <source>Name:</source>
+        <translation>Naziv:</translation>
+    </message>
+    <message>
+        <source>ID:</source>
+        <translation>ID:</translation>
+    </message>
+    <message>
+        <source>VAT ID:</source>
+        <translation>PIB:</translation>
+    </message>
+    <message>
+        <source>Address:</source>
+        <translation>Adresa:</translation>
+    </message>
+    <message>
+        <source>E-mail:</source>
+        <translation>E-mail:</translation>
+    </message>
+    <message>
+        <source>Phone:</source>
+        <translation>Telefon:</translation>
+    </message>
+    <message>
+        <source>Notes:</source>
+        <translation>Beleške:</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation>Naziv</translation>
+    </message>
+    <message>
+        <source>ID</source>
+        <translation>ID</translation>
+    </message>
+    <message>
+        <source>VAT ID</source>
+        <translation>PIB</translation>
+    </message>
+    <message>
+        <source>Address</source>
+        <translation>Adresa</translation>
+    </message>
+    <message>
+        <source>E-mail</source>
+        <translation>E-mail</translation>
+    </message>
+    <message>
+        <source>Phone</source>
+        <translation>Telefon</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Beleške</translation>
+    </message>
+</context>
+<context>
     <name>Circuit</name>
     <message>
         <source>ID:</source>
@@ -4629,8 +4692,8 @@ Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</t
         <translation>Poslovni partner:</translation>
     </message>
     <message>
-        <source>Business partner (ID):</source>
-        <translation>ID partnera:</translation>
+        <source>New Partner</source>
+        <translation>Novi partner</translation>
     </message>
 </context>
 <context>

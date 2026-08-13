@@ -494,6 +494,69 @@
     </message>
 </context>
 <context>
+    <name>BusinessPartner</name>
+    <message>
+        <source>Business Partner</source>
+        <translation>Partner biznesowy</translation>
+    </message>
+    <message>
+        <source>Name:</source>
+        <translation>Nazwa:</translation>
+    </message>
+    <message>
+        <source>ID:</source>
+        <translation>NIP:</translation>
+    </message>
+    <message>
+        <source>VAT ID:</source>
+        <translation>VAT ID:</translation>
+    </message>
+    <message>
+        <source>Address:</source>
+        <translation>Adres:</translation>
+    </message>
+    <message>
+        <source>E-mail:</source>
+        <translation>E-mail:</translation>
+    </message>
+    <message>
+        <source>Phone:</source>
+        <translation>Telefon:</translation>
+    </message>
+    <message>
+        <source>Notes:</source>
+        <translation>Notatki:</translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation>Nazwa</translation>
+    </message>
+    <message>
+        <source>ID</source>
+        <translation>NIP</translation>
+    </message>
+    <message>
+        <source>VAT ID</source>
+        <translation>VAT ID</translation>
+    </message>
+    <message>
+        <source>Address</source>
+        <translation>Adres</translation>
+    </message>
+    <message>
+        <source>E-mail</source>
+        <translation>E-mail</translation>
+    </message>
+    <message>
+        <source>Phone</source>
+        <translation>Telefon</translation>
+    </message>
+    <message>
+        <source>Notes</source>
+        <translation>Notatki</translation>
+    </message>
+</context>
+<context>
     <name>Circuit</name>
     <message>
         <source>Hermetically sealed</source>
@@ -4625,8 +4688,8 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
         <translation>Partner biznesowy:</translation>
     </message>
     <message>
-        <source>Business partner (ID):</source>
-        <translation>Partner biznesowy (NIP):</translation>
+        <source>New Partner</source>
+        <translation>Nowy partner</translation>
     </message>
 </context>
 <context>

@@ -49,10 +49,8 @@ void RefrigerantRecord::initEditDialogue(EditDialogueWidgets *md)
     }
     md->addInputWidget(date_edit);
 
-    PartnerWidgets *partner_widgets = new PartnerWidgets(partner(), partnerID(), md->widget());
-    md->addInputWidget(partner_widgets->partnersWidget());
-    md->addInputWidget(partner_widgets->partnerNameWidget());
-    md->addInputWidget(partner_widgets->partnerIdWidget());
+    PartnerWidgets *partner_widgets = new PartnerWidgets(partnerUUID(), partner(), partnerID(), md->widget());
+    partner_widgets->addToEditDialogue(*md);
     md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), refrigerant(), refrigerants));
     md->addInputWidget(new MDLineEdit("batch_number", tr("Batch number:"), md->widget(), batchNumber()));
     md->addInputWidget(new MDDoubleSpinBox("purchased", tr("Purchased (new):"), md->widget(), 0.0, 999999999.9, purchased(), QApplication::translate("Units", "kg")));
@@ -93,6 +91,7 @@ public:
     RefrigerantManagementColumns() {
         columns << Column("uuid", "UUID PRIMARY KEY");
         columns << Column("service_company_uuid", "UUID");
+        columns << Column("partner_uuid", "UUID");
         columns << Column("date", "TEXT");
         columns << Column("partner", "TEXT");
         columns << Column("partner_id", "TEXT");

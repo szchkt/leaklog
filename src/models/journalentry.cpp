@@ -55,6 +55,7 @@ public:
         table_names.insert(10, "service_companies");
         table_names.insert(11, "refrigerant_management");
         table_names.insert(12, "inspectors");
+        table_names.insert(13, "partners");
         table_names.insert(20, "customers");
         table_names.insert(21, "persons");
         table_names.insert(30, "repairs");
@@ -96,6 +97,15 @@ int JournalEntry::tableIDForName(const QString &name)
 QString JournalEntry::tableNameForID(int id, const QString &default_value)
 {
     return table_ids.table_names.value(id, default_value);
+}
+
+int JournalEntry::versionForTableID(int table_id)
+{
+    switch (table_id) {
+        case 13:
+            return 4;
+    }
+    return 0;
 }
 
 static class ColumnIDs
@@ -276,6 +286,9 @@ public:
         column_names.insert(169, "refr_add_am_rege");
         // Version 4
         column_names.insert(170, "stamp_file_uuid");
+        column_names.insert(171, "partner_uuid");
+        column_names.insert(172, "company_id");
+        column_names.insert(173, "company_vatin");
 
         QMapIterator<int, QString> i(column_names);
         while (i.hasNext()) { i.next();
@@ -324,7 +337,11 @@ bool JournalEntry::shouldJournalUpdateOnInsertionForColumnID(int column_id, cons
         case 169:
             return value.toDouble() != 0.0;
         case 170:
+        case 171:
             return !value.toString().isEmpty();
+        case 172:
+        case 173:
+            return false;
     }
     return column_id >= 162;
 }
