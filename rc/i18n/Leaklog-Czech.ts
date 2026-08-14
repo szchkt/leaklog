@@ -525,6 +525,10 @@
         <translation>Telefon:</translation>
     </message>
     <message>
+        <source>Website:</source>
+        <translation>Webová stránka:</translation>
+    </message>
+    <message>
         <source>Notes:</source>
         <translation>Poznámky:</translation>
     </message>
@@ -551,6 +555,10 @@
     <message>
         <source>Phone</source>
         <translation>Telefon</translation>
+    </message>
+    <message>
+        <source>Website</source>
+        <translation>Webová stránka</translation>
     </message>
     <message>
         <source>Notes</source>

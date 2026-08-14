@@ -49,8 +49,9 @@ private:
     MDLineEdit *partner_name_le;
     MDLineEdit *company_vatin_le;
     MDAddressEdit *address_ae;
-    MDLineEdit *mail_le;
     MDLineEdit *phone_le;
+    MDLineEdit *mail_le;
+    MDLineEdit *website_le;
     MDPlainTextEdit *notes_pte;
     MDComboBox *partners_cb;
 };

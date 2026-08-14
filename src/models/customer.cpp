@@ -36,8 +36,8 @@ void Customer::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDCompanyIDEdit("id", tr("ID:"), md->widget(), companyID()));
     md->addInputWidget(new MDLineEdit("company", tr("Company:"), md->widget(), companyName()));
     md->addInputWidget(new MDAddressEdit("address", tr("Address:"), md->widget(), stringValue("address")));
-    md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), mail()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), phone()));
+    md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), mail()));
     md->addInputWidget(new MDLineEdit("website_url", tr("Website:"), md->widget(), websiteURL()));
     md->addInputWidget(new MDLineEdit("maps_url", tr("Link to maps:"), md->widget(), mapsURL()));
     MDPlainTextEdit *notes = new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), this->notes());

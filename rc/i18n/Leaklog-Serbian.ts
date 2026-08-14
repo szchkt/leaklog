@@ -524,6 +524,10 @@
         <translation>Telefon:</translation>
     </message>
     <message>
+        <source>Website:</source>
+        <translation>Websajt:</translation>
+    </message>
+    <message>
         <source>Notes:</source>
         <translation>Beleške:</translation>
     </message>
@@ -550,6 +554,10 @@
     <message>
         <source>Phone</source>
         <translation>Telefon</translation>
+    </message>
+    <message>
+        <source>Website</source>
+        <translation>Websajt</translation>
     </message>
     <message>
         <source>Notes</source>

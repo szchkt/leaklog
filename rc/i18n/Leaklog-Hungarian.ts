@@ -524,6 +524,10 @@
         <translation>Tel:</translation>
     </message>
     <message>
+        <source>Website:</source>
+        <translation>Weboldal:</translation>
+    </message>
+    <message>
         <source>Notes:</source>
         <translation>Megjegyzések:</translation>
     </message>
@@ -550,6 +554,10 @@
     <message>
         <source>Phone</source>
         <translation>Tel</translation>
+    </message>
+    <message>
+        <source>Website</source>
+        <translation>Weboldal</translation>
     </message>
     <message>
         <source>Notes</source>

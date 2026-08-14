@@ -39,10 +39,12 @@ public:
     inline void setCompanyVATIN(const QString &value) { setValue("company_vatin", value); }
     inline QString address() { return stringValue("address"); }
     inline void setAddress(const QString &value) { setValue("address", value); }
-    inline QString mail() { return stringValue("mail"); }
-    inline void setMail(const QString &value) { setValue("mail", value); }
     inline QString phone() { return stringValue("phone"); }
     inline void setPhone(const QString &value) { setValue("phone", value); }
+    inline QString mail() { return stringValue("mail"); }
+    inline void setMail(const QString &value) { setValue("mail", value); }
+    inline QString website() { return stringValue("website"); }
+    inline void setWebsite(const QString &value) { setValue("website", value); }
     inline QString notes() { return stringValue("notes"); }
     inline void setNotes(const QString &value) { setValue("notes", value); }
     static QString tableName();

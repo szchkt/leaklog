@@ -35,8 +35,9 @@ void BusinessPartner::initEditDialogue(EditDialogueWidgets *md)
     md->addInputWidget(new MDCompanyIDEdit("company_id", tr("ID:"), md->widget(), companyID()));
     md->addInputWidget(new MDLineEdit("company_vatin", tr("VAT ID:"), md->widget(), companyVATIN()));
     md->addInputWidget(new MDAddressEdit("address", tr("Address:"), md->widget(), address()));
-    md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), mail()));
     md->addInputWidget(new MDLineEdit("phone", tr("Phone:"), md->widget(), phone()));
+    md->addInputWidget(new MDLineEdit("mail", tr("E-mail:"), md->widget(), mail()));
+    md->addInputWidget(new MDLineEdit("website", tr("Website:"), md->widget(), website()));
     md->addInputWidget(new MDPlainTextEdit("notes", tr("Notes:"), md->widget(), notes()));
 }
 
@@ -54,8 +55,9 @@ public:
         columns << Column("company_id", "TEXT");
         columns << Column("company_vatin", "TEXT");
         columns << Column("address", "TEXT");
-        columns << Column("mail", "TEXT");
         columns << Column("phone", "TEXT");
+        columns << Column("mail", "TEXT");
+        columns << Column("website", "TEXT");
         columns << Column("notes", "TEXT");
         columns << Column("date_updated", "TEXT");
         columns << Column("updated_by", "TEXT");
@@ -78,8 +80,9 @@ public:
         dict.insert("company_id", QApplication::translate("BusinessPartner", "ID"));
         dict.insert("company_vatin", QApplication::translate("BusinessPartner", "VAT ID"));
         dict.insert("address", QApplication::translate("BusinessPartner", "Address"));
-        dict.insert("mail", QApplication::translate("BusinessPartner", "E-mail"));
         dict.insert("phone", QApplication::translate("BusinessPartner", "Phone"));
+        dict.insert("mail", QApplication::translate("BusinessPartner", "E-mail"));
+        dict.insert("website", QApplication::translate("BusinessPartner", "Website"));
         dict.insert("notes", QApplication::translate("BusinessPartner", "Notes"));
     }
 

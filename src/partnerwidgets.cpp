@@ -29,7 +29,7 @@
 PartnerWidgets::PartnerWidgets(const QString &partner_uuid, const QString &partner_name, const QString &partner_id, QWidget *md)
     : MDGroupedInputWidgets(tr("Business partner:"), md)
 {
-    setRowSpan(8);
+    setRowSpan(9);
 
     partner_name_le = new MDLineEdit("partner", QApplication::translate("BusinessPartner", "Name:"), this, partner_name);
     partner_id_le = new MDCompanyIDEdit("partner_id", QApplication::translate("BusinessPartner", "ID:"), this, partner_id);
@@ -38,10 +38,12 @@ PartnerWidgets::PartnerWidgets(const QString &partner_uuid, const QString &partn
     company_vatin_le->setSkipSave(true);
     address_ae = new MDAddressEdit("address", QApplication::translate("BusinessPartner", "Address:"), this, QString());
     address_ae->setSkipSave(true);
-    mail_le = new MDLineEdit("mail", QApplication::translate("BusinessPartner", "E-mail:"), this, QString());
-    mail_le->setSkipSave(true);
     phone_le = new MDLineEdit("phone", QApplication::translate("BusinessPartner", "Phone:"), this, QString());
     phone_le->setSkipSave(true);
+    mail_le = new MDLineEdit("mail", QApplication::translate("BusinessPartner", "E-mail:"), this, QString());
+    mail_le->setSkipSave(true);
+    website_le = new MDLineEdit("website", QApplication::translate("BusinessPartner", "Website:"), this, QString());
+    website_le->setSkipSave(true);
     notes_pte = new MDPlainTextEdit("notes", QApplication::translate("BusinessPartner", "Notes:"), this, QString());
     notes_pte->setSkipSave(true);
 
@@ -55,7 +57,7 @@ PartnerWidgets::PartnerWidgets(const QString &partner_uuid, const QString &partn
     partners_cb->setMaximumWidth(300);
     QObject::connect(partners_cb, SIGNAL(currentIndexChanged(int)), this, SLOT(partnerChanged(int)));
 
-    input_widgets << partners_cb << partner_name_le << partner_id_le << company_vatin_le << address_ae << mail_le << phone_le << notes_pte;
+    input_widgets << partners_cb << partner_name_le << partner_id_le << company_vatin_le << address_ae << phone_le << mail_le << website_le << notes_pte;
     foreach (MDAbstractInputWidget *widget, input_widgets) {
         widget->setRowSpan(0);
         addWidget(widget);
@@ -100,7 +102,8 @@ void PartnerWidgets::partnerChanged(int)
     partner_id_le->setText(partner.companyID());
     company_vatin_le->setText(partner.companyVATIN());
     address_ae->setVariantValue(partner.address());
-    mail_le->setText(partner.mail());
     phone_le->setText(partner.phone());
+    mail_le->setText(partner.mail());
+    website_le->setText(partner.website());
     notes_pte->setVariantValue(partner.notes());
 }
