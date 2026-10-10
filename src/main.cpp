@@ -36,7 +36,10 @@ int main(int argc, char *argv[])
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     QWebEngineUrlScheme::registerScheme(QWebEngineUrlScheme("dbfile"));
-    QWebEngineUrlScheme::registerScheme(QWebEngineUrlScheme("view"));
+    QWebEngineUrlScheme view_scheme("view");
+    // The rendered views load their stylesheets, scripts and images from qrc:.
+    view_scheme.setFlags(QWebEngineUrlScheme::LocalAccessAllowed);
+    QWebEngineUrlScheme::registerScheme(view_scheme);
 #endif
 
     MTApplication app(argc, argv);
