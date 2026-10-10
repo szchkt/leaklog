@@ -26,10 +26,15 @@
 #include <QBuffer>
 #include <QDesktopServices>
 #include <QApplication>
+#include <QShortcut>
 
 AboutWidget::AboutWidget()
 {
     setupUi(this);
+
+    // The web view consumes Escape before it can reach QDialog.
+    QShortcut *close_shortcut = new QShortcut(QKeySequence(Qt::Key_Escape), this);
+    QObject::connect(close_shortcut, SIGNAL(activated()), this, SLOT(reject()));
 
     MTWebPage *page = new MTWebPage(webv_about);
     page->setLinkDelegationPolicy(MTWebPage::DelegateAllLinks);

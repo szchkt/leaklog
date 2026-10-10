@@ -2,7 +2,7 @@
 <ui version="4.0">
  <author>Matus &amp; Michal Tomlein</author>
  <class>AboutWidget</class>
- <widget class="QWidget" name="AboutWidget">
+ <widget class="QDialog" name="AboutWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -216,6 +216,9 @@
         <property name="text">
          <string>About Qt</string>
         </property>
+        <property name="autoDefault">
+         <bool>false</bool>
+        </property>
        </widget>
       </item>
       <item>
@@ -226,12 +229,18 @@
         <property name="checkable">
          <bool>true</bool>
         </property>
+        <property name="autoDefault">
+         <bool>false</bool>
+        </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="btn_licence">
         <property name="text">
          <string>Licence</string>
+        </property>
+        <property name="autoDefault">
+         <bool>false</bool>
         </property>
        </widget>
       </item>

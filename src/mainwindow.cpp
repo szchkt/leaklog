@@ -47,6 +47,7 @@
 #include <QPushButton>
 #include <QCheckBox>
 #include <QRadioButton>
+#include <QDialog>
 #include <QDialogButtonBox>
 #include <QPrintDialog>
 #include <QPrintPreviewDialog>
@@ -1489,7 +1490,7 @@ void MainWindow::saveSettings()
 
 void MainWindow::changeLanguage()
 {
-    QWidget *w_lang = new QWidget(this, Qt::Dialog);
+    QDialog *w_lang = new QDialog(this);
     w_lang->setWindowModality(Qt::WindowModal);
     w_lang->setAttribute(Qt::WA_DeleteOnClose);
 #ifdef Q_OS_MAC
@@ -1511,8 +1512,9 @@ void MainWindow::changeLanguage()
     }
     glayout_lang->addWidget(cb_lang, 1, 0);
     QDialogButtonBox *bb_lang = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, w_lang);
+    bb_lang->button(QDialogButtonBox::Ok)->setDefault(true);
     QObject::connect(bb_lang, SIGNAL(accepted()), this, SLOT(languageChanged()));
-    QObject::connect(bb_lang, SIGNAL(rejected()), w_lang, SLOT(close()));
+    QObject::connect(bb_lang, SIGNAL(rejected()), w_lang, SLOT(reject()));
     glayout_lang->addWidget(bb_lang, 2, 0);
     w_lang->show();
 }
@@ -1535,7 +1537,7 @@ void MainWindow::languageChanged()
 
 void MainWindow::logIn()
 {
-    QWidget *w = new QWidget(this, Qt::Dialog);
+    QDialog *w = new QDialog(this);
     w->setWindowModality(Qt::WindowModal);
     w->setAttribute(Qt::WA_DeleteOnClose);
 #ifdef Q_OS_MAC
@@ -1564,6 +1566,7 @@ void MainWindow::logIn()
 
     QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Reset | QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, w);
     bb->button(QDialogButtonBox::Ok)->setText(tr("Log In"));
+    bb->button(QDialogButtonBox::Ok)->setDefault(true);
     if (authenticator->token().isEmpty()) {
         bb->button(QDialogButtonBox::Reset)->setText(tr("Register"));
         QObject::connect(bb, SIGNAL(clicked(QAbstractButton *)), this, SLOT(doSignUp(QAbstractButton *)));
@@ -1572,7 +1575,7 @@ void MainWindow::logIn()
         QObject::connect(bb, SIGNAL(clicked(QAbstractButton *)), this, SLOT(doLogOut(QAbstractButton *)));
     }
     QObject::connect(bb, SIGNAL(accepted()), this, SLOT(doLogIn()));
-    QObject::connect(bb, SIGNAL(rejected()), w, SLOT(close()));
+    QObject::connect(bb, SIGNAL(rejected()), w, SLOT(reject()));
     layout->addWidget(bb, 3, 0, 1, 2);
 
     w->show();

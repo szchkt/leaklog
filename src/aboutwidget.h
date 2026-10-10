@@ -22,7 +22,7 @@
 
 #include "ui_aboutwidget.h"
 
-class AboutWidget : public QWidget, private Ui::AboutWidget
+class AboutWidget : public QDialog, private Ui::AboutWidget
 {
     Q_OBJECT
 
