@@ -565,6 +565,13 @@
     </message>
 </context>
 <context>
+    <name>BusinessPartnersView</name>
+    <message>
+        <source>Business Partners</source>
+        <translation>Partnerzy biznesowi</translation>
+    </message>
+</context>
+<context>
     <name>Circuit</name>
     <message>
         <source>Hermetically sealed</source>
@@ -4550,6 +4557,10 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
         <source>Print Service Company or Inspector Stamp</source>
         <translation>Drukuj pieczątkę firmy serwisowej lub kontrolera</translation>
     </message>
+    <message>
+        <source>Edit business partner %1</source>
+        <translation>Edytuj partnera biznesowego %1</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -4833,6 +4844,10 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
     <message>
         <source>Remove service company</source>
         <translation>Usuń firmę serwisową</translation>
+    </message>
+    <message>
+        <source>Edit business partner</source>
+        <translation>Edytuj partnera biznesowego</translation>
     </message>
 </context>
 <context>
@@ -6421,6 +6436,10 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
     <message>
         <source>Circuit Unit Types</source>
         <translation>Typy jednostki obiegu</translation>
+    </message>
+    <message>
+        <source>Business Partners</source>
+        <translation>Partnerzy biznesowi</translation>
     </message>
 </context>
 <context>

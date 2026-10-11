@@ -107,6 +107,7 @@ public slots:
     void removeServiceCompany();
     void addRefrigerantRecord();
     void editRefrigerantRecord(const QString &uuid);
+    void editBusinessPartner(const QString &uuid);
 
     void addCustomer();
     void editCustomer();

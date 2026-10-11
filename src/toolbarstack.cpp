@@ -224,6 +224,10 @@ void ToolBarStack::viewChanged(View::ViewID view)
             cb_filter_column->addItem(QApplication::translate("Customer", "Phone"), "phone");
             cb_filter_column->addItem(QApplication::translate("Customer", "Notes"), "notes");
             break;
+        case View::BusinessPartners:
+            for (int n = 0; n < BusinessPartner::attributes().count(); ++n)
+                cb_filter_column->addItem(BusinessPartner::attributes().value(n), BusinessPartner::attributes().key(n));
+            break;
         case View::Circuits:
             updateView_ListOfCircuits_CircuitAttributes:
             cb_filter_column->addItem(QApplication::translate("Circuit", "ID"), "id");

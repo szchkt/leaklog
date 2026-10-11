@@ -566,6 +566,13 @@
     </message>
 </context>
 <context>
+    <name>BusinessPartnersView</name>
+    <message>
+        <source>Business Partners</source>
+        <translation>Obchodní partneři</translation>
+    </message>
+</context>
+<context>
     <name>Circuit</name>
     <message>
         <source>ID:</source>
@@ -4561,6 +4568,10 @@ Pro odstranění všech údajů o servisní organizaci „%1“ napište ODSTRAN
         <source>Print Service Company or Inspector Stamp</source>
         <translation>Tisknout razítko servisní organizace nebo certifikované osoby</translation>
     </message>
+    <message>
+        <source>Edit business partner %1</source>
+        <translation>Upravit obchodního partnera %1</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -4844,6 +4855,10 @@ Pro odstranění všech údajů o servisní organizaci „%1“ napište ODSTRAN
     <message>
         <source>Remove service company</source>
         <translation>Odstranit servisní organizaci</translation>
+    </message>
+    <message>
+        <source>Edit business partner</source>
+        <translation>Upravit obchodního partnera</translation>
     </message>
 </context>
 <context>
@@ -6432,6 +6447,10 @@ Pro odstranění všech údajů o servisní organizaci „%1“ napište ODSTRAN
     <message>
         <source>Inspection</source>
         <translation>Kontrola</translation>
+    </message>
+    <message>
+        <source>Business Partners</source>
+        <translation>Obchodní partneři</translation>
     </message>
 </context>
 <context>

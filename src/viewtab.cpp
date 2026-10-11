@@ -23,6 +23,7 @@
 #include "mainwindow.h"
 #include "storeview.h"
 #include "refrigerantmanagementview.h"
+#include "businesspartnersview.h"
 #include "customersview.h"
 #include "circuitsview.h"
 #include "inspectionsview.h"
@@ -174,6 +175,7 @@ void ViewTab::createViewItems()
 {
     views[View::Store] = new StoreView(this);
     views[View::RefrigerantManagement] = new RefrigerantManagementView(this);
+    views[View::BusinessPartners] = new BusinessPartnersView(this);
     views[View::Customers] = new CustomersView(this);
     views[View::Circuits] = new CircuitsView(this);
     views[View::Inspections] = new InspectionsView(this);
@@ -209,6 +211,12 @@ void ViewTab::createViewItems()
     item_refrigerant_management->setData(0, Qt::UserRole, View::RefrigerantManagement);
     item_refrigerant_management->setIcon(0, QIcon(":/images/images/management_view.png"));
     view_items[View::RefrigerantManagement] = item_refrigerant_management;
+
+    QTreeWidgetItem *item_business_partners = new QTreeWidgetItem(group_service_company);
+    item_business_partners->setText(0, tr("Business Partners"));
+    item_business_partners->setData(0, Qt::UserRole, View::BusinessPartners);
+    item_business_partners->setIcon(0, QIcon(":/images/images/business_partners.png"));
+    view_items[View::BusinessPartners] = item_business_partners;
 
     QTreeWidgetItem *item_leakages = new QTreeWidgetItem(group_service_company);
     item_leakages->setText(0, tr("Leakages by Application"));
@@ -794,6 +802,11 @@ void ViewTab::executeLink(Link *link)
     case LinkParser::RefrigerantRecord:
         if (link->action() == Link::Edit)
             parentWindow()->editRefrigerantRecord(link->idValue("refrigerantrecord"));
+        break;
+
+    case LinkParser::BusinessPartner:
+        if (link->action() == Link::Edit)
+            parentWindow()->editBusinessPartner(link->idValue("businesspartner"));
         break;
 
     case LinkParser::LeakagesByApplication:

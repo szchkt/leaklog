@@ -59,7 +59,8 @@ public:
         AssemblyRecordItemType = 1601,
         AssemblyRecordCategory = 1602,
         AllCircuitUnitTypes = 1800,
-        CircuitUnitType = 1801
+        CircuitUnitType = 1801,
+        BusinessPartner = 1900
     };
 
     LinkParser();

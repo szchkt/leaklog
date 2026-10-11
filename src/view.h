@@ -59,6 +59,7 @@ public:
         AssemblyRecordTypes,          AssemblyRecordsRelated = AssemblyRecordTypes,
         AssemblyRecordItems,          AssemblyRecordsRelatedEnd = AssemblyRecordItems,
         CircuitUnitTypes,
+        BusinessPartners,
         ViewCount
     };
 

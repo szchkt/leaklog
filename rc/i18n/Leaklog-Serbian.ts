@@ -565,6 +565,13 @@
     </message>
 </context>
 <context>
+    <name>BusinessPartnersView</name>
+    <message>
+        <source>Business Partners</source>
+        <translation>Poslovni partneri</translation>
+    </message>
+</context>
+<context>
     <name>Circuit</name>
     <message>
         <source>ID:</source>
@@ -4554,6 +4561,10 @@ Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</t
         <source>Print Service Company or Inspector Stamp</source>
         <translation>Odštampaj pečat servisne kompanije ili kontrolora</translation>
     </message>
+    <message>
+        <source>Edit business partner %1</source>
+        <translation>Uredi poslovnog partnera %1</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -4837,6 +4848,10 @@ Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</t
     <message>
         <source>Remove service company</source>
         <translation>Ukloni servisnu kompaniju</translation>
+    </message>
+    <message>
+        <source>Edit business partner</source>
+        <translation>Uredi poslovnog partnera</translation>
     </message>
 </context>
 <context>
@@ -6425,6 +6440,10 @@ Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</t
     <message>
         <source>Inspection</source>
         <translation>Kontrola</translation>
+    </message>
+    <message>
+        <source>Business Partners</source>
+        <translation>Poslovni partneri</translation>
     </message>
 </context>
 <context>

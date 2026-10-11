@@ -565,6 +565,13 @@
     </message>
 </context>
 <context>
+    <name>BusinessPartnersView</name>
+    <message>
+        <source>Business Partners</source>
+        <translation>Üzleti partnerek</translation>
+    </message>
+</context>
+<context>
     <name>Circuit</name>
     <message>
         <source>Hermetically sealed</source>
@@ -3383,7 +3390,7 @@
     </message>
     <message>
         <source>Edit record of refrigerant management %1</source>
-        <translation>Hűtőközeg-kezelési bejegyzés szerkesztése %1</translation>
+        <translation>%1 hűtőközeg-kezelési bejegyzés szerkesztése</translation>
     </message>
     <message>
         <source>Add customer</source>
@@ -3391,11 +3398,11 @@
     </message>
     <message>
         <source>Edit customer %1%2</source>
-        <translation>Ügyfél szerkesztése %1%2</translation>
+        <translation>%1%2 ügyfél szerkesztése</translation>
     </message>
     <message>
         <source>Duplicate customer %1%2</source>
-        <translation>Ügyfél duplikálása %1%2</translation>
+        <translation>%1%2 ügyfél duplikálása</translation>
     </message>
     <message>
         <source>Remove customer - Leaklog</source>
@@ -3409,7 +3416,7 @@ A &quot;%1&quot; ügyfél összes adatának eltávolításához gépelje be ELT�
     </message>
     <message>
         <source>Remove customer %1%2</source>
-        <translation>Ügyfél eltávolítása %1%2</translation>
+        <translation>%1%2 ügyfél eltávolítása</translation>
     </message>
     <message>
         <source>Decommission all circuits - Leaklog</source>
@@ -3437,11 +3444,11 @@ A &quot;%1&quot; ügyfél összes adatának eltávolításához gépelje be ELT�
     </message>
     <message>
         <source>Edit circuit %1 (%2)</source>
-        <translation>Hűtőkör szerkesztése %1 (%2)</translation>
+        <translation>%1 (%2) hűtőkör szerkesztése</translation>
     </message>
     <message>
         <source>Duplicate circuit %1 (%2)</source>
-        <translation>Hűtőkör duplikálása %1 (%2)</translation>
+        <translation>%1 (%2) hűtőkör duplikálása</translation>
     </message>
     <message>
         <source>Duplicate and decommission - Leaklog</source>
@@ -3473,7 +3480,7 @@ A &quot;%1&quot; ügyfél összes adatának eltávolításához gépelje be ELT�
     </message>
     <message>
         <source>Duplicate and decommission circuit %1 (%2)</source>
-        <translation>Hűtőkör duplikálása és eltávolítása %1 (%2)</translation>
+        <translation>%1 (%2) hűtőkör duplikálása és eltávolítása</translation>
     </message>
     <message>
         <source>Remove circuit - Leaklog</source>
@@ -3487,7 +3494,7 @@ A &quot;%1&quot; hűtőkör összes adatának eltávolításához gépelje be EL
     </message>
     <message>
         <source>Remove circuit %1 (%2)</source>
-        <translation>Hűtőkör eltávolítása %1 (%2)</translation>
+        <translation>%1 (%2) hűtőkör eltávolítása</translation>
     </message>
     <message>
         <source>Add inspection</source>
@@ -3495,11 +3502,11 @@ A &quot;%1&quot; hűtőkör összes adatának eltávolításához gépelje be EL
     </message>
     <message>
         <source>Edit inspection %1 (%2, circuit %3)</source>
-        <translation>Felülvizsgálat szerkesztése %1 (%2, hűtőkör %3)</translation>
+        <translation>%1 felülvizsgálat szerkesztése (%2, %3 hűtőkör)</translation>
     </message>
     <message>
         <source>Duplicate inspection %1 (%2, circuit %3)</source>
-        <translation>Felülvizsgálat duplikálása %1 (%2, hűtőkör %3)</translation>
+        <translation>%1 felülvizsgálat duplikálása (%2, %3 hűtőkör)</translation>
     </message>
     <message>
         <source>Remove inspection - Leaklog</source>
@@ -3513,7 +3520,7 @@ A &quot;%1&quot; felülvizsgálat összes adatának eltávolításához gépelje
     </message>
     <message>
         <source>Remove inspection %1 (%2, circuit %3)</source>
-        <translation>Felülvizsgálat eltávolítása %1 (%2, hűtőkör %3)</translation>
+        <translation>%1 felülvizsgálat eltávolítása (%2, %3 hűtőkör)</translation>
     </message>
     <message>
         <source>Add repair</source>
@@ -3521,11 +3528,11 @@ A &quot;%1&quot; felülvizsgálat összes adatának eltávolításához gépelje
     </message>
     <message>
         <source>Edit repair %1%2</source>
-        <translation>Javítás szerkesztése %1%2</translation>
+        <translation>%1%2 javítás szerkesztése</translation>
     </message>
     <message>
         <source>Duplicate repair %1%2</source>
-        <translation>Javítás duplikálása %1%2</translation>
+        <translation>%1%2 javítás duplikálása</translation>
     </message>
     <message>
         <source>Remove repair - Leaklog</source>
@@ -3539,7 +3546,7 @@ A &quot;%1&quot; javítás összes adatának eltávolításához gépelje be ELT
     </message>
     <message>
         <source>Remove repair %1%2</source>
-        <translation>Javítás eltávolítása %1%2</translation>
+        <translation>%1%2 javítás eltávolítása</translation>
     </message>
     <message>
         <source>Add variable</source>
@@ -3547,7 +3554,7 @@ A &quot;%1&quot; javítás összes adatának eltávolításához gépelje be ELT
     </message>
     <message>
         <source>Edit variable %1</source>
-        <translation>Változó szerkesztése %1</translation>
+        <translation>%1 változó szerkesztése</translation>
     </message>
     <message>
         <source>Remove subvariable - Leaklog</source>
@@ -3565,11 +3572,11 @@ A &quot;%1&quot; változó eltávolításához gépelje be ELTÁVOLÍTÁS majd e
     </message>
     <message>
         <source>Remove variable %1</source>
-        <translation>Változó eltávolítása %1</translation>
+        <translation>%1 változó eltávolítása</translation>
     </message>
     <message>
         <source>Edit table %1</source>
-        <translation>Tábla szerkesztése %1</translation>
+        <translation>%1 tábla szerkesztése</translation>
     </message>
     <message>
         <source>Remove table - Leaklog</source>
@@ -3583,7 +3590,7 @@ A &quot;%1&quot; tábla eltávolításához gépelje be ELTÁVOLÍTÁS majd erő
     </message>
     <message>
         <source>Remove table %1</source>
-        <translation>Tábla eltávolítása %1</translation>
+        <translation>%1 tábla eltávolítása</translation>
     </message>
     <message>
         <source>None</source>
@@ -3631,7 +3638,7 @@ A &quot;%1&quot; tábla eltávolításához gépelje be ELTÁVOLÍTÁS majd erő
     </message>
     <message>
         <source>Edit warning %1</source>
-        <translation>Figyelmeztetés szerkesztése %1</translation>
+        <translation>%1 figyelmeztetés szerkesztése</translation>
     </message>
     <message>
         <source>Remove warning - Leaklog</source>
@@ -3645,7 +3652,7 @@ A &quot;%1&quot; változó eltávolításához gépelje be ELTÁVOLÍTÁS majd e
     </message>
     <message>
         <source>Remove warning %1</source>
-        <translation>Figyelmeztetés eltávolítása %1</translation>
+        <translation>%1 figyelmeztetés eltávolítása</translation>
     </message>
     <message>
         <source>Add inspector</source>
@@ -3653,7 +3660,7 @@ A &quot;%1&quot; változó eltávolításához gépelje be ELTÁVOLÍTÁS majd e
     </message>
     <message>
         <source>Edit inspector %1</source>
-        <translation>Felülvizsgáló szerkesztése %1</translation>
+        <translation>%1 felülvizsgáló szerkesztése</translation>
     </message>
     <message>
         <source>Remove inspector - Leaklog</source>
@@ -3667,7 +3674,7 @@ A &quot;%1&quot; felülvizsgáló összes adatának eltávolításához gépelje
     </message>
     <message>
         <source>Remove inspector %1</source>
-        <translation>Felülvizsgáló eltávolítása %1</translation>
+        <translation>%1 felülvizsgáló eltávolítása</translation>
     </message>
     <message>
         <source>Import data - Leaklog</source>
@@ -3707,7 +3714,7 @@ A &quot;%1&quot; felülvizsgáló összes adatának eltávolításához gépelje
     </message>
     <message>
         <source>Import database %1</source>
-        <translation>Adatbázis importálása %1</translation>
+        <translation>%1 adatbázis importálása</translation>
     </message>
     <message>
         <source>Import CSV - Leaklog</source>
@@ -3819,7 +3826,7 @@ A &quot;%1&quot; felülvizsgáló összes adatának eltávolításához gépelje
     </message>
     <message>
         <source>Import CSV %1</source>
-        <translation>CSV importálása %1</translation>
+        <translation>%1 CSV importálása</translation>
     </message>
     <message>
         <source>Failed to import %1 of %2 records.</source>
@@ -3837,7 +3844,7 @@ A &quot;%1&quot; felülvizsgáló összes adatának eltávolításához gépelje
     </message>
     <message>
         <source>Edit assembly record type %1</source>
-        <translation>Szerelési bejegyzés szerkesztése %1</translation>
+        <translation>%1 szerelési bejegyzés szerkesztése</translation>
     </message>
     <message>
         <source>Remove assembly record type - Leaklog</source>
@@ -3851,7 +3858,7 @@ A &quot;%1&quot; bejegyzés összes adatának eltávolításához gépelje be EL
     </message>
     <message>
         <source>Remove assembly record type %1</source>
-        <translation>Szerelési bejegyzés típus eltávolítása %1</translation>
+        <translation>%1 szerelési bejegyzés típus eltávolítása</translation>
     </message>
     <message>
         <source>Add assembly record item type</source>
@@ -3859,7 +3866,7 @@ A &quot;%1&quot; bejegyzés összes adatának eltávolításához gépelje be EL
     </message>
     <message>
         <source>Edit assembly record item type %1</source>
-        <translation>Szerelési bejegyzés típus szerkesztése %1</translation>
+        <translation>%1 szerelési bejegyzés típus szerkesztése</translation>
     </message>
     <message>
         <source>Remove assembly record item type - Leaklog</source>
@@ -3873,7 +3880,7 @@ A &quot;%1&quot; bejegyzés tétel összes adatának eltávolításához gépelj
     </message>
     <message>
         <source>Remove assembly record item type %1</source>
-        <translation>Szerelési bejegyzés tétel típus eltávolítása %1</translation>
+        <translation>%1 szerelési bejegyzés tétel típus eltávolítása</translation>
     </message>
     <message>
         <source>Add assembly record item category</source>
@@ -3881,7 +3888,7 @@ A &quot;%1&quot; bejegyzés tétel összes adatának eltávolításához gépelj
     </message>
     <message>
         <source>Edit assembly record item category %1</source>
-        <translation>Szerelési bejegyzés tétel kategória szerkesztése %1</translation>
+        <translation>%1 szerelési bejegyzés tétel kategória szerkesztése</translation>
     </message>
     <message>
         <source>Remove assembly record item category - Leaklog</source>
@@ -3895,7 +3902,7 @@ A &quot;%1&quot;  tétel kategória összes adatának eltávolításához gépel
     </message>
     <message>
         <source>Remove assembly record item category %1</source>
-        <translation>Szerelési tétel kategória eltávolítása %1</translation>
+        <translation>%1 szerelési tétel kategória eltávolítása</translation>
     </message>
     <message>
         <source>Add circuit unit type</source>
@@ -3903,7 +3910,7 @@ A &quot;%1&quot;  tétel kategória összes adatának eltávolításához gépel
     </message>
     <message>
         <source>Edit circuit unit type %1</source>
-        <translation>Hűtőköri egység típus szerkesztése %1</translation>
+        <translation>%1 hűtőköri egység típus szerkesztése</translation>
     </message>
     <message>
         <source>Remove circuit unit type - Leaklog</source>
@@ -3917,7 +3924,7 @@ A &quot;%1&quot; hűtőköri egység típus összes adatának eltávolításáho
     </message>
     <message>
         <source>Remove circuit unit type %1</source>
-        <translation>Hűtőköri egység típus eltávolítása %1</translation>
+        <translation>%1 hűtőköri egység típus eltávolítása</translation>
     </message>
     <message>
         <source>Add style</source>
@@ -3925,7 +3932,7 @@ A &quot;%1&quot; hűtőköri egység típus összes adatának eltávolításáho
     </message>
     <message>
         <source>Edit style %1</source>
-        <translation>Stílus szerkesztése %1</translation>
+        <translation>%1 stílus szerkesztése</translation>
     </message>
     <message>
         <source>Remove style - Leaklog</source>
@@ -4270,7 +4277,7 @@ person and company ID</source>
     </message>
     <message>
         <source>Move circuit %1 (%2) to customer %3</source>
-        <translation>Hűtőkör %1 (%2) áthelyezése %3 ügyfélhez</translation>
+        <translation>%1 (%2) hűtőkör áthelyezése %3 ügyfélhez</translation>
     </message>
     <message>
         <source>DO NOT EDIT THIS INSPECTION: If you can read this message, you are using an older version of Leaklog than the one used to create this inspection. Changes made to this inspection will not be visible in newer versions of Leaklog.</source>
@@ -4487,7 +4494,7 @@ To remove all data about the service company &quot;%1&quot; type REMOVE and conf
     </message>
     <message>
         <source>Remove service company %1%2</source>
-        <translation>Szervizcég eltávolítása %1%2</translation>
+        <translation>%1%2 szervizcég eltávolítása</translation>
     </message>
     <message>
         <source>Exclude from Agenda only</source>
@@ -4542,6 +4549,10 @@ No. 2024/573</source>
     <message>
         <source>https://github.com/szchkt/leaklog/releases</source>
         <translation>https://github.com/szchkt/leaklog/releases</translation>
+    </message>
+    <message>
+        <source>Edit business partner %1</source>
+        <translation>%1 üzleti partner szerkesztése</translation>
     </message>
 </context>
 <context>
@@ -4826,6 +4837,10 @@ No. 2024/573</source>
     <message>
         <source>Remove service company</source>
         <translation>Szervizcég eltávolítása</translation>
+    </message>
+    <message>
+        <source>Edit business partner</source>
+        <translation>Üzleti partner szerkesztése</translation>
     </message>
 </context>
 <context>
@@ -6414,6 +6429,10 @@ No. 2024/573</source>
     <message>
         <source>Circuit Unit Types</source>
         <translation>Hűtőköri egység típusok</translation>
+    </message>
+    <message>
+        <source>Business Partners</source>
+        <translation>Üzleti partnerek</translation>
     </message>
 </context>
 <context>

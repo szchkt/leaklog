@@ -2,6 +2,7 @@
     <qresource prefix="/">
         <file>html/service_company.html</file>
         <file>html/refrigerant_management.html</file>
+        <file>html/business_partners.html</file>
         <file>html/customers.html</file>
         <file>html/customer.html</file>
         <file>html/circuit.html</file>

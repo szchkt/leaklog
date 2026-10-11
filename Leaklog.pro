@@ -106,6 +106,7 @@ HEADERS       += src/aboutwidget.h \
                  src/views/assemblyrecorditemsview.h \
                  src/views/assemblyrecordsview.h \
                  src/views/assemblyrecordtypesview.h \
+                 src/views/businesspartnersview.h \
                  src/views/circuitsview.h \
                  src/views/circuitunittypesview.h \
                  src/views/customersview.h \
@@ -217,6 +218,7 @@ SOURCES       += src/aboutwidget.cpp \
                  src/views/assemblyrecorditemsview.cpp \
                  src/views/assemblyrecordsview.cpp \
                  src/views/assemblyrecordtypesview.cpp \
+                 src/views/businesspartnersview.cpp \
                  src/views/circuitsview.cpp \
                  src/views/circuitunittypesview.cpp \
                  src/views/customersview.cpp \
