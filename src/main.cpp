@@ -29,6 +29,11 @@
 int main(int argc, char *argv[])
 {
 #ifdef Q_OS_MAC
+#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
+    // Avoid recreating the unified-titlebar window when the first WebEngine view
+    // enables GPU composition, which can shrink the window by the titlebar height.
+    qputenv("QT_WIDGETS_RHI", "1");
+#endif
     QFont::insertSubstitution(".Lucida Grande UI", "Lucida Grande");
     QFont::insertSubstitution(".Helvetica Neue DeskInterface", "Helvetica Neue");
     QFont::insertSubstitution(".SF NS Text", "Lucida Grande");
