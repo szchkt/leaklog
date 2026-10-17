@@ -59,8 +59,6 @@ public:
 
     void openFile(const QString &);
 
-    void scaleFactorChanged();
-
     inline MainWindowSettings &settings() { return m_settings; }
     inline UndoStack *undoStack() const { return m_undo_stack; }
     inline ViewTab *currentTab() const { return m_tab; }
@@ -301,7 +299,6 @@ private:
     UndoStack *m_undo_stack;
     ViewTab *m_tab;
     QString m_connection_string;
-    double m_current_scale;
     Authenticator *authenticator;
     SyncEngine *sync_engine;
     QProgressBar *progress_bar;

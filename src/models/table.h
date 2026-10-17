@@ -33,11 +33,7 @@ public:
 
     inline QStringList listValue(const QString &field) {
         return stringValue(field)
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-            .split(';', QString::SkipEmptyParts);
-#else
             .split(';', Qt::SkipEmptyParts);
-#endif
     }
 
     inline QString name() { return stringValue("name"); }

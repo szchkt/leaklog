@@ -45,7 +45,6 @@
 
 int Global::winVersion()
 {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     QString version = QSysInfo::productVersion();
     switch (version.split('.').first().toInt()) {
         case 10:
@@ -54,44 +53,6 @@ int Global::winVersion()
             return 0x00d0;
     }
     return 0x00f0;
-#else
-    return QSysInfo::WindowsVersion;
-#endif
-}
-
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-
-#include <windows.h>
-
-#pragma comment(lib, "user32.lib")
-#pragma comment(lib, "gdi32.lib")
-
-#endif
-
-double Global::scaleFactor(bool refresh)
-{
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    return 1.0;
-#else
-    static double scale = 0.0;
-    if (scale == 0.0 || refresh) {
-        HDC hdc = GetDC(NULL);
-        if (hdc) {
-            scale = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0;
-            ReleaseDC(NULL, hdc);
-        } else {
-            scale = 1.0;
-        }
-    }
-    return scale;
-#endif
-}
-
-#else // !defined(Q_OS_WIN32)
-
-double Global::scaleFactor(bool)
-{
-    return 1.0;
 }
 
 #endif
@@ -138,12 +99,6 @@ QString Global::downArrow() { return QString::fromUtf8("\342\206\223"); }
 
 QString Global::rightTriangle()
 {
-#ifdef Q_OS_WIN32
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    if (QSysInfo::WindowsVersion < QSysInfo::WV_6_0)
-        return ">";
-#endif
-#endif
     return QString::fromUtf8("\342\226\270");
 }
 
@@ -292,11 +247,7 @@ void Global::addColumn(const QString &column, const QString &table, const QSqlDa
 
     QString c = column;
     c.remove("PRIMARY KEY");
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-    QStringList col = c.split(' ', QString::SkipEmptyParts);
-#else
     QStringList col = c.split(' ', Qt::SkipEmptyParts);
-#endif
     if (!col.count())
         return;
 
@@ -421,11 +372,7 @@ bool Global::journalDeletion(int table_id, const QString &record_uuid, const QSq
 
 QPair<bool, QDir> Global::backupDirectoryForDatabasePath(const QString &path)
 {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     QDir dir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
-#else
-    QDir dir(QStandardPaths::writableLocation(QStandardPaths::DataLocation));
-#endif
     QByteArray hash = QCryptographicHash::hash(path.toUtf8(), QCryptographicHash::Md5);
     QString backup_path = QString("Backups/%1").arg(QString(hash.toHex()));
     if (dir.mkpath(backup_path) && dir.cd(backup_path)) {
@@ -1260,11 +1207,7 @@ QStringList Global::listRefrigerants(bool in_store_only, bool include_user_refri
 QSet<QString> Global::refrigerantSet(bool in_store_only, bool include_user_refrigerants)
 {
     QStringList refrigerants = listRefrigerants(in_store_only, include_user_refrigerants);
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-    return QSet<QString>::fromList(refrigerants);
-#else
     return QSet<QString>(refrigerants.begin(), refrigerants.end());
-#endif
 }
 
 MTDictionary Global::listServiceCompanies()

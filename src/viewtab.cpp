@@ -110,7 +110,7 @@ ViewTab::ViewTab(QWidget *parent):
     createViewItems();
     setDefaultWebPage();
 
-    scaleFactorChanged();
+    initializeNavigation();
 
     for (int i = 0; i < ui->trw_navigation->topLevelItemCount(); ++i)
         ui->trw_navigation->topLevelItem(i)->setExpanded(true);
@@ -123,14 +123,12 @@ ViewTab::~ViewTab()
     delete ui;
 }
 
-void ViewTab::scaleFactorChanged()
+void ViewTab::initializeNavigation()
 {
-    double scale = Global::scaleFactor();
-
-    ui->trw_navigation->setMinimumWidth(180 * scale);
+    ui->trw_navigation->setMinimumWidth(180);
     ui->splitter->setSizes(QList<int>() << 10 << 1000);
 
-    QString style = QString("QTreeWidget::item { padding-top: %1px; padding-bottom: %1px; }").arg(2 * scale);
+    QString style = QString("QTreeWidget::item { padding-top: 2px; padding-bottom: 2px; }");
 #ifdef Q_OS_MAC
     style += R"(
         QTreeWidget { background-color: #EEEEEE; }
@@ -151,9 +149,9 @@ void ViewTab::scaleFactorChanged()
     style += QString("QTreeWidget::item:!selected { background-color: white; }");
     style += QString("QTreeWidget::item:selected:disabled { background-color: #F7F7F7;"
                                                            "color: #787878; border-color: #DEDEDE; border-style: solid; border-width: 1px; }");
-    style += QString("QTreeWidget::item:has-children { padding-left: %1px; color: #1E3287; }").arg(3 * scale);
+    style += QString("QTreeWidget::item:has-children { padding-left: 3px; color: #1E3287; }");
 #endif
-    style += QString("QTreeWidget::item:!has-children { padding-left: %1px; }").arg(7 * scale);
+    style += QString("QTreeWidget::item:!has-children { padding-left: 7px; }");
 
     ui->trw_navigation->setStyleSheet(style);
 
@@ -162,13 +160,9 @@ void ViewTab::scaleFactorChanged()
         ui->trw_navigation->topLevelItem(i)->setTextAlignment(0, Qt::AlignLeft | Qt::AlignBottom);
         ui->trw_navigation->topLevelItem(i)->setSizeHint(0, QSize(0, i ? 28 : 24));
 #else
-        ui->trw_navigation->topLevelItem(i)->setSizeHint(0, QSize(0, 28 * scale));
+        ui->trw_navigation->topLevelItem(i)->setSizeHint(0, QSize(0, 28));
 #endif
     }
-
-    ui->wv_main->setZoomFactor(scale);
-
-    ui->toolbarstack->scaleFactorChanged();
 }
 
 void ViewTab::createViewItems()
@@ -996,7 +990,6 @@ void ViewTab::setDefaultWebPage()
     MTWebPage *page = new MTWebPage(ui->wv_main);
     page->setLinkDelegationPolicy(MTWebPage::DelegateAllLinks);
     ui->wv_main->setPage(page);
-    ui->wv_main->setZoomFactor(Global::scaleFactor());
 
     page->profile()->installUrlSchemeHandler(QString("dbfile").toUtf8(), new DBFileUrlSchemeHandler);
     page->profile()->installUrlSchemeHandler(QString("view").toUtf8(), view_handler);

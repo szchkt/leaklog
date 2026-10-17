@@ -28,19 +28,10 @@
 #include <QTextStream>
 #include <QDate>
 #include <QMessageBox>
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QtWebEngineCore>
 #include <QtWebEngineWidgets>
-#else
-#include <QtWebEngine/QtWebEngine>
-#include <QtWebEngineWidgets/QtWebEngineWidgets>
-#endif
 
 using namespace Global;
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-#define endl Qt::endl
-#endif
 
 ReportDataController::ReportDataController(QWebEngineView *wv, ToolBarStack *parent):
 QObject(parent), toolbarstack(parent) {
@@ -55,7 +46,6 @@ QObject(parent), toolbarstack(parent) {
     QWebEnginePage *page = new QWebEnginePage(wv_main);
     page->profile()->setHttpUserAgent(page->profile()->httpUserAgent() + QString(" Leaklog/%1").arg(LEAKLOG_VERSION));
     wv_main->setPage(page);
-    wv_main->setZoomFactor(Global::scaleFactor());
     QObject::connect(wv_main, SIGNAL(loadProgress(int)), this, SLOT(updateProgressBar(int)));
     QObject::connect(wv_main, SIGNAL(loadFinished(bool)), this, SLOT(enableAutofill()));
     //: URL to the data report system of the notified body
@@ -133,11 +123,11 @@ void ReportDataController::autofill()
 void ReportDataController::reportData(int year)
 {
     QString js; QTextStream out(&js);
-    out << "clearAll();" << endl;
+    out << "clearAll();" << Qt::endl;
 
     ListOfVariantMaps inspectors(Inspector::query().listAll("certificate_number"));
     for (ListOfVariantMaps::const_iterator i = inspectors.constBegin(); i != inspectors.constEnd(); ++i) {
-        out << "addEmployee({ \"certification_num\": \"" << i->value("certificate_number").toString().rightJustified(4, '0') << "\" });" << endl;
+        out << "addEmployee({ \"certification_num\": \"" << i->value("certificate_number").toString().rightJustified(4, '0') << "\" });" << Qt::endl;
     }
 
     QSet<QString> refrigerants_by_field;
@@ -181,14 +171,14 @@ void ReportDataController::reportData(int year)
                     }
                 }
                 if (add) {
-                    out << "addRefrigerantManagementEntry({" << endl;
-                    out << "\t\"refrigerant\": \"" << refrigerant.split(':').first() << ":0\"," << endl;
+                    out << "addRefrigerantManagementEntry({" << Qt::endl;
+                    out << "\t\"refrigerant\": \"" << refrigerant.split(':').first() << ":0\"," << Qt::endl;
                     for (int j = 0; j < refr_man_fieldnames.count(); ++j) {
                         out << "\t\"" << refr_man_fieldnames.value(j) << "\": ";
                         out << sum_list->at(refr_man_fieldnames.key(j).toInt());
-                        if (j == refr_man_fieldnames.count() - 1) out << endl; else out << "," << endl;
+                        if (j == refr_man_fieldnames.count() - 1) out << Qt::endl; else out << "," << Qt::endl;
                     }
-                    out << "});" << endl;
+                    out << "});" << Qt::endl;
                 }
 
                 add = false;
@@ -199,14 +189,14 @@ void ReportDataController::reportData(int year)
                     }
                 }
                 if (add) {
-                    out << "addRefrigerantUseEntry({" << endl;
-                    out << "\t\"refrigerant\": \"" << refrigerant << "\"," << endl;
+                    out << "addRefrigerantUseEntry({" << Qt::endl;
+                    out << "\t\"refrigerant\": \"" << refrigerant << "\"," << Qt::endl;
                     for (int j = 0; j < refr_use_fieldnames.count(); ++j) {
                         out << "\t\"" << refr_use_fieldnames.value(j) << "\": ";
                         out << sum_list->at(refr_use_fieldnames.key(j).toInt());
-                        if (j == refr_use_fieldnames.count() - 1) out << endl; else out << "," << endl;
+                        if (j == refr_use_fieldnames.count() - 1) out << Qt::endl; else out << "," << Qt::endl;
                     }
-                    out << "});" << endl;
+                    out << "});" << Qt::endl;
                 }
             }
             ++sums_iterator;
@@ -227,26 +217,26 @@ void ReportDataController::reportLeakages()
 
     Q_ASSERT(tables.count() == LeakagesByApplication::TableCount);
 
-    out << "importLeakagesByApplication({" << endl;
+    out << "importLeakagesByApplication({" << Qt::endl;
 
     for (int year = leakages.startYear(); year <= leakages.endYear(); ++year) {
         if (year != leakages.startYear())
-            out << "," << endl;
+            out << "," << Qt::endl;
 
-        out << "\t" << year << ": {" << endl;
+        out << "\t" << year << ": {" << Qt::endl;
 
         bool first_refrigerant = true;
         foreach (const QString &refrigerant, leakages.usedRefrigerants().keys()) {
             if (first_refrigerant)
                 first_refrigerant = false;
             else
-                out << "," << endl;
+                out << "," << Qt::endl;
 
-            out << "\t\t'" << refrigerant << "': {" << endl;
+            out << "\t\t'" << refrigerant << "': {" << Qt::endl;
 
             for (int t = 0; t < tables.count(); ++t) {
                 if (t)
-                    out << "," << endl;
+                    out << "," << Qt::endl;
 
                 out << "\t\t\t'" << tables.at(t) << "': { ";
 
@@ -261,13 +251,13 @@ void ReportDataController::reportLeakages()
                 out << values.join(", ") << " }";
             }
 
-            out << endl << "\t\t}";
+            out << Qt::endl << "\t\t}";
         }
 
-        out << endl << "\t}";
+        out << Qt::endl << "\t}";
     }
 
-    out << endl << "});" << endl;
+    out << Qt::endl << "});" << Qt::endl;
 
     wv_main->page()->runJavaScript(js);
 }

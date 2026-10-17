@@ -51,8 +51,6 @@ AboutWidget::AboutWidget()
     lbl_version->setText(lbl_version->text().arg(QString(LEAKLOG_VERSION) + (LEAKLOG_PREVIEW_VERSION ? QString("-PREVIEW%1").arg(LEAKLOG_PREVIEW_VERSION) : "")));
 
     showAcknowledgements(false);
-
-    resize(size() * Global::scaleFactor());
 }
 
 void AboutWidget::showAcknowledgements(bool show)
@@ -116,7 +114,6 @@ void AboutWidget::showAcknowledgements(bool show)
     }
 
     webv_about->setHtml(html_doc.html());
-    webv_about->setZoomFactor(Global::scaleFactor());
 }
 
 void AboutWidget::showLicence()

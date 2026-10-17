@@ -71,7 +71,6 @@ using namespace Global;
 
 MainWindow::MainWindow():
     m_tab(NULL),
-    m_current_scale(1.0),
     sync_engine(NULL)
 {
     // i18n
@@ -87,11 +86,7 @@ MainWindow::MainWindow():
     if (tr("LTR") == "RTL")
         qApp->setLayoutDirection(Qt::RightToLeft);
     setupUi(this);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     setUnifiedTitleAndToolBarOnMac(true);
-#endif
-
-    scaleFactorChanged();
 
     network_access_manager = new QNetworkAccessManager(this);
     authenticator = new Authenticator(this);
@@ -365,21 +360,6 @@ MainWindow::MainWindow():
 #endif
 }
 
-void MainWindow::scaleFactorChanged()
-{
-    double scale = scaleFactor(true);
-    double diff = scale / m_current_scale;
-    m_current_scale = scale;
-
-    frame_welcome->setMaximumSize(frame_welcome->maximumSize() * diff);
-    frame_welcome->setMinimumSize(frame_welcome->minimumSize() * diff);
-
-    for (int i = 0; i < tabw_main->count(); ++i) {
-        ViewTab *tab = qobject_cast<ViewTab *>(tabw_main->widget(i));
-        tab->scaleFactorChanged();
-    }
-}
-
 bool MainWindow::hasActiveModalWidget()
 {
     QList<QDialog *> list = findChildren<QDialog *>();
@@ -481,11 +461,7 @@ void MainWindow::print()
 void MainWindow::print(QPrinter *printer)
 {
     bool printing = true;
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    m_tab->webView()->page()->print(printer, [&printing](bool) {
-        printing = false;
-    });
-#elif __has_include(<QPdfDocument>)
+#if __has_include(<QPdfDocument>)
     QPageLayout pageLayout = printer->pageLayout();
     m_tab->webView()->page()->printToPdf([printer, pageLayout, &printing](const QByteArray &pdf) {
         QByteArray copy = pdf;
@@ -585,11 +561,7 @@ void MainWindow::exportHTML()
         QFile default_css(":/html/default.css");
         default_css.open(QIODevice::ReadOnly | QIODevice::Text);
         QTextStream in(&default_css);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         in.setEncoding(QStringConverter::Utf8);
-#else
-        in.setCodec("UTF-8");
-#endif
         html.replace("<link href=\"default.css\" rel=\"stylesheet\" type=\"text/css\" />", QString("<style type=\"text/css\">\n<!--\n%1\n-->\n</style>").arg(in.readAll()));
         default_css.close();
     }
@@ -597,11 +569,7 @@ void MainWindow::exportHTML()
         QFile colours_css(":/html/colours.css");
         colours_css.open(QIODevice::ReadOnly | QIODevice::Text);
         QTextStream in(&colours_css);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         in.setEncoding(QStringConverter::Utf8);
-#else
-        in.setCodec("UTF-8");
-#endif
         html.replace("<link href=\"colours.css\" rel=\"stylesheet\" type=\"text/css\" />", QString("<style type=\"text/css\">\n<!--\n%1\n-->\n</style>").arg(in.readAll()));
         colours_css.close();
     }
@@ -609,20 +577,12 @@ void MainWindow::exportHTML()
         QFile application_js(":/html/application.js");
         application_js.open(QIODevice::ReadOnly | QIODevice::Text);
         QTextStream in(&application_js);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         in.setEncoding(QStringConverter::Utf8);
-#else
-        in.setCodec("UTF-8");
-#endif
         html.replace("<script type=\"text/javascript\" src=\"application.js\"></script>", QString("<script type=\"text/javascript\">\n<!--\n%1\n-->\n</script>").arg(in.readAll()));
         application_js.close();
     }
     QTextStream out(&file);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     out.setEncoding(QStringConverter::Utf8);
-#else
-    out.setCodec("UTF-8");
-#endif
     out << html;
     file.close();
 }
@@ -683,11 +643,7 @@ void MainWindow::printLabel(bool detailed)
     if (detailed) {
         Customer customer(m_tab->selectedCustomerUUID());
         Circuit circuit(m_tab->selectedCircuitUUID());
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
         attributes.insert(
-#else
-        attributes.unite(
-#endif
             circuit.list("id, refrigerant, " + circuitRefrigerantAmountQuery()
                          + ", hermetic, leak_detector, inspection_interval")
         );
@@ -730,20 +686,12 @@ void MainWindow::printLabel(bool detailed)
 
     Inspector inspector(selected_inspector_uuid);
     if (inspector.exists()) {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
         attributes.insert(inspector.list("certificate_number, person, mail AS inspector_mail, phone AS inspector_phone"));
-#else
-        attributes.unite(inspector.list("certificate_number, person, mail AS inspector_mail, phone AS inspector_phone"));
-#endif
     }
 
     ServiceCompany service_company(m_tab->selectedServiceCompanyUUID());
     if (service_company.exists()) {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
         attributes.insert(service_company.list("id, name, address, mail, phone"));
-#else
-        attributes.unite(service_company.list("id, name, address, mail, phone"));
-#endif
         attributes.insert("id", attributes.value("id").toString());
     }
 
@@ -1414,8 +1362,8 @@ void MainWindow::loadSettings()
 {
     QSettings settings("SZCHKT", "Leaklog");
     lw_recent_docs->addItems(settings.value("recent_docs").toStringList());
-    move(settings.value("pos", pos()).toPoint() * scaleFactor());
-    resize(settings.value("size", size()).toSize() * scaleFactor());
+    move(settings.value("pos", pos()).toPoint());
+    resize(settings.value("size", size()).toSize());
     restoreState(settings.value("window_state").toByteArray(), 0);
 #ifdef Q_OS_MAC
     if (settings.value("fullscreen", isFullScreen()).toBool())
@@ -1460,8 +1408,8 @@ void MainWindow::saveSettings()
         recent << lw_recent_docs->item(i)->text();
     settings.setValue("recent_docs", recent);
     if (!isMaximized() && !isFullScreen()) {
-        settings.setValue("pos", pos() / scaleFactor());
-        settings.setValue("size", size() / scaleFactor());
+        settings.setValue("pos", pos());
+        settings.setValue("size", size());
     }
     settings.setValue("maximized", isMaximized());
     settings.setValue("fullscreen", isFullScreen());

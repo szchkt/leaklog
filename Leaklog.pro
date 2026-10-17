@@ -1,3 +1,5 @@
+lessThan(QT_MAJOR_VERSION, 6):error("Leaklog requires Qt 6 or newer.")
+
 CONFIG        += qt warn_on
 TEMPLATE       = app
 FORMS         += ui/aboutwidget.ui \
@@ -238,10 +240,10 @@ SOURCES       += src/aboutwidget.cpp \
                  src/warnings.cpp
 
 QT                += widgets network webenginewidgets sql printsupport
-CONFIG            += c++11
+CONFIG            += c++17
 
 # Qt 6.3+
-greaterThan(QT_MAJOR_VERSION, 5):greaterThan(QT_MINOR_VERSION, 2) {
+versionAtLeast(QT_VERSION, 6.3.0) {
     QT            += pdf
 }
 
@@ -267,7 +269,7 @@ win32 {
     RCC_DIR        = build/win32
 }
 
-win32-msvc:greaterThan(QT_MAJOR_VERSION, 5) {
+win32-msvc {
     QMAKE_LFLAGS  += /ENTRY:mainCRTStartup
 }
 
@@ -294,20 +296,12 @@ macx {
 }
 
 # Qt 6.5+
-macx:greaterThan(QT_MAJOR_VERSION, 5):greaterThan(QT_MINOR_VERSION, 4) {
+macx:versionAtLeast(QT_VERSION, 6.5.0) {
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 11.0
 }
 
-macx:greaterThan(QT_MAJOR_VERSION, 5):CONFIG(release) {
+macx:CONFIG(release) {
     QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
-}
-
-win32-msvc:greaterThan(QMAKE_MSC_VER, 1929) {
-    QMAKE_CXXFLAGS += /std:c++17
-} else:win32-msvc {
-    QMAKE_CXXFLAGS += /std:c++14
-} else {
-    QMAKE_CXXFLAGS += -std=c++17
 }
 
 unix {

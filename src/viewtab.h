@@ -59,8 +59,6 @@ public:
     QObject *object() { return this; }
     void connectSlots(QObject *);
 
-    void scaleFactorChanged();
-
     void enableAllTools();
     void enableTools();
 
@@ -133,6 +131,7 @@ private slots:
     void restoreScrollPosition(bool success);
 
 private:
+    void initializeNavigation();
     void createViewItems();
     void formatGroupItem(QTreeWidgetItem *item);
 

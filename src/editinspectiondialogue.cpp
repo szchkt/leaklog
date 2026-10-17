@@ -96,7 +96,7 @@ EditInspectionDialogue::EditInspectionDialogue(Inspection *record, UndoStack *un
     splitter->setSizes(QList<int>() << 1000 << 1 << 200);
 
     QSettings settings("SZCHKT", "Leaklog");
-    resize(settings.value("inspection_dialogue/size", QSize(900, 550)).toSize() * Global::scaleFactor());
+    resize(settings.value("inspection_dialogue/size", QSize(900, 550)).toSize());
     QString splitter_state_key = QString("inspection_dialogue/splitter_state%1").arg(compressors ? "" : "_no_compressors");
     splitter->restoreState(settings.value(splitter_state_key).toByteArray());
 }
@@ -104,7 +104,7 @@ EditInspectionDialogue::EditInspectionDialogue(Inspection *record, UndoStack *un
 EditInspectionDialogue::~EditInspectionDialogue()
 {
     QSettings settings("SZCHKT", "Leaklog");
-    settings.setValue("inspection_dialogue/size", size() / Global::scaleFactor());
+    settings.setValue("inspection_dialogue/size", size());
     QString splitter_state_key = QString("inspection_dialogue/splitter_state%1").arg(compressors ? "" : "_no_compressors");
     settings.setValue(splitter_state_key, splitter->saveState());
 }

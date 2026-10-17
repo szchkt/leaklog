@@ -22,9 +22,7 @@
 
 #include <QSettings>
 #include <QTranslator>
-#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
 #include <QWebEngineUrlScheme>
-#endif
 
 int main(int argc, char *argv[])
 {
@@ -39,24 +37,15 @@ int main(int argc, char *argv[])
     QFont::insertSubstitution(".SF NS Text", "Lucida Grande");
 #endif
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     QWebEngineUrlScheme::registerScheme(QWebEngineUrlScheme("dbfile"));
     QWebEngineUrlScheme view_scheme("view");
     // The rendered views load their stylesheets, scripts and images from qrc:.
     view_scheme.setFlags(QWebEngineUrlScheme::LocalAccessAllowed);
     QWebEngineUrlScheme::registerScheme(view_scheme);
-#endif
 
     MTApplication app(argc, argv);
     app.setApplicationName("Leaklog");
     app.setApplicationVersion(LEAKLOG_VERSION);
-
-#ifdef Q_OS_WIN32
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    if (QSysInfo::WindowsVersion > QSysInfo::WV_6_1)
-        QApplication::setStyle("windowsxp");
-#endif
-#endif
 
     QSettings settings("SZCHKT", "Leaklog");
     QString lang = settings.value("lang").toString();

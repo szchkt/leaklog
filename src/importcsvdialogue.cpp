@@ -26,9 +26,6 @@
 
 #include <QFile>
 #include <QTextStream>
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include <QTextCodec>
-#endif
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QInputDialog>
@@ -72,19 +69,10 @@ ImportCsvDialogue::~ImportCsvDialogue()
 void ImportCsvDialogue::load()
 {
     QString encoding = cb_encoding->currentData().toString();
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     std::optional<QStringConverter::Encoding> codec;
     if (encoding != "System") {
         codec = QStringConverter::encodingForName(encoding.toUtf8());
     }
-#else
-    QTextCodec *codec = NULL;
-    if (encoding != "System") {
-        codec = QTextCodec::codecForName(encoding.toUtf8());
-    } else {
-        codec = QTextCodec::codecForLocale();
-    }
-#endif
 
     QFile file(file_path);
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
@@ -94,13 +82,9 @@ void ImportCsvDialogue::load()
     }
 
     QTextStream in(&file);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     if (codec) {
         in.setEncoding(*codec);
     }
-#else
-    in.setCodec(codec);
-#endif
 
     MTCSVParser parser(&in);
     parser.setSkipLines(spb_skip_lines->value());

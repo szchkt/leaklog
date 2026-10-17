@@ -37,7 +37,6 @@ namespace Global {
 #ifdef Q_OS_MAC
     int macVersion();
 #endif
-    double scaleFactor(bool refresh = false);
     QString escapeString(const QVariant &, bool = false, bool = false);
     QString escapeString(QString, bool = false, bool = false);
     QString formatURL(const QString &);

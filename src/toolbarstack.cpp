@@ -35,7 +35,7 @@ ToolBarStack::ToolBarStack(QWidget *parent):
 {
     setupUi(this);
 
-    scaleFactorChanged();
+    initializeStyle();
 
     cb_refrigerant->addItem(tr("All"), QString());
     foreach (const QString &refrigerant, listRefrigerants()) {
@@ -128,7 +128,7 @@ void ToolBarStack::connectSlots(QObject *receiver)
     QObject::connect(chb_min_3kg, SIGNAL(clicked()), receiver, SLOT(refreshView()));
 }
 
-void ToolBarStack::scaleFactorChanged()
+void ToolBarStack::initializeStyle()
 {
     QString style;
 #ifdef Q_OS_MAC
@@ -150,9 +150,8 @@ void ToolBarStack::scaleFactorChanged()
         }
     )";
 #else
-    double scale = scaleFactor();
     style += QString(".QWidget { background-color: #F0F0F0; color: white; border-color: #A0A0A0; border-style: solid; border-width: 0px 0px 1px 1px; }");
-    style += QString("QToolButton { min-height: %1px; }").arg(16 * scale);
+    style += QString("QToolButton { min-height: 16px; }");
 #endif
     setStyleSheet(style);
 }
