@@ -257,7 +257,8 @@ SOURCES           += include/csvparser/mtcsvparser.cpp
 
 DESTDIR            = bin
 INCLUDEPATH       += src src/models src/views include
-UI_DIR             = ui/include
+UI_DIR             = $$OUT_PWD/ui/include
+DEPENDPATH        += $$UI_DIR
 
 win32 {
     RC_FILE        = rc/leaklog.rc
