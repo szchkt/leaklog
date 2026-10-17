@@ -88,6 +88,7 @@ void ToolBarStack::connectSlots(QObject *receiver)
     QObject::connect(tbtn_edit_service_company, SIGNAL(clicked()), receiver, SLOT(editServiceCompany()));
     QObject::connect(tbtn_remove_service_company, SIGNAL(clicked()), receiver, SLOT(removeServiceCompany()));
     QObject::connect(tbtn_add_record_of_refrigerant_management, SIGNAL(clicked()), receiver, SLOT(addRefrigerantRecord()));
+    QObject::connect(tbtn_add_business_partner, SIGNAL(clicked()), receiver, SLOT(addBusinessPartner()));
     QObject::connect(tbtn_add_inspector, SIGNAL(clicked()), receiver, SLOT(addInspector()));
     QObject::connect(tbtn_edit_inspector, SIGNAL(clicked()), receiver, SLOT(editInspector()));
     QObject::connect(tbtn_remove_inspector, SIGNAL(clicked()), receiver, SLOT(removeInspector()));
@@ -182,6 +183,7 @@ void ToolBarStack::viewChanged(View::ViewID view)
     tbtn_add_assembly_record_item_category->setVisible(view == View::AssemblyRecordItems);
     tbtn_add_assembly_record_item_type->setVisible(view == View::AssemblyRecordItems);
     tbtn_add_assembly_record_type->setVisible(view == View::AssemblyRecordTypes);
+    tbtn_add_business_partner->setVisible(view == View::BusinessPartners);
     tbtn_add_circuit->setVisible(view == View::Circuits);
     tbtn_add_circuit_unit_type->setVisible(view == View::CircuitUnitTypes);
     tbtn_add_customer->setVisible(view == View::Customers);

@@ -914,6 +914,7 @@ public:
         dict.insert("remove_service_company", QApplication::translate("Permissions", "Remove service company"));
         dict.insert("add_refrigerant_management", QApplication::translate("Permissions", "Add record of refrigerant management"));
         dict.insert("edit_refrigerant_management", QApplication::translate("Permissions", "Edit record of refrigerant management"));
+        dict.insert("add_business_partner", QApplication::translate("Permissions", "Add business partner"));
         dict.insert("edit_business_partner", QApplication::translate("Permissions", "Edit business partner"));
         dict.insert("add_customer", QApplication::translate("Permissions", "Add customer"));
         dict.insert("edit_customer", QApplication::translate("Permissions", "Edit customer"));

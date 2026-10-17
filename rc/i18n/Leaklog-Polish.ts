@@ -4561,6 +4561,10 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
         <source>Edit business partner %1</source>
         <translation>Edytuj partnera biznesowego %1</translation>
     </message>
+    <message>
+        <source>Add business partner</source>
+        <translation>Dodaj partnera biznesowego</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -4848,6 +4852,10 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
     <message>
         <source>Edit business partner</source>
         <translation>Edytuj partnera biznesowego</translation>
+    </message>
+    <message>
+        <source>Add business partner</source>
+        <translation>Dodaj partnera biznesowego</translation>
     </message>
 </context>
 <context>
@@ -5951,6 +5959,14 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
     <message>
         <source>Remove Service Company...</source>
         <translation>Usuń firmę serwisową...</translation>
+    </message>
+    <message>
+        <source>Add a new business partner</source>
+        <translation>Dodaj nowego partnera biznesowego</translation>
+    </message>
+    <message>
+        <source>Add Business Partner...</source>
+        <translation>Dodaj partnera biznesowego...</translation>
     </message>
 </context>
 <context>

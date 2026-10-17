@@ -4565,6 +4565,10 @@ Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</t
         <source>Edit business partner %1</source>
         <translation>Uredi poslovnog partnera %1</translation>
     </message>
+    <message>
+        <source>Add business partner</source>
+        <translation>Dodaj poslovnog partnera</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -4852,6 +4856,10 @@ Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</t
     <message>
         <source>Edit business partner</source>
         <translation>Uredi poslovnog partnera</translation>
+    </message>
+    <message>
+        <source>Add business partner</source>
+        <translation>Dodaj poslovnog partnera</translation>
     </message>
 </context>
 <context>
@@ -5955,6 +5963,14 @@ Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</t
     <message>
         <source>Remove Service Company...</source>
         <translation>Ukloni servisnu kompaniju...</translation>
+    </message>
+    <message>
+        <source>Add a new business partner</source>
+        <translation>Dodaj novog poslovnog partnera</translation>
+    </message>
+    <message>
+        <source>Add Business Partner...</source>
+        <translation>Dodaj poslovnog partnera...</translation>
     </message>
 </context>
 <context>

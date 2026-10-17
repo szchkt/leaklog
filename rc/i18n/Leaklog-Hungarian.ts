@@ -4554,6 +4554,10 @@ No. 2024/573</source>
         <source>Edit business partner %1</source>
         <translation>%1 üzleti partner szerkesztése</translation>
     </message>
+    <message>
+        <source>Add business partner</source>
+        <translation>Üzleti partner hozzáadása</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -4841,6 +4845,10 @@ No. 2024/573</source>
     <message>
         <source>Edit business partner</source>
         <translation>Üzleti partner szerkesztése</translation>
+    </message>
+    <message>
+        <source>Add business partner</source>
+        <translation>Üzleti partner hozzáadása</translation>
     </message>
 </context>
 <context>
@@ -5944,6 +5952,14 @@ No. 2024/573</source>
     <message>
         <source>Refrigerant:</source>
         <translation>Hűtőközeg:</translation>
+    </message>
+    <message>
+        <source>Add a new business partner</source>
+        <translation>Új üzleti partner hozzáadása</translation>
+    </message>
+    <message>
+        <source>Add Business Partner...</source>
+        <translation>Üzleti partner hozzáadása...</translation>
     </message>
 </context>
 <context>

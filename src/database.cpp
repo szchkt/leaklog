@@ -1339,6 +1339,19 @@ void MainWindow::editRefrigerantRecord(const QString &uuid)
     }
 }
 
+void MainWindow::addBusinessPartner()
+{
+    if (!QSqlDatabase::database().isOpen()) { return; }
+    if (!isOperationPermitted("add_business_partner")) { return; }
+    BusinessPartner record;
+    UndoCommand command(m_undo_stack, tr("Add business partner"));
+    EditDialogue md(&record, m_undo_stack, this);
+    if (md.exec() == QDialog::Accepted) {
+        setDatabaseModified(true);
+        refreshView();
+    }
+}
+
 void MainWindow::editBusinessPartner(const QString &uuid)
 {
     if (!QSqlDatabase::database().isOpen()) { return; }

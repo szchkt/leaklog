@@ -4565,6 +4565,10 @@ Na odstránenie všetkých údajov o servisnej organizácii „%1“ napíšte O
         <source>Edit business partner %1</source>
         <translation>Upraviť obchodného partnera %1</translation>
     </message>
+    <message>
+        <source>Add business partner</source>
+        <translation>Pridať obchodného partnera</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -4853,6 +4857,10 @@ Na odstránenie všetkých údajov o servisnej organizácii „%1“ napíšte O
     <message>
         <source>Edit business partner</source>
         <translation>Upraviť obchodného partnera</translation>
+    </message>
+    <message>
+        <source>Add business partner</source>
+        <translation>Pridať obchodného partnera</translation>
     </message>
 </context>
 <context>
@@ -5956,6 +5964,14 @@ Na odstránenie všetkých údajov o servisnej organizácii „%1“ napíšte O
     <message>
         <source>Remove Service Company...</source>
         <translation>Odstrániť servisnú organizáciu...</translation>
+    </message>
+    <message>
+        <source>Add a new business partner</source>
+        <translation>Pridať nového obchodného partnera</translation>
+    </message>
+    <message>
+        <source>Add Business Partner...</source>
+        <translation>Pridať obchodného partnera...</translation>
     </message>
 </context>
 <context>

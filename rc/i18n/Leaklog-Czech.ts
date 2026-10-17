@@ -4572,6 +4572,10 @@ Pro odstranění všech údajů o servisní organizaci „%1“ napište ODSTRAN
         <source>Edit business partner %1</source>
         <translation>Upravit obchodního partnera %1</translation>
     </message>
+    <message>
+        <source>Add business partner</source>
+        <translation>Přidat obchodního partnera</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowSettings</name>
@@ -4859,6 +4863,10 @@ Pro odstranění všech údajů o servisní organizaci „%1“ napište ODSTRAN
     <message>
         <source>Edit business partner</source>
         <translation>Upravit obchodního partnera</translation>
+    </message>
+    <message>
+        <source>Add business partner</source>
+        <translation>Přidat obchodního partnera</translation>
     </message>
 </context>
 <context>
@@ -5962,6 +5970,14 @@ Pro odstranění všech údajů o servisní organizaci „%1“ napište ODSTRAN
     <message>
         <source>Remove Service Company...</source>
         <translation>Odstranit servisní organizaci...</translation>
+    </message>
+    <message>
+        <source>Add a new business partner</source>
+        <translation>Přidat nového obchodního partnera</translation>
+    </message>
+    <message>
+        <source>Add Business Partner...</source>
+        <translation>Přidat obchodního partnera...</translation>
     </message>
 </context>
 <context>
