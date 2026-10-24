@@ -34,6 +34,7 @@
 
 #include <QActionGroup>
 #include <QBuffer>
+#include <QScopedValueRollback>
 #include <QSettings>
 #include <QTranslator>
 #include <QNetworkAccessManager>
@@ -71,6 +72,7 @@ using namespace Global;
 
 MainWindow::MainWindow():
     m_tab(NULL),
+    m_opening_database(false),
     sync_engine(NULL)
 {
     // i18n
@@ -392,6 +394,10 @@ void MainWindow::setWindowTitleWithRepresentedFilename(const QString &path)
 
 void MainWindow::openFile(const QString &file)
 {
+    if (m_opening_database)
+        return;
+    QScopedValueRollback<bool> opening(m_opening_database, true);
+
     QFileInfo file_info(file);
     if (file_info.exists() && !saveChangesBeforeProceeding(tr("Open database - Leaklog"), true)) {
         addRecent(file_info.absoluteFilePath());
@@ -1690,15 +1696,11 @@ void MainWindow::httpRequestFinished(QNetworkReply *reply)
                                            "<style type=\"text/css\">p, li { white-space: pre-wrap; }</style>"
                                            "</head><body><p>%1</p></body></html>")
                                    .arg(release_notes));
-        message.addButton(tr("&Download Update"), QMessageBox::AcceptRole);
+        QAbstractButton *download_button = message.addButton(tr("&Download Update"), QMessageBox::AcceptRole);
         message.addButton(tr("Remind Me &Later"), QMessageBox::RejectRole);
-        switch (message.exec()) {
-            case QMessageBox::AcceptRole: // Download
-                QDesktopServices::openUrl(url);
-                break;
-            case QMessageBox::RejectRole: // Later
-                break;
-        }
+        message.exec();
+        if (message.clickedButton() == download_button)
+            QDesktopServices::openUrl(url);
     }
 }
 

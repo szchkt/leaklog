@@ -299,6 +299,8 @@ private:
     UndoStack *m_undo_stack;
     ViewTab *m_tab;
     QString m_connection_string;
+    // Covers dialogs and event processing throughout a database open.
+    bool m_opening_database;
     Authenticator *authenticator;
     SyncEngine *sync_engine;
     QProgressBar *progress_bar;

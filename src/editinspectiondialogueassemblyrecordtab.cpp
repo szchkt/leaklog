@@ -368,18 +368,16 @@ void EditInspectionDialogueAssemblyRecordTab::assemblyRecordNumberChanged()
         message.setIcon(QMessageBox::Information);
         message.setText(tr("An inspection with the same assembly record number already exists."));
         message.setInformativeText(tr("Use anyway?"));
-        message.addButton(tr("&Use"), QMessageBox::AcceptRole);
+        QAbstractButton *use_button = message.addButton(tr("&Use"), QMessageBox::AcceptRole);
         message.addButton(tr("Cancel"), QMessageBox::RejectRole);
 
-        switch (message.exec()) {
-            case 0: // Use
-                current_arno = arno_w->text();
-                ar_type_w->setVariantValue(query.value(1).toInt());
-                loadItemInputWidgets();
-                break;
-            default: // Cancel
-                arno_w->setText(current_arno);
-                break;
+        message.exec();
+        if (message.clickedButton() == use_button) {
+            current_arno = arno_w->text();
+            ar_type_w->setVariantValue(query.value(1).toInt());
+            loadItemInputWidgets();
+        } else {
+            arno_w->setText(current_arno);
         }
     }
 

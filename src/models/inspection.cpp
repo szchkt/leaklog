@@ -255,14 +255,10 @@ void Inspection::showSecondNominalInspectionWarning(MDComboBox *combobox, int in
         message.setIcon(QMessageBox::Information);
         message.setText(tr("This circuit already has a nominal inspection."));
         message.setInformativeText(tr("Are you sure you want to add another?"));
-        message.addButton(tr("&Add Another Nominal Inspection"), QMessageBox::AcceptRole);
+        QAbstractButton *add_button = message.addButton(tr("&Add Another Nominal Inspection"), QMessageBox::AcceptRole);
         message.setDefaultButton(message.addButton(tr("Cancel"), QMessageBox::RejectRole));
-        switch (message.exec()) {
-            case 0: // Add
-                break;
-            case 1: // Cancel
-                QMetaObject::invokeMethod(combobox, "setCurrentIndex", Qt::QueuedConnection, Q_ARG(int, 1));
-                break;
-        }
+        message.exec();
+        if (message.clickedButton() != add_button)
+            QMetaObject::invokeMethod(combobox, "setCurrentIndex", Qt::QueuedConnection, Q_ARG(int, 1));
     }
 }

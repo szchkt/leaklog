@@ -53,6 +53,7 @@
 #include <QSqlError>
 #include <QCalendarWidget>
 #include <QDateTime>
+#include <QScopedValueRollback>
 #include <QSettings>
 #include <QTimer>
 #include <QJsonArray>
@@ -75,20 +76,18 @@ bool MainWindow::saveChangesBeforeProceeding(const QString &title, bool close_)
         message.setIcon(QMessageBox::Information);
         message.setText(tr("The database has been modified."));
         message.setInformativeText(tr("Do you want to save your changes?"));
-        message.addButton(tr("&Save"), QMessageBox::AcceptRole);
-        message.addButton(tr("&Discard"), QMessageBox::DestructiveRole);
+        QAbstractButton *save_button = message.addButton(tr("&Save"), QMessageBox::AcceptRole);
+        QAbstractButton *discard_button = message.addButton(tr("&Discard"), QMessageBox::DestructiveRole);
         message.addButton(tr("Cancel"), QMessageBox::RejectRole);
-        switch (message.exec()) {
-            case 0: // Save
-                save(); if (close_) { closeDatabase(false); }; return false;
-                break;
-            case 1: // Discard
-                if (close_) { closeDatabase(false); }; return false;
-                break;
-            case 2: // Cancel
-                return true;
-                break;
-        }
+        message.exec();
+        if (message.clickedButton() == save_button)
+            save();
+        else if (message.clickedButton() != discard_button)
+            return true;
+
+        if (close_)
+            closeDatabase(false);
+        return false;
     } else if (db_open && !this->isWindowModified()) {
         if (close_) { closeDatabase(false); }; return false;
     }
@@ -295,15 +294,12 @@ bool MainWindow::initDatabase(QSqlDatabase &database, bool transaction, bool sav
                                " It is recommended that you save the changes now."));
             message.setInformativeText(tr("Once saved, you will not be able to use this database with previous versions of Leaklog."
                                           " Do you want to save the changes?"));
-            message.addButton(tr("&Save"), QMessageBox::AcceptRole);
+            QAbstractButton *save_button = message.addButton(tr("&Save"), QMessageBox::AcceptRole);
             message.addButton(tr("&Later"), QMessageBox::RejectRole);
-            switch (message.exec()) {
-                case 0: // Save
-                    saveDatabase(true, false);
-                    break;
-                case 1: // Later
-                    return false;
-            }
+            message.exec();
+            if (message.clickedButton() != save_button)
+                return false;
+            saveDatabase(true, false);
         }
     }
 } // (SCOPE)
@@ -362,6 +358,10 @@ void MainWindow::initTables(bool transaction)
 
 void MainWindow::newDatabase(const QString &uuid, const QString &name)
 {
+    if (m_opening_database)
+        return;
+    QScopedValueRollback<bool> opening(m_opening_database, true);
+
     if (saveChangesBeforeProceeding(tr("New database - Leaklog"), true)) { return; }
     QSettings settings("SZCHKT", "Leaklog");
     QDir dir(settings.value("file_dialog_dir", QDir::homePath()).toString());
@@ -470,7 +470,12 @@ void MainWindow::downloadDatabase()
 
 void MainWindow::openRecent(QListWidgetItem *item)
 {
+    if (m_opening_database)
+        return;
+    QScopedValueRollback<bool> opening(m_opening_database, true);
+
     QString s = item->text();
+    if (saveChangesBeforeProceeding(tr("Open database - Leaklog"), true)) { return; }
     addRecent(s);
     if (s.startsWith("db:")) {
         QStringList path = s.split("@");
@@ -493,6 +498,10 @@ void MainWindow::openRecent(QListWidgetItem *item)
 
 void MainWindow::open()
 {
+    if (m_opening_database)
+        return;
+    QScopedValueRollback<bool> opening(m_opening_database, true);
+
     if (saveChangesBeforeProceeding(tr("Open database - Leaklog"), true)) { return; }
     QSettings settings("SZCHKT", "Leaklog");
     QDir dir(settings.value("file_dialog_dir", QDir::homePath()).toString());
@@ -510,6 +519,10 @@ void MainWindow::open()
 
 void MainWindow::openRemote()
 {
+    if (m_opening_database)
+        return;
+    QScopedValueRollback<bool> opening(m_opening_database, true);
+
     if (saveChangesBeforeProceeding(tr("Open remote database - Leaklog"), true)) { return; }
 
     QDialog *d = new QDialog(this);
@@ -841,15 +854,11 @@ void MainWindow::autosave()
         message.setIcon(QMessageBox::Information);
         message.setText(tr("The database has been modified."));
         message.setInformativeText(tr("Do you want to save your changes?"));
-        message.addButton(tr("&Save"), QMessageBox::AcceptRole);
-        message.addButton(tr("&Later"), QMessageBox::RejectRole);
-        message.setDefaultButton(QMessageBox::Cancel);
-        switch (message.exec()) {
-            case 0: // Save
-                break;
-            case 1: // Later
-                return;
-        }
+        QAbstractButton *save_button = message.addButton(tr("&Save"), QMessageBox::AcceptRole);
+        message.setDefaultButton(message.addButton(tr("&Later"), QMessageBox::RejectRole));
+        message.exec();
+        if (message.clickedButton() != save_button)
+            return;
     }
 
     if (autosave_mode == "ask" || autosave_mode == "delayed") {
@@ -943,20 +952,16 @@ void MainWindow::sync(bool force, bool save)
             message.setInformativeText(tr("By using this service, you agree to the <a href=\"https://leaklog.org/terms\">Terms of Service</a>."));
             message.setTextFormat(Qt::RichText);
             message.setTextInteractionFlags(Qt::LinksAccessibleByMouse);
-            message.addButton(tr("&Sync"), QMessageBox::AcceptRole);
-            message.addButton(tr("Do &Not Sync"), QMessageBox::RejectRole);
-            switch (message.exec()) {
-                case 0: // Sync
-                    DBInfo::setValueForKey("sync_server", "leaklog.org");
-                    saveDatabase(false, false);
-                    sync_engine->sync(force);
-                    break;
-                case 1: // Do Not Sync
-                    if (server.isNull()) {
-                        DBInfo::setValueForKey("sync_server", "");
-                        saveDatabase(false, false);
-                    }
-                    break;
+            QAbstractButton *sync_button = message.addButton(tr("&Sync"), QMessageBox::AcceptRole);
+            QAbstractButton *do_not_sync_button = message.addButton(tr("Do &Not Sync"), QMessageBox::RejectRole);
+            message.exec();
+            if (message.clickedButton() == sync_button) {
+                DBInfo::setValueForKey("sync_server", "leaklog.org");
+                saveDatabase(false, false);
+                sync_engine->sync(force);
+            } else if (message.clickedButton() == do_not_sync_button && server.isNull()) {
+                DBInfo::setValueForKey("sync_server", "");
+                saveDatabase(false, false);
             }
         }
     }
