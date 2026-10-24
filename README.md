@@ -36,10 +36,8 @@ Binaries are available for **macOS** and **Windows** on
 To build Leaklog from source, you will need Qt 6 or a newer,
 compatible version.
 
-Use the `lrelease` tool to compile translations as follows:
-
-	lrelease Leaklog.pro
-	lrelease rc/i18n/Leaklog-i18n.ts
+Translations are compiled automatically with `lrelease` and embedded in the
+application during the build.
 
 If you're running macOS, use:
 

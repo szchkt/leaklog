@@ -146,7 +146,6 @@ HEADERS       += src/aboutwidget.h \
                  src/viewtabsettings.h \
                  src/warnings.h
 RESOURCES     += rc/html.qrc \
-                 rc/i18n.qrc \
                  rc/resources.qrc
 SOURCES       += src/aboutwidget.cpp \
                  src/activityeventfilter.cpp \
@@ -417,9 +416,12 @@ refprop:exists(refprop/include/refprop_lib.h) {
 }
 
 CODECFORTR         = UTF-8
+CONFIG            += lrelease embed_translations
 TRANSLATIONS      += rc/i18n/Leaklog-Slovak.ts \
                      rc/i18n/Leaklog-Polish.ts \
                      rc/i18n/Leaklog-Czech.ts \
                      rc/i18n/Leaklog-Serbian.ts \
                      rc/i18n/Leaklog-Hungarian.ts
+# Language names are maintained separately and must not be changed by lupdate.
+EXTRA_TRANSLATIONS += rc/i18n/Leaklog-i18n.ts
 QMAKE_RESOURCE_FLAGS += -compress 9
