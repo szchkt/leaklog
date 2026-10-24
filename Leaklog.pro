@@ -2,6 +2,25 @@ lessThan(QT_MAJOR_VERSION, 6):error("Leaklog requires Qt 6 or newer.")
 
 CONFIG        += qt warn_on
 TEMPLATE       = app
+TARGET         = Leaklog
+
+# Keep the application and bundle versions in sync with src/defs.h.
+LEAKLOG_DEFS = $$cat($$PWD/src/defs.h, lines)
+VERSION = $$find(LEAKLOG_DEFS, "^\\s*\\x23define\\s+LEAKLOG_VERSION\\s+")
+VERSION = $$section(VERSION, \", 1, 1)
+!contains(VERSION, ^[0-9]+\\.[0-9]+\\.[0-9]+$):error("LEAKLOG_VERSION must be a three-component version in src/defs.h.")
+# Regenerate the Makefile and bundle metadata when the version changes.
+QMAKE_INTERNAL_INCLUDED_FILES += $$PWD/src/defs.h
+
+# Share the build year between the About dialog and macOS bundle metadata.
+equals(QMAKE_HOST.os, Windows) {
+    LEAKLOG_COPYRIGHT_YEAR = $$system(powershell -NoProfile -Command Get-Date -Format yyyy)
+} else {
+    LEAKLOG_COPYRIGHT_YEAR = $$system(date +%Y)
+}
+!contains(LEAKLOG_COPYRIGHT_YEAR, ^[0-9]{4}$):error("Unable to determine the copyright year.")
+DEFINES += LEAKLOG_COPYRIGHT_YEAR=$$LEAKLOG_COPYRIGHT_YEAR
+
 FORMS         += ui/aboutwidget.ui \
                  ui/importcsvdialogue.ui \
                  ui/importdialogue.ui \
@@ -278,7 +297,13 @@ win32-g++ {
 }
 
 macx {
-    QMAKE_INFO_PLIST = Info.plist
+    bundle_info_plist.input = $$PWD/Info.plist
+    bundle_info_plist.output = $$OUT_PWD/build/Info.plist
+    QMAKE_SUBSTITUTES += bundle_info_plist
+    QMAKE_INFO_PLIST = $$bundle_info_plist.output
+    bundle_metadata.target = $$DESTDIR/$${TARGET}.app/Contents/Info.plist
+    bundle_metadata.depends = $$PWD/src/defs.h $$PWD/Info.plist $$QMAKE_INFO_PLIST
+    QMAKE_EXTRA_TARGETS += bundle_metadata
     LIBS          += -framework Foundation
     OBJECTIVE_SOURCES += src/mainwindowmacx.mm
     ICON           = rc/images/leaklog.icns

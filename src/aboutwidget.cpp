@@ -72,7 +72,7 @@ void AboutWidget::showAcknowledgements(bool show)
         HTMLParentElement *body = html_doc.body();
 
         HTMLParagraph *p = body->paragraph();
-        *p << "&copy; 2008&nbsp;&ndash;&nbsp;2026 <span style=\"font-style:italic;\">Mat&uacute;&scaron; Tomlein, Michal Tomlein, Peter Tomlein</span>";
+        *p << QString("&copy; 2008&nbsp;&ndash;&nbsp;%1 <span style=\"font-style:italic;\">Mat&uacute;&scaron; Tomlein, Michal Tomlein, Peter Tomlein</span>").arg(LEAKLOG_COPYRIGHT_YEAR);
         p->newLine();
         *p << tr("Slovak Association for Cooling, Air Conditioning and Heat Pumps");
 
