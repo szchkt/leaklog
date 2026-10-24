@@ -49,8 +49,38 @@
 
 #include <QBuffer>
 #include <QDesktopServices>
+#include <QPainter>
+#include <QStyledItemDelegate>
 #include <QWebEngineProfile>
 #include <QWebEngineUrlRequestJob>
+
+#ifndef Q_OS_MAC
+class NavigationItemDelegate : public QStyledItemDelegate
+{
+public:
+    using QStyledItemDelegate::QStyledItemDelegate;
+
+    void paint(QPainter *painter, const QStyleOptionViewItem &option,
+               const QModelIndex &index) const override
+    {
+        QStyledItemDelegate::paint(painter, option, index);
+
+        if (!(option.state & QStyle::State_Selected) || !(option.state & QStyle::State_Enabled))
+            return;
+
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing, false);
+        QPen border(Qt::black);
+        // A cosmetic pen stays one physical pixel wide at every display scale.
+        border.setWidth(0);
+        painter->setPen(border);
+        painter->setBrush(Qt::NoBrush);
+        const qreal pixel = 1.0 / painter->device()->devicePixelRatioF();
+        painter->drawRect(QRectF(option.rect).adjusted(0, 0, -pixel, -pixel));
+        painter->restore();
+    }
+};
+#endif
 
 class ViewBuffer : public QBuffer
 {
@@ -143,13 +173,14 @@ void ViewTab::initializeNavigation()
         QTreeWidget::item:has-children:!active { color: #777777; }
     )";
 #else
+    ui->trw_navigation->setItemDelegate(new NavigationItemDelegate(ui->trw_navigation));
     style += QString("QTreeWidget { background-color: white; }");
-    style += QString("QTreeWidget::item:selected { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #DAECFC, stop: 1 #C4E0FC);"
-                                                  "border-color: #569DE5; border-style: solid; border-width: 1px; }");
+    style += QString("QTreeWidget::item:selected { background-color: #CCE8FF;"
+                                                  "border-color: transparent; border-style: solid; border-width: 1px; }");
     style += QString("QTreeWidget::item:!selected { background-color: white; }");
     style += QString("QTreeWidget::item:selected:disabled { background-color: #F7F7F7;"
                                                            "color: #787878; border-color: #DEDEDE; border-style: solid; border-width: 1px; }");
-    style += QString("QTreeWidget::item:has-children { padding-left: 3px; color: #1E3287; }");
+    style += QString("QTreeWidget::item:has-children { padding-left: 3px; color: #000000; }");
 #endif
     style += QString("QTreeWidget::item:!has-children { padding-left: 7px; }");
 
@@ -329,14 +360,12 @@ void ViewTab::createViewItems()
 void ViewTab::formatGroupItem(QTreeWidgetItem *item)
 {
     QFont font = item->font(0);
-#ifdef Q_OS_MAC
     font.setBold(true);
+#ifdef Q_OS_MAC
     if (Global::macVersion() == 12 /* 10.10 */) {
         font.setLetterSpacing(QFont::PercentageSpacing, 105);
     }
     font.setPointSize(font.pointSize() - 1);
-#else
-    font.setPointSize(font.pointSize() + 3);
 #endif
     item->setFont(0, font);
     item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
