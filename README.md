@@ -1,7 +1,7 @@
 Leaklog
 =======
 
-Leaklog is a leakage control system based on Regulation (EC) No 842/2006.
+Leaklog is a leakage control system based on Regulation (EU) 2024/573.
 It logs findings and parameters of leakage checks, shows a history of the
 development of parameters, compares them with nominal ones and calculates
 the percentage of leakage.
