@@ -27,7 +27,7 @@ class MTTabWidget : public QTabWidget
     Q_OBJECT
 
 public:
-    MTTabWidget(QWidget *parent = NULL): QTabWidget(parent) {}
+    MTTabWidget(QWidget *parent = NULL);
 
     void setTabBar(QTabBar *tb);
     QTabBar *tabBar() const;

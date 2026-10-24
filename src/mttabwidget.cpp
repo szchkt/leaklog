@@ -20,6 +20,79 @@
 #include "mttabwidget.h"
 
 #include <QTabBar>
+#if defined(Q_OS_MACOS) && QT_VERSION >= QT_VERSION_CHECK(6, 12, 0)
+#include <QApplication>
+#include <QEvent>
+#include <QScopedValueRollback>
+#include <QStyleOptionTab>
+
+namespace {
+class MTSpacedTabBar : public QTabBar
+{
+public:
+    explicit MTSpacedTabBar(QWidget *parent): QTabBar(parent) {}
+
+protected:
+    void tabInserted(int index) override
+    {
+        QTabBar::tabInserted(index);
+        if (QWidget *button = tabButton(index, LeftSide))
+            button->installEventFilter(this);
+        positionCloseButtons();
+    }
+
+    void tabLayoutChange() override
+    {
+        QTabBar::tabLayoutChange();
+        positionCloseButtons();
+    }
+
+    void paintEvent(QPaintEvent *event) override
+    {
+        // Scrolling can move tab buttons without calling tabLayoutChange().
+        // During a drag, keep Qt's animation positions via the move filter.
+        if (!(QApplication::mouseButtons() & Qt::LeftButton))
+            positionCloseButtons();
+        QTabBar::paintEvent(event);
+    }
+
+    bool eventFilter(QObject *object, QEvent *event) override
+    {
+        if (event->type() == QEvent::Move && !m_positioning) {
+            QScopedValueRollback<bool> guard(m_positioning, true);
+            auto *button = static_cast<QWidget *>(object);
+            button->move(button->pos() + QPoint(isRightToLeft() ? -6 : 6, 0));
+        }
+        return QTabBar::eventFilter(object, event);
+    }
+
+private:
+    void positionCloseButtons()
+    {
+        if (m_positioning)
+            return;
+        QScopedValueRollback<bool> guard(m_positioning, true);
+        for (int i = 0; i < count(); ++i) {
+            if (QWidget *button = tabButton(i, LeftSide)) {
+                QStyleOptionTab option;
+                initStyleOption(&option, i);
+                const QRect rect = style()->subElementRect(QStyle::SE_TabBarTabLeftButton, &option, this);
+                button->move(rect.topLeft() + QPoint(isRightToLeft() ? -6 : 6, 0));
+            }
+        }
+    }
+
+    bool m_positioning = false;
+};
+}
+#endif
+
+MTTabWidget::MTTabWidget(QWidget *parent): QTabWidget(parent)
+{
+#if defined(Q_OS_MACOS) && QT_VERSION >= QT_VERSION_CHECK(6, 12, 0)
+    setTabBar(new MTSpacedTabBar(this));
+#endif
+}
 
 void MTTabWidget::setTabBar(QTabBar *tb)
 {

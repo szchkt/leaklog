@@ -130,7 +130,7 @@ MainWindow::MainWindow():
     // Tab bar
 
     tabw_main->setDocumentMode(false);
-    tabw_main->setStyleSheet(R"(
+    QString tab_style = R"(
         QTabWidget::pane { border-top: 1px solid #ACACAC; }
         QTabWidget::tab-bar { alignment: left; }
         QTabBar::tab {
@@ -145,7 +145,25 @@ MainWindow::MainWindow():
         QTabBar::tab:!active:!selected:hover { background-color: #DEDEDE; border-right: 1px solid #DBDBDB; }
         QTabBar::close-button { image: url(:/images/images/tab_close.svg); }
         QTabBar::close-button:hover { image: url(:/images/images/tab_close_hover.svg); }
-    )");
+    )";
+#if QT_VERSION >= QT_VERSION_CHECK(6, 12, 0)
+    // Match the lighter unified window toolbar used by newer Qt macOS styles.
+    tab_style += R"(
+        QTabWidget::pane { border-top: 1px solid #C6C6C6; }
+        QTabBar { background-color: #F0F0F0; }
+        QTabBar::tab {
+            background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #E8E8E8, stop: 1 #DEDEDE);
+            border-right: 1px solid #C6C6C6;
+        }
+        QTabBar::tab:!active { background-color: #ECECEC; border-right: 1px solid #DBDBDB; }
+        QTabBar::tab:selected { background-color: #F0F0F0; }
+        QTabBar::tab:!active:selected { background-color: #F4F4F4; }
+        QTabBar::tab:!selected:hover { background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #DEDEDE, stop: 1 #D4D4D4); }
+        QTabBar::tab:!selected:pressed { background-color: #CBCBCB; border-right: 1px solid #B8B8B8; }
+        QTabBar::tab:!active:!selected:hover { background-color: #E5E5E5; border-right: 1px solid #DBDBDB; }
+    )";
+#endif
+    tabw_main->setStyleSheet(tab_style);
 
     // Status bar
 

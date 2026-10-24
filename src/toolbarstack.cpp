@@ -149,6 +149,15 @@ void ToolBarStack::initializeStyle()
             border-color: #125FEE;
         }
     )";
+#if QT_VERSION >= QT_VERSION_CHECK(6, 12, 0)
+    // Keep the toolbar rows subtle beneath the lighter unified window toolbar.
+    style += R"(
+        .QWidget {
+            background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #F8F8F8, stop: 1 #EFEFEF);
+            border-color: #C6C6C6;
+        }
+    )";
+#endif
 #else
     style += QString(".QWidget { background-color: #F0F0F0; color: white; border-color: #A0A0A0; border-style: solid; border-width: 0px 0px 1px 1px; }");
     style += QString("QToolButton { min-height: 16px; }");
