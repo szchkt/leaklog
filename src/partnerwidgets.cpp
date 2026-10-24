@@ -29,6 +29,8 @@
 PartnerWidgets::PartnerWidgets(const QString &partner_uuid, const QString &partner_name, const QString &partner_id, QWidget *md)
     : MDGroupedInputWidgets(tr("Business partner:"), md)
 {
+    setId("partner_uuid");
+    setSkipSave(false);
     setRowSpan(9);
 
     partner_name_le = new MDLineEdit("partner", QApplication::translate("BusinessPartner", "Name:"), this, partner_name);
@@ -54,6 +56,7 @@ PartnerWidgets::PartnerWidgets(const QString &partner_uuid, const QString &partn
     });
 
     partners_cb = new MDComboBox("partner_uuid", QObject::tr("Partners:"), this, partner_uuid.isEmpty() ? partners_dict.key(0) : partner_uuid, partners_dict);
+    partners_cb->setSkipSave(true);
     partners_cb->setMaximumWidth(300);
     QObject::connect(partners_cb, SIGNAL(currentIndexChanged(int)), this, SLOT(partnerChanged(int)));
 
@@ -75,8 +78,28 @@ void PartnerWidgets::addToEditDialogue(EditDialogueWidgets &md)
         md.addInputWidget(widget);
 }
 
+bool PartnerWidgets::isEmpty() const
+{
+    return partner_name_le->text().trimmed().isEmpty()
+        && partner_id_le->text().trimmed().isEmpty()
+        && company_vatin_le->text().trimmed().isEmpty()
+        && address_ae->address().isEmpty()
+        && phone_le->text().trimmed().isEmpty()
+        && mail_le->text().trimmed().isEmpty()
+        && website_le->text().trimmed().isEmpty()
+        && notes_pte->toPlainText().trimmed().isEmpty();
+}
+
+QVariant PartnerWidgets::variantValue() const
+{
+    return isEmpty() ? QVariant() : partners_cb->variantValue();
+}
+
 void PartnerWidgets::save()
 {
+    if (isEmpty())
+        return;
+
     BusinessPartner partner(partners_cb->variantValue().toString());
 
     for (QList<MDAbstractInputWidget *>::const_iterator i = input_widgets.constBegin(); i != input_widgets.constEnd(); ++i) {

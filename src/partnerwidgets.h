@@ -38,12 +38,15 @@ public:
     PartnerWidgets(const QString &partner_uuid, const QString &partner_name, const QString &partner_id, QWidget *md);
 
     void addToEditDialogue(EditDialogueWidgets &);
-    void save();
+    QVariant variantValue() const override;
+    void save() override;
 
 private slots:
     void partnerChanged(int);
 
 private:
+    bool isEmpty() const;
+
     QList<MDAbstractInputWidget *> input_widgets;
     MDLineEdit *partner_id_le;
     MDLineEdit *partner_name_le;
