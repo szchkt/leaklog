@@ -1331,8 +1331,12 @@ void MainWindow::editRefrigerantRecord(const QString &uuid)
                         ? tr("Add record of refrigerant management")
                         : tr("Edit record of refrigerant management %1").arg(m_settings.formatDateTime(record.date())));
     EditDialogue md(&record, m_undo_stack, this);
+    md.enableRemoval(tr("Remove record of refrigerant management - Leaklog"),
+                     tr("Are you sure you want to remove this record of refrigerant management?"),
+                     tr("Remove record of refrigerant management %1").arg(m_settings.formatDateTime(record.date())));
     if (md.exec() == QDialog::Accepted) {
-        if (record.purchased() <= 0.0 && record.purchasedRecovered() <= 0.0 &&
+        if (record.exists() &&
+            record.purchased() <= 0.0 && record.purchasedRecovered() <= 0.0 &&
             record.sold() <= 0.0 && record.soldRecovered() <= 0.0 &&
             record.purchasedReclaimed() <= 0.0 && record.soldReclaimed() <= 0.0 &&
             record.regenerated() <= 0.0 && record.disposedOf() <= 0.0 &&
@@ -1366,6 +1370,20 @@ void MainWindow::editBusinessPartner(const QString &uuid)
     if (!isOperationPermitted("edit_business_partner", record.updatedBy())) { return; }
     UndoCommand command(m_undo_stack, tr("Edit business partner %1").arg(record.name()));
     EditDialogue md(&record, m_undo_stack, this);
+    md.enableRemoval(tr("Remove business partner - Leaklog"),
+                     tr("Are you sure you want to remove the business partner \"%1\"?").arg(record.name()),
+                     tr("Remove business partner %1").arg(record.name()), [&record, &md]() {
+        if (RefrigerantRecord::query({{"partner_uuid", record.uuid()}}).exists()) {
+            QMessageBox message(QMessageBox::Warning, tr("Remove business partner - Leaklog"),
+                                tr("This business partner cannot be removed."), QMessageBox::Ok, &md);
+            message.setWindowModality(Qt::WindowModal);
+            message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+            message.setInformativeText(tr("The business partner is used by a record of refrigerant management."));
+            message.exec();
+            return false;
+        }
+        return true;
+    });
     if (md.exec() == QDialog::Accepted) {
         setDatabaseModified(true);
         refreshView();

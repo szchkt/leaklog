@@ -1543,6 +1543,14 @@
         <source>Select a customer first.</source>
         <translation>Najpierw wybierz klienta.</translation>
     </message>
+    <message>
+        <source>Remove</source>
+        <translation>Usuń</translation>
+    </message>
+    <message>
+        <source>The record could not be removed.</source>
+        <translation>Nie udało się usunąć rekordu.</translation>
+    </message>
 </context>
 <context>
     <name>EditDialogueAdvancedTable</name>
@@ -4564,6 +4572,38 @@ Aby usunąć wszystkie dane firmy serwisowej &quot;%1&quot; naciśnij USUŃ i po
     <message>
         <source>Add business partner</source>
         <translation>Dodaj partnera biznesowego</translation>
+    </message>
+    <message>
+        <source>Remove record of refrigerant management - Leaklog</source>
+        <translation>Usuń pozycję zarządzania czynnikiem - Leaklog</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to remove this record of refrigerant management?</source>
+        <translation>Czy na pewno chcesz usunąć tę pozycję zarządzania czynnikiem?</translation>
+    </message>
+    <message>
+        <source>Remove record of refrigerant management %1</source>
+        <translation>Usuń pozycję zarządzania czynnikiem %1</translation>
+    </message>
+    <message>
+        <source>Remove business partner - Leaklog</source>
+        <translation>Usuń partnera biznesowego - Leaklog</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to remove the business partner &quot;%1&quot;?</source>
+        <translation>Czy na pewno chcesz usunąć partnera biznesowego „%1”?</translation>
+    </message>
+    <message>
+        <source>Remove business partner %1</source>
+        <translation>Usuń partnera biznesowego %1</translation>
+    </message>
+    <message>
+        <source>This business partner cannot be removed.</source>
+        <translation>Nie można usunąć tego partnera biznesowego.</translation>
+    </message>
+    <message>
+        <source>The business partner is used by a record of refrigerant management.</source>
+        <translation>Partner biznesowy jest używany w pozycji zarządzania czynnikiem.</translation>
     </message>
 </context>
 <context>

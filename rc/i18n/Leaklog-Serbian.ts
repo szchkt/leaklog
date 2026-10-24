@@ -1543,6 +1543,14 @@
         <source>Select a customer first.</source>
         <translation>Prvo odaberi korisnika.</translation>
     </message>
+    <message>
+        <source>Remove</source>
+        <translation>Ukloni</translation>
+    </message>
+    <message>
+        <source>The record could not be removed.</source>
+        <translation>Nije moguće ukloniti zapis.</translation>
+    </message>
 </context>
 <context>
     <name>EditDialogueAdvancedTable</name>
@@ -4568,6 +4576,38 @@ Da biste uklonili servisnu kompaniju „%1“ napišite UKLONITI i potvrdite:</t
     <message>
         <source>Add business partner</source>
         <translation>Dodaj poslovnog partnera</translation>
+    </message>
+    <message>
+        <source>Remove record of refrigerant management - Leaklog</source>
+        <translation>Ukloni zapis o rukovanju sa rashladnim sredstvima - Leaklog</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to remove this record of refrigerant management?</source>
+        <translation>Da li ste sigurni da želite da uklonite ovaj zapis o rukovanju sa rashladnim sredstvima?</translation>
+    </message>
+    <message>
+        <source>Remove record of refrigerant management %1</source>
+        <translation>Ukloni zapis o rukovanju sa rashladnim sredstvima %1</translation>
+    </message>
+    <message>
+        <source>Remove business partner - Leaklog</source>
+        <translation>Ukloni poslovnog partnera - Leaklog</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to remove the business partner &quot;%1&quot;?</source>
+        <translation>Da li ste sigurni da želite da uklonite poslovnog partnera „%1“?</translation>
+    </message>
+    <message>
+        <source>Remove business partner %1</source>
+        <translation>Ukloni poslovnog partnera %1</translation>
+    </message>
+    <message>
+        <source>This business partner cannot be removed.</source>
+        <translation>Ovaj poslovni partner ne može biti uklonjen.</translation>
+    </message>
+    <message>
+        <source>The business partner is used by a record of refrigerant management.</source>
+        <translation>Poslovni partner se koristi u zapisu o rukovanju sa rashladnim sredstvima.</translation>
     </message>
 </context>
 <context>

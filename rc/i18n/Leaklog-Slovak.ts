@@ -1543,6 +1543,14 @@
         <source>Select a customer first.</source>
         <translation>Najprv vyberte zákazníka.</translation>
     </message>
+    <message>
+        <source>Remove</source>
+        <translation>Odstrániť</translation>
+    </message>
+    <message>
+        <source>The record could not be removed.</source>
+        <translation>Záznam sa nepodarilo odstrániť.</translation>
+    </message>
 </context>
 <context>
     <name>EditDialogueAdvancedTable</name>
@@ -4568,6 +4576,38 @@ Na odstránenie všetkých údajov o servisnej organizácii „%1“ napíšte O
     <message>
         <source>Add business partner</source>
         <translation>Pridať obchodného partnera</translation>
+    </message>
+    <message>
+        <source>Remove record of refrigerant management - Leaklog</source>
+        <translation>Odstrániť záznam o nakladaní s chladivom - Leaklog</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to remove this record of refrigerant management?</source>
+        <translation>Naozaj chcete odstrániť tento záznam o nakladaní s chladivom?</translation>
+    </message>
+    <message>
+        <source>Remove record of refrigerant management %1</source>
+        <translation>Odstrániť záznam o nakladaní s chladivom %1</translation>
+    </message>
+    <message>
+        <source>Remove business partner - Leaklog</source>
+        <translation>Odstrániť obchodného partnera - Leaklog</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to remove the business partner &quot;%1&quot;?</source>
+        <translation>Naozaj chcete odstrániť obchodného partnera „%1“?</translation>
+    </message>
+    <message>
+        <source>Remove business partner %1</source>
+        <translation>Odstrániť obchodného partnera %1</translation>
+    </message>
+    <message>
+        <source>This business partner cannot be removed.</source>
+        <translation>Tohto obchodného partnera nie je možné odstrániť.</translation>
+    </message>
+    <message>
+        <source>The business partner is used by a record of refrigerant management.</source>
+        <translation>Obchodný partner je použitý v zázname o nakladaní s chladivom.</translation>
     </message>
 </context>
 <context>

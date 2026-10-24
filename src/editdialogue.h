@@ -23,8 +23,11 @@
 #include <QDialog>
 #include <QGridLayout>
 
+#include <functional>
+
 #include "editdialoguewidgets.h"
 
+class QDialogButtonBox;
 class DBRecord;
 class MTRecord;
 class MDAbstractInputWidget;
@@ -38,6 +41,9 @@ public:
     EditDialogue(DBRecord *, UndoStack *, QWidget * = NULL);
 
     virtual void setWindowTitle(const QString &);
+
+    void enableRemoval(const QString &title, const QString &confirmation, const QString &undoDescription,
+                       std::function<bool()> canRemove = {});
 
     inline DBRecord *record() { return md_record; }
 
@@ -57,6 +63,7 @@ protected:
     DBRecord *md_record;
     UndoStack *md_undo_stack;
     QGridLayout *md_grid_main;
+    QDialogButtonBox *md_button_box;
 
     friend class Customer;
     friend class Circuit;

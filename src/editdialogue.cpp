@@ -35,7 +35,7 @@ void EditDialogue::init(DBRecord *record)
     md_vlayout_main->setContentsMargins(9, 9, 9, 9);
     md_grid_main = new QGridLayout;
     addMainGridLayout(md_vlayout_main);
-    QDialogButtonBox *md_bb = new QDialogButtonBox(this);
+    QDialogButtonBox *md_bb = md_button_box = new QDialogButtonBox(this);
     md_bb->setStandardButtons(QDialogButtonBox::Save | QDialogButtonBox::Cancel);
     md_bb->button(QDialogButtonBox::Save)->setText(tr("Save"));
     md_bb->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
@@ -71,6 +71,43 @@ EditDialogue::EditDialogue(DBRecord *record, UndoStack *undo_stack, QWidget *par
 void EditDialogue::setWindowTitle(const QString &title)
 {
     this->QDialog::setWindowTitle(title);
+}
+
+void EditDialogue::enableRemoval(const QString &title, const QString &confirmation, const QString &undoDescription,
+                                 std::function<bool()> canRemove)
+{
+    if (!md_record->exists())
+        return;
+
+    // ResetRole places this auxiliary button to the left of the button box's stretch.
+    QPushButton *remove_button = md_button_box->addButton(tr("Remove"), QDialogButtonBox::ResetRole);
+    remove_button->setAutoDefault(false);
+    QObject::connect(remove_button, &QPushButton::clicked, this, [this, title, confirmation, undoDescription, canRemove]() {
+        if (canRemove && !canRemove())
+            return;
+
+        QMessageBox message(QMessageBox::Warning, title, confirmation,
+                            QMessageBox::NoButton, this);
+        message.setWindowModality(Qt::WindowModal);
+        message.setWindowFlags(message.windowFlags() | Qt::Sheet);
+        QPushButton *confirm_button = message.addButton(tr("Remove"), QMessageBox::DestructiveRole);
+        QPushButton *cancel_button = message.addButton(tr("Cancel"), QMessageBox::RejectRole);
+        message.setDefaultButton(cancel_button);
+        message.setEscapeButton(cancel_button);
+        message.exec();
+        if (message.clickedButton() != confirm_button)
+            return;
+
+        UndoCommand command(md_undo_stack, undoDescription);
+        int savepoint = md_undo_stack->savepoint();
+        if (!md_record->remove()) {
+            md_undo_stack->rollbackToSavepoint(savepoint);
+            QMessageBox::warning(this, title, tr("The record could not be removed."));
+            return;
+        }
+
+        accept();
+    });
 }
 
 void EditDialogue::save()

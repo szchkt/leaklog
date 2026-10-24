@@ -1543,6 +1543,14 @@
         <source>Select a customer first.</source>
         <translation>Először válasszon ügyfelet.</translation>
     </message>
+    <message>
+        <source>Remove</source>
+        <translation>Eltávolítás</translation>
+    </message>
+    <message>
+        <source>The record could not be removed.</source>
+        <translation>A bejegyzést nem sikerült eltávolítani.</translation>
+    </message>
 </context>
 <context>
     <name>EditDialogueAdvancedTable</name>
@@ -4557,6 +4565,38 @@ No. 2024/573</source>
     <message>
         <source>Add business partner</source>
         <translation>Üzleti partner hozzáadása</translation>
+    </message>
+    <message>
+        <source>Remove record of refrigerant management - Leaklog</source>
+        <translation>Hűtőközeg-kezelési bejegyzés eltávolítása - Leaklog</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to remove this record of refrigerant management?</source>
+        <translation>Biztosan el kívánja távolítani ezt a hűtőközeg-kezelési bejegyzést?</translation>
+    </message>
+    <message>
+        <source>Remove record of refrigerant management %1</source>
+        <translation>%1 hűtőközeg-kezelési bejegyzés eltávolítása</translation>
+    </message>
+    <message>
+        <source>Remove business partner - Leaklog</source>
+        <translation>Üzleti partner eltávolítása - Leaklog</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to remove the business partner &quot;%1&quot;?</source>
+        <translation>Biztosan el kívánja távolítani a(z) „%1” üzleti partnert?</translation>
+    </message>
+    <message>
+        <source>Remove business partner %1</source>
+        <translation>%1 üzleti partner eltávolítása</translation>
+    </message>
+    <message>
+        <source>This business partner cannot be removed.</source>
+        <translation>Ez az üzleti partner nem távolítható el.</translation>
+    </message>
+    <message>
+        <source>The business partner is used by a record of refrigerant management.</source>
+        <translation>Az üzleti partner egy hűtőközeg-kezelési bejegyzésben szerepel.</translation>
     </message>
 </context>
 <context>
