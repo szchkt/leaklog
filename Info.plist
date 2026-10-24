@@ -44,7 +44,7 @@
 	<key>CFBundleName</key>
 	<string>Leaklog</string>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.14</string>
+	<string>${MACOSX_DEPLOYMENT_TARGET}</string>
 	<key>NSRequiresAquaSystemAppearance</key>
 	<true/>
 </dict>

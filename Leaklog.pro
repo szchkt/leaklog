@@ -300,6 +300,11 @@ macx:versionAtLeast(QT_VERSION, 6.5.0) {
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 11.0
 }
 
+# Qt 6.12+
+macx:versionAtLeast(QT_VERSION, 6.12.0) {
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 14.4
+}
+
 macx:CONFIG(release) {
     QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
 }
