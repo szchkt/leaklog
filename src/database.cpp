@@ -1549,7 +1549,7 @@ void MainWindow::decommissionAllCircuits()
 
     QString decommissioning = date->date().toString(DATE_FORMAT);
 
-    auto circuits = customer.circuits().where(QString("disused = %1").arg(Circuit::Commissioned));
+    auto circuits = customer.circuits().where(QString("COALESCE(disused, 0) = %1").arg(Circuit::Commissioned));
     foreach (auto circuit, circuits) {
         circuit.setStatus(exclude_from_agenda->isChecked() ? Circuit::ExcludedFromAgenda : Circuit::Decommissioned);
         circuit.setDateOfDecommissioning(decommissioning);
@@ -2066,9 +2066,9 @@ QStringList MainWindow::selectCircuits(const QString &title)
     QString current_date = QDate::currentDate().toString(DATE_FORMAT);
 
     auto circuits = Circuit::query({
-        {"customer_uuid", m_tab->selectedCustomerUUID()},
-        {"disused", QString::number(Circuit::Commissioned)}
+        {"customer_uuid", m_tab->selectedCustomerUUID()}
     });
+    circuits.setPredicate(QString("COALESCE(circuits.disused, 0) = %1").arg(Circuit::Commissioned));
     circuits.addFields(circuitRefrigerantAmountQuery());
     circuits.addJoin("LEFT JOIN (SELECT circuit_uuid, date FROM inspections"
                      " WHERE uuid IN (SELECT (SELECT uuid FROM inspections"

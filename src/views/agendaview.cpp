@@ -57,7 +57,8 @@ QString AgendaView::renderHTML(bool)
     }
     MultiMapOfVariantMaps customers(customers_query.mapAll("uuid", "id, company"));
 
-    MTQuery circuits_query = Circuit::query({{"disused", Circuit::Commissioned}});
+    MTQuery circuits_query = Circuit::query();
+    circuits_query.setPredicate(QString("COALESCE(circuits.disused, 0) = %1").arg(Circuit::Commissioned));
     if (!service_company_uuid.isEmpty()) {
         circuits_query.parents().insert("service_company_uuid", service_company_uuid);
     }

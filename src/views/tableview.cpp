@@ -63,7 +63,7 @@ QString TableView::renderHTML(bool)
         }
     }
     if (settings->toolBarStack()->isTableForAllCircuitsExceptDecommissionedChecked()) {
-        circuits_query.setPredicate(QString("(disused = %1 OR decommissioning >= '%2')").arg(Circuit::Commissioned).arg(settings->toolBarStack()->minimumDecommissioningDateForTableOfAllCircuits().toString(DATE_FORMAT)));
+        circuits_query.setPredicate(QString("(COALESCE(disused, 0) = %1 OR decommissioning >= '%2')").arg(Circuit::Commissioned).arg(settings->toolBarStack()->minimumDecommissioningDateForTableOfAllCircuits().toString(DATE_FORMAT)));
     }
     ListOfVariantMaps circuits = circuits_query.listAll("*, " + circuitRefrigerantAmountQuery());
 

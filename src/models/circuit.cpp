@@ -73,7 +73,7 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
     MDSpinBox *inspection_interval = new MDSpinBox("inspection_interval", tr("Inspection interval:"), md->widget(), 0, 999999, inspectionInterval(), QApplication::translate("Units", "days"));
     inspection_interval->setSpecialValueText(tr("Automatic"));
     md->addInputWidget(inspection_interval);
-    MDComboBox *disused = new MDComboBox("disused", tr("Status:"), md->widget(), stringValue("disused", QString::number(Circuit::Commissioned)), {
+    MDComboBox *disused = new MDComboBox("disused", tr("Status:"), md->widget(), QString::number(status()), {
         {QString::number(Circuit::Commissioned), tr("Commissioned")},
         {QString::number(Circuit::ExcludedFromAgenda), tr("Excluded from Agenda")},
         {QString::number(Circuit::Decommissioned), tr("Decommissioned")}
