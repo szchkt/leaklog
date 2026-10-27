@@ -1185,7 +1185,9 @@ QStringList Global::listRefrigerants(bool in_store_only, bool include_user_refri
     if (include_user_refrigerants) {
         QList<QVariantMap> user_refrigerants = DBInfo::refrigerants();
         foreach (const QVariantMap &refrigerant, user_refrigerants) {
-            refrigerants << refrigerant.value("name").toString();
+            const QString name = refrigerant.value("name").toString();
+            if (!refrigerants.contains(name))
+                refrigerants << name;
         }
     }
 

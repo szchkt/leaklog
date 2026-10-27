@@ -33,8 +33,6 @@ Repair::Repair(const QString &uuid, const QVariantMap &savedValues):
 
 void Repair::initEditDialogue(EditDialogueWidgets *md)
 {
-    MTDictionary refrigerants(listRefrigerants(true));
-
     md->setWindowTitle(tr("Repair"));
     md->addInputWidget(new MDComboBox("service_company_uuid", tr("Service company:"), md->widget(), serviceCompanyUUID(), listServiceCompanies()));
 
@@ -56,7 +54,7 @@ void Repair::initEditDialogue(EditDialogueWidgets *md)
 
     md->addInputWidget(new MDLineEdit("device", tr("Device:"), md->widget(), device()));
     md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md->widget(), field(), fieldsOfApplication()));
-    md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), refrigerant(), refrigerants));
+    md->addInputWidget(new MDRefrigerantComboBox("refrigerant", tr("Refrigerant:"), md->widget(), refrigerant()));
 
     MDComboBox *repairman = new MDComboBox("inspector_uuid", tr("Inspector:"), md->widget(), inspectorUUID(), listInspectors());
     repairman->setNullValue(QVariant(QVariant::Int));

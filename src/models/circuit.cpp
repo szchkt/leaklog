@@ -36,8 +36,6 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
 {
     md->setMaximumRowCount(15);
 
-    MTDictionary refrigerants(listRefrigerants(true));
-
     Customer customer(customerUUID());
     md->setWindowTitle(tr("Customer: %2 %1 Circuit").arg(rightTriangle())
                        .arg(customer.companyName().isEmpty() ? customer.companyID() : customer.companyName()));
@@ -64,7 +62,7 @@ void Circuit::initEditDialogue(EditDialogueWidgets *md)
     notes->setRowSpan(2);
     md->addInputWidget(notes);
     md->addInputWidget(new MDComboBox("field", tr("Field of application:"), md->widget(), field(), fieldsOfApplication()));
-    md->addInputWidget(new MDComboBox("refrigerant", tr("Refrigerant:"), md->widget(), refrigerant(), refrigerants));
+    md->addInputWidget(new MDRefrigerantComboBox("refrigerant", tr("Refrigerant:"), md->widget(), refrigerant()));
     md->addInputWidget(new MDDoubleSpinBox("refrigerant_amount", tr("Refrigerant amount precharged:"), md->widget(), 0.0, 999999.9, refrigerantAmount(), QApplication::translate("Units", "kg")));
     md->addInputWidget(new MDComboBox("oil", tr("Oil:"), md->widget(), stringValue("oil", "poe"), oils()));
     md->addInputWidget(new MDDoubleSpinBox("oil_amount", tr("Oil amount:"), md->widget(), 0.0, 999999.9, oilAmount(), QApplication::translate("Units", "kg")));

@@ -27,6 +27,8 @@
 #include <QFileDialog>
 #include <QRadioButton>
 #include <QCalendarWidget>
+#include <QSignalBlocker>
+#include <QTimer>
 
 using namespace Global;
 
@@ -376,6 +378,79 @@ void MDComboBox::emitToggled(int index)
 {
     emit currentIndexChanged(this, index);
     emit toggled(index != 0);
+}
+
+MDRefrigerantComboBox::MDRefrigerantComboBox(const QString &id, const QString &labeltext, QWidget *parent, const QString &value):
+MDComboBox(id, labeltext, parent, QString(), MTDictionary())
+{
+    const QSignalBlocker blocker(this);
+    QStringList refrigerants = listRefrigerants(true);
+    const bool show_all = refrigerants.isEmpty();
+    if (show_all)
+        refrigerants = listRefrigerants();
+    for (const QString &refrigerant : refrigerants)
+        addItem(refrigerant, refrigerant);
+    setVariantValue(value);
+
+    if (!show_all) {
+        insertSeparator(count());
+        addItem(tr("Show all refrigerants..."));
+        setItemData(count() - 1, true, ShowAllRole);
+    }
+
+    QObject::connect(this, &QComboBox::activated, this, [this](int index) {
+        if (itemData(index, ShowAllRole).toBool())
+            showAllRefrigerants();
+    });
+}
+
+QVariant MDRefrigerantComboBox::variantValue() const
+{
+    // The catalogue action is never a refrigerant, even during activation.
+    return itemData(currentIndex(), ShowAllRole).toBool() ? selected_value : MDComboBox::variantValue();
+}
+
+void MDRefrigerantComboBox::setVariantValue(const QVariant &value)
+{
+    const QString refrigerant = value.toString();
+    int index = refrigerant.isEmpty() ? -1 : findData(refrigerant);
+    if (index < 0 && !refrigerant.isEmpty()) {
+        const int action_index = findData(true, ShowAllRole);
+        index = action_index < 0 ? count() : action_index - 1;
+        insertItem(index, refrigerant, refrigerant);
+    }
+    setCurrentIndex(index);
+    selected_value = MDComboBox::variantValue();
+}
+
+void MDRefrigerantComboBox::emitToggled(int index)
+{
+    if (itemData(index, ShowAllRole).toBool())
+        return;
+    selected_value = MDComboBox::variantValue();
+    MDComboBox::emitToggled(index);
+}
+
+void MDRefrigerantComboBox::showAllRefrigerants()
+{
+    {
+        const QSignalBlocker blocker(this);
+        setVariantValue(selected_value);
+    }
+
+    // Allow the selection flash and closing animation to finish before reopening.
+    QTimer::singleShot(150, this, [this]() {
+        {
+            const QSignalBlocker blocker(this);
+            clear();
+            const QStringList refrigerants = listRefrigerants();
+            for (const QString &refrigerant : refrigerants)
+                addItem(refrigerant, refrigerant);
+            setVariantValue(selected_value);
+        }
+        if (isVisible() && isEnabled())
+            showPopup();
+    });
 }
 
 MDColourComboBox::MDColourComboBox(const QString &id, const QString &labeltext, QWidget *parent, const QString &value):

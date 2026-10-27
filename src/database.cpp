@@ -1711,26 +1711,12 @@ void MainWindow::duplicateAndDecommissionCircuit()
     QRadioButton *set_duplicate_id = new QRadioButton(tr("Choose a new ID for the duplicate:"), &d);
     gl->addWidget(set_duplicate_id, 4, 0);
 
-    QStringList refrigerants = listRefrigerants(true);
-    if (!refrigerants.contains(circuit.refrigerant()))
-        refrigerants.append(circuit.refrigerant());
-
-    lbl = new QLabel(tr("Previous refrigerant:"), &d);
-    lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-    gl->addWidget(lbl, 5, 0);
-
-    QComboBox *old_refrigerant = new QComboBox(&d);
-    old_refrigerant->addItems(refrigerants);
-    old_refrigerant->setCurrentIndex(refrigerants.indexOf(circuit.refrigerant()));
+    MDRefrigerantComboBox *old_refrigerant = new MDRefrigerantComboBox("old_refrigerant", tr("Previous refrigerant:"), &d, circuit.refrigerant());
+    gl->addWidget(old_refrigerant->label()->widget(), 5, 0);
     gl->addWidget(old_refrigerant, 5, 1);
 
-    lbl = new QLabel(tr("New refrigerant:"), &d);
-    lbl->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-    gl->addWidget(lbl, 6, 0);
-
-    QComboBox *new_refrigerant = new QComboBox(&d);
-    new_refrigerant->addItems(refrigerants);
-    new_refrigerant->setCurrentIndex(refrigerants.indexOf(circuit.refrigerant()));
+    MDRefrigerantComboBox *new_refrigerant = new MDRefrigerantComboBox("new_refrigerant", tr("New refrigerant:"), &d, circuit.refrigerant());
+    gl->addWidget(new_refrigerant->label()->widget(), 6, 0);
     gl->addWidget(new_refrigerant, 6, 1);
 
     lbl = new QLabel(QApplication::translate("Circuit", "This ID is not available. Please choose a different ID."), &d);
@@ -1778,7 +1764,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
 
     circuit.setStatus(Circuit::Decommissioned);
     circuit.setDateOfDecommissioning(date_string);
-    circuit.setRefrigerant(old_refrigerant->currentText());
+    circuit.setRefrigerant(old_refrigerant->variantValue().toString());
 
     if (set_original_id->isChecked()) {
         circuit.setCircuitID(id);
@@ -1788,7 +1774,7 @@ void MainWindow::duplicateAndDecommissionCircuit()
 
     circuit.save();
 
-    attributes.insert("refrigerant", new_refrigerant->currentText());
+    attributes.insert("refrigerant", new_refrigerant->variantValue());
     attributes.insert("refrigerant_amount", 0.0);
     attributes.insert("disused", Circuit::Commissioned);
     attributes.insert("commissioning", date_string);

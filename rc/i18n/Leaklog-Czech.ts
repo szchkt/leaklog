@@ -2323,6 +2323,13 @@
     </message>
 </context>
 <context>
+    <name>MDRefrigerantComboBox</name>
+    <message>
+        <source>Show all refrigerants...</source>
+        <translation>Zobrazit všechna chladiva...</translation>
+    </message>
+</context>
+<context>
     <name>MTAddressEdit</name>
     <message>
         <source>Street:</source>

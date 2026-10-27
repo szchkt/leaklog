@@ -102,6 +102,7 @@ namespace Global {
     double refrigerantGWP(const QString &refrigerant);
     double CO2Equivalent(const QString &refrigerant, double refrigerant_amount);
     // List
+    // Returns unique names, with predefined refrigerants before user-defined ones.
     QStringList listRefrigerants(bool in_store_only = false, bool include_user_refrigerants = true);
     QSet<QString> refrigerantSet(bool in_store_only = false, bool include_user_refrigerants = true);
     MTDictionary listServiceCompanies();

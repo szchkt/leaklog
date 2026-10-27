@@ -290,10 +290,31 @@ signals:
     void toggled(bool);
 
 protected slots:
-    void emitToggled(int);
+    virtual void emitToggled(int);
 
 private:
     QVariant nullvalue;
+};
+
+class MDRefrigerantComboBox : public MDComboBox
+{
+    Q_OBJECT
+
+public:
+    MDRefrigerantComboBox(const QString &id, const QString &labeltext, QWidget *parent, const QString &value);
+
+    QVariant variantValue() const override;
+    void setVariantValue(const QVariant &value) override;
+
+protected:
+    void emitToggled(int index) override;
+
+private:
+    enum { ShowAllRole = Qt::UserRole + 1 };
+
+    void showAllRefrigerants();
+
+    QVariant selected_value;
 };
 
 class MDColourComboBox : public MTColourComboBox, public MDInputWidget
